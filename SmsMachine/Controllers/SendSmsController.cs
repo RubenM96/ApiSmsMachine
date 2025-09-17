@@ -8,22 +8,21 @@ namespace SmsMachine.Controllers;
 [Route("api/sendmessage")]
 public class SendSmsController: ControllerBase
 {
-    private readonly ISmsSender _smsSender;
+    private readonly ISmsService _smsService;
 
-    public SendSmsController(ISmsSender smsSender)
+    public SendSmsController(ISmsService smsService)
     {
-        _smsSender = smsSender;
+        _smsService = smsService;
     }
 
     [HttpPost]
     public IActionResult Send([FromForm] SmsSend sms)
     {
-        if(ModelState.IsValid)
+        if (ModelState.IsValid)
         {
-            var index = _smsSender.SendSms(sms.Recipient, sms.Text, sms.Notify.Value);
+            _smsService.SendSms(sms.Recipient, sms.Text, false, sms.Notify.Value);
         }
 
         return BadRequest(ModelState);
     }
-
 }
