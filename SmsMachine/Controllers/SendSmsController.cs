@@ -6,7 +6,7 @@ namespace SmsMachine.Controllers;
 
 [ApiController]
 [Route("api/sendmessage")]
-public class SendSmsController: ControllerBase
+public class SendSmsController : ControllerBase
 {
     private readonly ISmsService _smsService;
 
@@ -18,11 +18,19 @@ public class SendSmsController: ControllerBase
     [HttpPost]
     public IActionResult Send([FromForm] SmsSend sms)
     {
-        if (ModelState.IsValid)
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        try
         {
             _smsService.SendSms(sms.Recipient, sms.Text, false, sms.Notify.Value);
         }
+        catch (Exception ex)
+        {
+            return BadRequest($"Errore durante l'invio del messaggio: {ex.Message}");
+        }
 
-        return BadRequest(ModelState);
+        return Ok("Messaggio inviato con successo!");
+
     }
 }

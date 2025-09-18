@@ -8,6 +8,7 @@ namespace SmsMachine.Services
         private readonly ILogger<AreaSxSmsSender> _logger;
         private readonly string _password;
 
+        public AreaSxSmsSender() {}
         public AreaSxSmsSender(HttpClient httpClient, ILogger<AreaSxSmsSender> logger, AreaSxOptions options)
         {
             _httpClient = httpClient;
@@ -18,17 +19,22 @@ namespace SmsMachine.Services
         public int SendSms(string recipient, string text, bool notify)
         {
             _logger.LogInformation("Sending SMS to {Recipient} with text: {Text} and notify: {Notify}", recipient, text, notify);
+            
             using var request = new HttpRequestMessage(HttpMethod.Post, AreaSxSmsMachine.Endpoints.SendSms);
 
-            var data = new Dictionary<string, string>();
-            data.Add("Pwd", _password);
-            data.Add("num", recipient);
-            data.Add("text", text);
+            var data = new Dictionary<string, string>
+            {
+                { "Pwd", _password },
+                { "num", recipient },
+                { "text", text }
+            };
+
             if(notify)
                 data.Add("notify", "1");
 
             request.Content = new FormUrlEncodedContent(data);
 
+           // Console.WriteLine($"URL: {request.RequestUri}. Base URL: {_httpClient.BaseAddress}");
             using var response = _httpClient.Send(request);
 
             if (!response.IsSuccessStatusCode)

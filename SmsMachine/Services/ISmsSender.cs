@@ -1,4 +1,5 @@
-﻿namespace SmsMachine.Services
+﻿
+namespace SmsMachine.Services
 {
     public interface ISmsSender
     {

@@ -23,11 +23,11 @@ builder.Services.AddSingleton(new AreaSxOptions
 
 builder.Services.AddTransient<ISmsService, SmsService>();
 builder.Services.AddTransient<ISmsReceiver, AreaSxSmsReceiver>();
-builder.Services.AddTransient<ISmsSender, AreaSxSmsSender>();
-builder.Services.AddHttpClient<AreaSxSmsSender>(client =>
+
+builder.Services.AddHttpClient<ISmsSender, AreaSxSmsSender>(client =>
 {
     var baseUrl = builder.Configuration["AreaSx:BaseUrl"];
-    client.BaseAddress=new Uri(baseUrl);
+    client.BaseAddress = new Uri(baseUrl);
 });
 
 builder.Services.AddControllers();
