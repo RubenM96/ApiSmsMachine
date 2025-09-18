@@ -6,12 +6,13 @@
         {
         }
 
-        public Sms(Recipient recipient, string text, bool multipart, bool notify)
+        public Sms(Recipient recipient, string text, bool multipart, bool notify, DateTime sentAt)
         {
             Recipient = recipient ?? throw new ArgumentNullException(nameof(recipient));
             Text = text ?? throw new ArgumentNullException(nameof(text));
             Multipart = multipart;
             Notify = notify;
+            SentAt = sentAt;
         }
 
         public int Id { get; }
