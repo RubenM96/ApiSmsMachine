@@ -20,8 +20,11 @@
         public string Text { get; }
         public bool Multipart { get; }
         public bool Notify { get; }
-        public DateTime? SentAt { get; }
+        public DateTime SentAt { get; }
         public int? Index { get; }
         public string? Error { get; }
+
+        //todo: aggiungere index per indicare lo stato dell'sms
+
     }
 }
