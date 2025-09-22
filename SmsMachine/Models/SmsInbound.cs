@@ -1,27 +1,27 @@
 ﻿namespace SmsMachine.Models
 {
-    public class Sms
+    public class SmsInbound
     {
-        private Sms()
+        private SmsInbound()
         {
         }
 
-        public Sms(Recipient recipient, string text, bool multipart, bool notify, DateTime sentAt)
+        public SmsInbound(Recipient recipient, string text, bool multipart, DateTime receivedAt)
         {
             Recipient = recipient ?? throw new ArgumentNullException(nameof(recipient));
             Text = text ?? throw new ArgumentNullException(nameof(text));
             Multipart = multipart;
-            Notify = notify;
-            SentAt = sentAt;
+           // Notify = notify;
+            ReceivedAt = receivedAt;
         }
-
         public int Id { get; }
         public Recipient Recipient { get; }
         public string Text { get; }
         public bool Multipart { get; }
-        public bool Notify { get; }
-        public DateTime SentAt { get; }
-        public int? Index { get; }
+        //public bool Notify { get; }
+        public DateTime ReceivedAt { get; }
+        
+        //public int? Index { get; }
         public string? Error { get; }
     }
 }

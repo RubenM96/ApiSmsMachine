@@ -25,6 +25,22 @@ namespace SmsMachine.Infrastructure.Data
                 e.Property(s => s.Multipart).IsRequired();  
                 e.Property(s => s.Notify).IsRequired();
             });
+            modelBuilder.Entity<SmsInbound>(e =>
+            {
+                e.ToTable("SmsInbound");
+                e.HasKey(s => s.Id);
+                e.Property(s => s.Id).ValueGeneratedOnAdd();
+
+                e.OwnsOne(s => s.Recipient, r =>
+                {
+                    r.Property(p => p.Value).HasColumnName("Recipient").IsRequired().HasMaxLength(50);
+                });
+
+                e.Property(s => s.Text).IsRequired().HasMaxLength(300);
+                e.Property(s => s.ReceivedAt).IsRequired();
+                e.Property(s => s.Multipart).IsRequired();
+                //e.Property(s => s.Notify).IsRequired();
+            });
         }
     }
 }
