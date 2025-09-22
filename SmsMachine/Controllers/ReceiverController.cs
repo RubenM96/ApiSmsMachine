@@ -21,9 +21,8 @@ namespace SmsMachine.Controllers
         [HttpPost]
         public IActionResult ReceiveSms([FromForm] SmsReceived sms)
         {
-            _logger.LogInformation("Sms o notifica arrivata!");
-            
-            Console.WriteLine($"Dettagli SMS: {sms.sms_code}, {sms.sms_num}, {sms.sms_text}, {sms.sms_date}");
+            _logger.LogInformation("Sms o notifica arrivata!");          
+            //Console.WriteLine($"Dettagli SMS: {sms.sms_code}, {sms.sms_num}, {sms.sms_text}, {sms.sms_date}");
 
             _smsReceiver.Receive(sms.sms_code, sms.sms_num, sms.sms_text, sms.sms_date);
             return Ok();

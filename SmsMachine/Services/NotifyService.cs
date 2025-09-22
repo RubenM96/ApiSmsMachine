@@ -1,5 +1,6 @@
 ﻿using SmsMachine.Interfaces;
 using SmsMachine.Models;
+using System.Globalization;
 
 namespace SmsMachine.Services;
 
@@ -17,17 +18,10 @@ public class NotifyService : INotifyService
 
     public void Notify(string index, string recipient, string text, string date)
     {
-        //aggiungere i valori in un oggetto Notify per passarlo al repository
-        //System.FormatException: String = '2025-09-19 13:16:58 GMT +02' was not recognized as a valid DateTime.
-        date = date.Replace("-", "/").Trim();
-        date = date.Replace(" +", "").Trim(); //per gestire il caso +2
-        date = date.Replace("GMT", "").Trim();
-        DateTime dateTime = DateTime.ParseExact(date, "yyyy/MM/dd HH:mm:ss fff", System.Globalization.CultureInfo.InvariantCulture);
-
+        date = date.Substring(0, 19).Trim().Replace("-", "/");
+        DateTime dateTime = DateTime.ParseExact(date, "yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture);
 
         var notify = new Notify(new Recipient(recipient), text, dateTime);     
-
-        //chiama il repository per salvare la notifica sul db
         _notifyRepository.AddNotify(notify);
 
     }

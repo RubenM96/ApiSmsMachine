@@ -1,20 +1,28 @@
-﻿using SmsMachine.Interfaces;
+﻿using SmsMachine.Infrastructure.Data;
+using SmsMachine.Interfaces;
 using SmsMachine.Models;
 
 namespace SmsMachine.Infrastructure.Repositories
 {
     public class NotifyRepository : INotifyRepository
     {
-        public Notify AddNotify(Notify notify)
+        private readonly SmsDbContext _context;
+
+        public NotifyRepository(SmsDbContext context)
         {
-            Console.WriteLine("Aggiunta notifica al database (simulata).");
-            Console.WriteLine($"Notifica: {notify.Recipient}, {notify.Text}, {notify.DateTime}");
-            throw new NotImplementedException();
+            _context = context;
         }
 
-        public Notify GetNotify(int id)
+        public Notify AddNotify(Notify notify)
         {
-            throw new NotImplementedException();
+            _context.Set<Notify>().Add(notify);
+            _context.SaveChanges();
+            return notify;
+        }
+
+        public Notify? GetNotify(int id)
+        {
+            return _context.Set<Notify>().Find(id);
         }
 
 

@@ -17,10 +17,8 @@
             if(IsNotifica(text))
             {
                 //notifica di ricezione sms
-                _logger.LogInformation("Notifica sms ricevuta: {Index}, recipient {Recipient}, text {Text}, date {Date}", index, recipient, text, date);
-                               
+                _logger.LogInformation("Notifica sms ricevuta: {Index}, recipient {Recipient}, text {Text}, date {Date}", index, recipient, text, date);                              
                 _notifyService.Notify(index, recipient, text, date);
-
             }
             else
             {

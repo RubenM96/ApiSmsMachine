@@ -4,7 +4,7 @@
     {
 
         private Notify() { }
-        public Notify( Recipient recipient, string text, DateTime dateTime)
+        public Notify(Recipient recipient, string text, DateTime dateTime)
         {
             Recipient = recipient;
             Text = text;
