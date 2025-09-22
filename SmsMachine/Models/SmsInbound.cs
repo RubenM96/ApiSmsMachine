@@ -1,4 +1,6 @@
-﻿namespace SmsMachine.Models
+﻿using System.IO;
+
+namespace SmsMachine.Models
 {
     public class SmsInbound
     {
@@ -23,5 +25,12 @@
         
         //public int? Index { get; }
         public string? Error { get; }
+
+
+        /*
+        sms_id identificativo dell’SMS concatenato 
+        sms_totparts numero totale di parti che lo compongono
+        sms_thispart identificativo della parte corrente
+        */
     }
 }
