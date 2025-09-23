@@ -9,12 +9,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-
-
 builder.Services.AddDbContext<SmsDbContext>(options =>
     options.UseSqlServer(connectionString));
 
 builder.Services.AddTransient<ISmsRepository, SmsRepository>();
+builder.Services.AddTransient<INotifyRepository, NotifyRepository>();
+
 // Add services to the container.
 builder.Services.AddSingleton(new AreaSxOptions
 {
@@ -22,7 +22,9 @@ builder.Services.AddSingleton(new AreaSxOptions
 });
 
 builder.Services.AddTransient<ISmsService, SmsService>();
+
 builder.Services.AddTransient<ISmsReceiver, AreaSxSmsReceiver>();
+builder.Services.AddTransient<INotifyService, NotifyService>();
 
 builder.Services.AddHttpClient<ISmsSender, AreaSxSmsSender>(client =>
 {

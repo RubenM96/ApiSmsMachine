@@ -23,5 +23,8 @@
         public DateTime SentAt { get; }
         public int? Index { get; }
         public string? Error { get; }
+
+        //todo: aggiungere index per indicare lo stato dell'sms
+
     }
 }

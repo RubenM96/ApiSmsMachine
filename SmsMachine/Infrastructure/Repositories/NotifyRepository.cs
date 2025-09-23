@@ -4,26 +4,27 @@ using SmsMachine.Models;
 
 namespace SmsMachine.Infrastructure.Repositories
 {
-    public class SmsRepository : ISmsRepository
+    public class NotifyRepository : INotifyRepository
     {
         private readonly SmsDbContext _context;
 
-        public SmsRepository(SmsDbContext context)
+        public NotifyRepository(SmsDbContext context)
         {
             _context = context;
         }
 
-        public Sms AddSms(Sms sms)
+        public Notify AddNotify(Notify notify)
         {
-            _context.Set<Sms>().Add(sms);
+            _context.Set<Notify>().Add(notify);
             _context.SaveChanges();
-            return sms;
+            return notify;
         }
 
-        public Sms? GetSms(int id)
+        public Notify? GetNotify(int id)
         {
-            return _context.Set<Sms>().Find(id);
+            return _context.Set<Notify>().Find(id);
         }
+
 
     }
 }

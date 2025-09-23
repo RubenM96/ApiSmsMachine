@@ -1,14 +1,15 @@
-﻿
-namespace SmsMachine.Services
+﻿namespace SmsMachine.Services
 {
     public class AreaSxSmsReceiver : ISmsReceiver
     {
         private readonly ILogger<AreaSxSmsReceiver> _logger;
         private readonly ISmsInbound _smsInboundService;
+        private readonly INotifyService _notifyService;
 
-        public AreaSxSmsReceiver(ILogger<AreaSxSmsReceiver> logger, ISmsInbound smsInboundService)
-        {
+        public AreaSxSmsReceiver(ILogger<AreaSxSmsReceiver> logger, INotifyService notifyService, ISmsInbound smsInboundService) 
+        { 
             _logger = logger;
+            _notifyService = notifyService;
             _smsInboundService = smsInboundService;
         }
 
@@ -17,7 +18,9 @@ namespace SmsMachine.Services
             //controllare se notifica o sms
             if(IsNotifica(text))
             {
-                //Registra Notifica
+                //notifica di ricezione
+                _logger.LogInformation("Notifica sms ricevuta: {Index}, recipient {Recipient}, text {Text}, date {Date}", index, recipient, text, date);                              
+                _notifyService.Notify(index, recipient, text, date);
             }
             else
             {
@@ -30,6 +33,7 @@ namespace SmsMachine.Services
                     throw new ArgumentException("Testo del messaggio mancante");
 
                 _smsInboundService.SmsInbound(recipient, text, date);
+
             }
         }
 
@@ -37,5 +41,6 @@ namespace SmsMachine.Services
         {
             return text == "STATUS REPORT";
         }
+
     }
 }
