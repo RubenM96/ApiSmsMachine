@@ -24,7 +24,7 @@
             }
             else
             {
-                //Registra sms
+                //Sms ricevuto
                 _logger.LogInformation("Receveing SMS from {Recipient} with text: {Text}", recipient, text);
 
                 if (string.IsNullOrEmpty(recipient))

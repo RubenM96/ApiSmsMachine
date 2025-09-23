@@ -14,6 +14,7 @@ builder.Services.AddDbContext<SmsDbContext>(options =>
 
 builder.Services.AddTransient<ISmsRepository, SmsRepository>();
 builder.Services.AddTransient<INotifyRepository, NotifyRepository>();
+builder.Services.AddTransient<ISmsInboundRepository, SmsInboundRepository>();
 
 // Add services to the container.
 builder.Services.AddSingleton(new AreaSxOptions
@@ -25,6 +26,7 @@ builder.Services.AddTransient<ISmsService, SmsService>();
 
 builder.Services.AddTransient<ISmsReceiver, AreaSxSmsReceiver>();
 builder.Services.AddTransient<INotifyService, NotifyService>();
+builder.Services.AddTransient<ISmsInbound, SmsInboundService>();
 
 builder.Services.AddHttpClient<ISmsSender, AreaSxSmsSender>(client =>
 {
