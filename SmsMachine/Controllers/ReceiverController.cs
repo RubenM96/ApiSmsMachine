@@ -21,10 +21,11 @@ namespace SmsMachine.Controllers
         [HttpPost]
         public IActionResult ReceiveSms([FromForm] SmsReceived sms)
         {
-            _logger.LogInformation("Sms o notifica arrivata!");          
-            //Console.WriteLine($"Informazioni base SMS: {sms.sms_code}, {sms.sms_num}, {sms.sms_text}, {sms.sms_date}");
 
-            _smsReceiver.Receive(sms.sms_code, sms.sms_num, sms.sms_text, sms.sms_date);
+            _logger.LogInformation("Sms o notifica arrivata!");
+            //Console.WriteLine($"Informazioni base SMS: {sms.sms_code}, {sms.sms_num}, {sms.sms_text}, {sms.sms_date}");
+            _smsReceiver.Receive(sms.sms_code, sms.sms_num, sms.sms_text, sms.sms_date, sms.sms_id, sms.sms_totparts, sms.sms_thispart);
+
             return Ok();
 
         }
