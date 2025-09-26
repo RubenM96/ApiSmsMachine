@@ -1,4 +1,5 @@
-﻿using SmsMachine.Interfaces;
+﻿using SmsMachine.Infrastructure.Utils;
+using SmsMachine.Interfaces;
 using SmsMachine.Models;
 using System.Globalization;
 using static System.Net.Mime.MediaTypeNames;
@@ -18,21 +19,34 @@ namespace SmsMachine.Services
 
         public void SmsInbound(string recipient, string text, string date)
         {
-            //bool multipart = false;
-            ////controlli input
-            //if (text.Length > 160)
-            //    multipart = true;
+            // parse della data
+            DateTime receivedAtUtc;
+            try
+            {
+                receivedAtUtc = SmsDateParser.ParseDateFromSmsMachine(date);
+            }
+            catch (Exception ex) 
+            {
+                _logger.LogWarning(ex, "Formato data non valido: {Date}", date);
+                receivedAtUtc = DateTime.UtcNow;
+            }
+            // controllo lunghezza messaggio 
+            if (!string.IsNullOrEmpty(text) && text.Length > 300)
+                text = text[..300];
 
-            //if (text.Length > 300)
-            //    text = text.Substring(0, 300);
+            var smsInbound = new SmsInbound(new Recipient(recipient), text, multipart: false, receivedAt: receivedAtUtc);
+            
 
-
-            //formattare i dati come nel modello SmsInbound
-            date = date.Substring(0, 19).Trim().Replace("-", "/");
-            DateTime dateTime = DateTime.ParseExact(date, "yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture);
-
-            var smsInbound = new SmsInbound(new Recipient(recipient), text, false, dateTime);
-
+            try 
+            {
+                _smsInboundRepository.AddSmsInbound(smsInbound);
+                _logger.LogInformation("Inbound SMS saved: Id={Id}, Recipient={Recipient}, Text={Text}", smsInbound.Id, recipient, text);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to save SMS for Recipient = {Recipient}", recipient);
+                throw;
+            }
         }
     }
 }
