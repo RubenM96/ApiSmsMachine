@@ -27,7 +27,7 @@
                 if(string.IsNullOrWhiteSpace(sms_status))               
                     throw new ArgumentException("Status empty");                   
                 
-                _logger.LogInformation("Notifica sms ricevuta: {Code}, recipient {Recipient}, text {Text}, date {Date}, index {sms_index}, status {sms_status}", code, recipient, text, date, sms_index, sms_status);
+                _logger.LogInformation("Notifica sms ricevuta: {Code}, recipient {Recipient}, text {Text}, date {Date}, index {sms_id}, status {sms_status}", code, recipient, text, date, sms_id, sms_status);
                 _notifyService.Notify(code, recipient, text, date, int.Parse(sms_id), sms_status);
                        
             }
