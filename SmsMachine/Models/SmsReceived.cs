@@ -9,12 +9,12 @@ public class SmsReceived
 
 
     //atributi per sms esteso
-    public string? sms_id { get; set; }
+    public string? sms_id { get; set; } //necessario per la notifica
     public string? sms_totparts { get; set; }
     public string? sms_thispart { get; set; }
 
 
     //atributi per la notifica
-    public string? sms_index { get; set; }
     public string? sms_status { get; set; }
+
 }

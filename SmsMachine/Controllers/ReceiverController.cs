@@ -28,10 +28,10 @@ namespace SmsMachine.Controllers
             _logger.LogInformation(
               $"Informazioni complete: {sms.sms_code}, {sms.sms_num}, {sms.sms_text}, {sms.sms_date}\n" +
               $"Attributi Sms esteso: {sms.sms_id}, {sms.sms_totparts}, {sms.sms_thispart},\n" +
-              $"Attributi Notifica: {sms.sms_index}, {sms.sms_status}"
+              $"Attributi Notifica: {sms.sms_status}"
              );
 
-            _smsReceiver.Receive(sms.sms_code, sms.sms_num, sms.sms_text, sms.sms_date, sms.sms_id, sms.sms_totparts, sms.sms_thispart, sms.sms_index, sms.sms_status);
+            _smsReceiver.Receive(sms.sms_code, sms.sms_num, sms.sms_text, sms.sms_date, sms.sms_id, sms.sms_totparts, sms.sms_thispart, sms.sms_status);
 
             //_smsReceiver.Receive(sms.sms_code, sms.sms_num, sms.sms_text, sms.sms_date);
             return Ok();

@@ -15,20 +15,20 @@
 
         public void Receive(string code, string recipient, string text, string date, 
             string? sms_id, string? sms_totparts, string? sms_thispart, 
-            string? sms_index, string? sms_status)
+            string? sms_status)
         {
             //controlla se è una notifica o un sms
             if(IsNotifica(text))
             {
 
-                if (string.IsNullOrWhiteSpace(sms_index))                
+                if (string.IsNullOrWhiteSpace(sms_id))                
                     throw new ArgumentException("Index empty");
                 
                 if(string.IsNullOrWhiteSpace(sms_status))               
                     throw new ArgumentException("Status empty");                   
                 
                 _logger.LogInformation("Notifica sms ricevuta: {Code}, recipient {Recipient}, text {Text}, date {Date}, index {sms_index}, status {sms_status}", code, recipient, text, date, sms_index, sms_status);
-                _notifyService.Notify(code, recipient, text, date, int.Parse(sms_index), sms_status);
+                _notifyService.Notify(code, recipient, text, date, int.Parse(sms_id), sms_status);
                        
             }
             else
