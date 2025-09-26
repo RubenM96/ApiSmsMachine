@@ -16,12 +16,15 @@ public class NotifyService : INotifyService
         _notifyRepository = notifyRepository;
     }
 
-    public void Notify(string index, string recipient, string text, string date)
+    public void Notify(string index, string recipient, string text, string date, int indexSms, string status)
     {
+        //data nel formato fornito da SMSmachine
         date = date.Substring(0, 19).Trim().Replace("-", "/");
         DateTime dateTime = DateTime.ParseExact(date, "yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture);
 
-        var notify = new Notify(new Recipient(recipient), text, dateTime);     
+        var notify = new Notify(new Recipient(recipient), text, dateTime, indexSms, status);     
+        
+        _logger.LogInformation("Informazioni notifica: recipient {Recipient} with text: {Text}, date {Date}, index {Index}, status {Status}", recipient, text, dateTime, indexSms.ToString() , status);        
         _notifyRepository.AddNotify(notify);
 
     }

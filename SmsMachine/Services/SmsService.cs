@@ -32,10 +32,14 @@ namespace SmsMachine.Services
 
             try
             {
+                //invio sms a AreaSx
+                int index = _smsSender.SendSms(recipient, text, notify);
+                sms.Index = index;
+                _logger.LogInformation("SMS to {Recipient} sent successfully with index {Index}", recipient, index);
+
                 //salvataggio su db
                 _smsRepository.AddSms(sms);
-                //invio sms a AreaSx
-                _smsSender.SendSms(recipient, text, notify);
+                _logger.LogInformation("SMS to {Recipient} sent and saved to database successfully", recipient);
 
             }
             catch (Exception ex)
