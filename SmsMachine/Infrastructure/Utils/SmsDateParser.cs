@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
 namespace SmsMachine.Infrastructure.Utils
@@ -22,5 +23,21 @@ namespace SmsMachine.Infrastructure.Utils
                 DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal
             );
         }
+
+        public static DateTime ParseDateNotify(string date)
+        {          
+            date = date.Substring(0, 19);
+
+            DateTime dateTime = DateTime.ParseExact(
+                    date,
+                    "yyyy-MM-dd HH:mm:ss",
+                    CultureInfo.InvariantCulture,
+                    DateTimeStyles.None
+                );
+
+            return dateTime;
+        }
+
+
     }
 }

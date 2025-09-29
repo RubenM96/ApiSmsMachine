@@ -21,21 +21,29 @@ namespace SmsMachine.Controllers
         [HttpPost]
         public IActionResult ReceiveSms([FromForm] SmsReceived sms)
         {
-            _logger.LogInformation("Sms o notifica arrivata!");
-         
 
-            //todo: controllo errrori Model Valid 
-            _logger.LogInformation(
-              $"Informazioni complete: {sms.sms_code}, {sms.sms_num}, {sms.sms_text}, {sms.sms_date}\n" +
-              $"Attributi Sms esteso: {sms.sms_id}, {sms.sms_totparts}, {sms.sms_thispart},\n" +
-              $"Attributi Notifica: {sms.sms_status}"
-             );
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            _smsReceiver.Receive(sms.sms_code, sms.sms_num, sms.sms_text, sms.sms_date, sms.sms_id, sms.sms_totparts, sms.sms_thispart, sms.sms_status);
+            try
+            {
+                _logger.LogInformation("Sms o notifica arrivata!");
 
-            //_smsReceiver.Receive(sms.sms_code, sms.sms_num, sms.sms_text, sms.sms_date);
+                _logger.LogInformation(
+                    $"Informazioni complete: {sms.sms_code}, {sms.sms_num}, {sms.sms_text}, {sms.sms_date}\n" +
+                    $"Attributi Sms esteso: {sms.sms_id}, {sms.sms_totparts}, {sms.sms_thispart},\n" +
+                    $"Status: {sms.sms_status}"
+                    );
+
+                _smsReceiver.Receive(sms.sms_code, sms.sms_num, sms.sms_text, sms.sms_date, sms.sms_id, sms.sms_totparts, sms.sms_thispart, sms.sms_status);
+
+            }catch (Exception ex)
+            {
+                return BadRequest($"Errore durante la ricezzione del messaggio: {ex.Message}");
+            }
+
             return Ok();
-
         }
+
     }
 }

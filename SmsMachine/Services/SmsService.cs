@@ -27,7 +27,6 @@ namespace SmsMachine.Services
             if (text.Length > 300)
                 text = text.Substring(0, 300);
 
-            //todo: aggiunegere index in Sms
             var sms = new Sms(new Recipient(recipient), text, multipart, notify, DateTime.Now);
 
             try
