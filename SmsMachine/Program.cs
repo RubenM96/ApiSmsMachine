@@ -23,8 +23,8 @@ builder.Services.AddSingleton(new AreaSxOptions
 });
 
 builder.Services.AddTransient<ISmsService, SmsService>();
-
 builder.Services.AddTransient<ISmsReceiver, AreaSxSmsReceiver>();
+
 builder.Services.AddTransient<INotifyService, NotifyService>();
 builder.Services.AddTransient<ISmsInbound, SmsInboundService>();
 

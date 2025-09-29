@@ -24,6 +24,7 @@ namespace SmsMachine.Infrastructure.Data
                 e.Property(s => s.SentAt).IsRequired();
                 e.Property(s => s.Multipart).IsRequired();  
                 e.Property(s => s.Notify).IsRequired();
+                e.Property(s => s.Index);
             });
 
             //Tabella Notify
@@ -35,8 +36,10 @@ namespace SmsMachine.Infrastructure.Data
                 {
                     r.Property(p => p.Value).HasColumnName("Recipient").IsRequired().HasMaxLength(50);
                 });
-                e.Property(n => n.Text).IsRequired().HasMaxLength(20);
+                e.Property(n => n.Text).HasColumnName("TextReport").IsRequired().HasMaxLength(20);
                 e.Property(n => n.DateTime).IsRequired();
+                e.Property(n => n.IndexSms).HasColumnName("SmsIndex").IsRequired();
+                e.Property(n => n.Status).IsRequired().HasMaxLength(10);
             });
 
             

@@ -13,26 +13,33 @@
             _smsInboundService = smsInboundService;
         }
 
-        public void Receive(string index, string recipient, string text, string date)
+        public void Receive(string code, string recipient, string text, string date, 
+            string? sms_id, string? sms_totparts, string? sms_thispart, 
+            string? sms_status)
         {
-            //controllare se notifica o sms
+            //controlla se è una notifica o un sms
             if(IsNotifica(text))
             {
-                //notifica di ricezione
-                _logger.LogInformation("Notifica sms ricevuta: {Index}, recipient {Recipient}, text {Text}, date {Date}", index, recipient, text, date);                              
-                _notifyService.Notify(index, recipient, text, date);
+
+                if (string.IsNullOrWhiteSpace(sms_id))                
+                    throw new ArgumentException("Index empty");
+                
+                if(string.IsNullOrWhiteSpace(sms_status))               
+                    throw new ArgumentException("Status empty");                   
+                
+                _logger.LogInformation("Notifica sms ricevuta: {Code}, recipient {Recipient}, text {Text}, date {Date}, index {sms_id}, status {sms_status}", code, recipient, text, date, sms_id, sms_status);
+                _notifyService.Notify(code, recipient, text, date, int.Parse(sms_id), sms_status);
+                       
             }
             else
             {
-                //Sms ricevuto
                 _logger.LogInformation("Receveing SMS from {Recipient} with text: {Text}", recipient, text);
 
                 if (string.IsNullOrEmpty(recipient))
                     throw new ArgumentException("Numero mancante");
                 if (string.IsNullOrEmpty(text))
                     throw new ArgumentException("Testo del messaggio mancante");
-
-                _smsInboundService.SmsInbound(recipient, text, date);
+        
 
             }
         }

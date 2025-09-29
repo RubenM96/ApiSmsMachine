@@ -20,17 +20,8 @@ namespace SmsMachine.Models
         public Recipient Recipient { get; }
         public string Text { get; }
         public bool Multipart { get; }
-        //public bool Notify { get; }
-        public DateTime ReceivedAt { get; }
-        
-        //public int? Index { get; }
+        public DateTime ReceivedAt { get; }     
         public string? Error { get; }
 
-
-        /*
-        sms_id identificativo dell’SMS concatenato 
-        sms_totparts numero totale di parti che lo compongono
-        sms_thispart identificativo della parte corrente
-        */
     }
 }
