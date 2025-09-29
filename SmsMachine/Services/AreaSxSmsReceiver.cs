@@ -40,6 +40,7 @@
                 if (string.IsNullOrEmpty(text))
                     throw new ArgumentException("Testo del messaggio mancante");
         
+                _smsInboundService.SmsInbound(recipient, text, date);
 
             }
         }
