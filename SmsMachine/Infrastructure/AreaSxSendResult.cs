@@ -8,5 +8,6 @@
 
         public bool IsSuccess => Errno == "0";
         public int GetIndex() => int.Parse(Index);
+
     }
 }

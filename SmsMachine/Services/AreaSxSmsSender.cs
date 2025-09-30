@@ -1,4 +1,5 @@
-﻿using SmsMachine.Infrastructure;
+﻿using Serilog;
+using SmsMachine.Infrastructure;
 
 namespace SmsMachine.Services
 {
@@ -45,6 +46,9 @@ namespace SmsMachine.Services
             
             var json = response.Content.ReadAsStringAsync().Result;
 
+            //Serilog
+            Log.Information(json);
+
             var result = System.Text.Json.JsonSerializer.Deserialize<AreaSxSendResult>(json,
                 new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
@@ -52,6 +56,7 @@ namespace SmsMachine.Services
                 throw new Exception(result.Errno);
                         
             _logger.LogInformation("SMS sent successfully to {Recipient}", recipient);
+            
 
             return result.GetIndex();
         }

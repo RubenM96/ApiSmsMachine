@@ -4,10 +4,15 @@ using SmsMachine.Infrastructure.Data;
 using SmsMachine.Infrastructure.Repositories;
 using SmsMachine.Interfaces;
 using SmsMachine.Services;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.File("logs/SmsSendLog.txt", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
 
 builder.Services.AddDbContext<SmsDbContext>(options =>
     options.UseSqlServer(connectionString));

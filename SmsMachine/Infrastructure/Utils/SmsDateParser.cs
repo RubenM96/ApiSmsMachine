@@ -24,6 +24,7 @@ namespace SmsMachine.Infrastructure.Utils
             );
         }
 
+        // Formato Notifica: "yyyy-MM-dd HH:mm:ss +GMT:00"
         public static DateTime ParseDateNotify(string date)
         {          
             date = date.Substring(0, 19);
