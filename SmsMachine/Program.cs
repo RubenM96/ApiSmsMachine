@@ -17,7 +17,7 @@ Log.Logger = new LoggerConfiguration()
 builder.Services.AddDbContext<SmsDbContext>(options =>
     options.UseSqlServer(connectionString));
 
-builder.Services.AddTransient<ISmsRepository, SmsRepository>();
+builder.Services.AddTransient<ISmsOutboundRepository, SmsOutboundRepository>();
 builder.Services.AddTransient<INotifyRepository, NotifyRepository>();
 builder.Services.AddTransient<ISmsInboundRepository, SmsInboundRepository>();
 

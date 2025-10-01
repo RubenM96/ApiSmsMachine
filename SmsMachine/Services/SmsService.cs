@@ -6,13 +6,13 @@ namespace SmsMachine.Services
     public class SmsService : ISmsService
     {
         private readonly ISmsSender _smsSender;
-        private readonly ISmsRepository _smsRepository;
+        private readonly ISmsOutboundRepository _smsOutboundRepository;
         private readonly ILogger<SmsService> _logger;
 
-        public SmsService(ISmsSender smsSender, ISmsRepository smsRepository, ILogger<SmsService> logger)
+        public SmsService(ISmsSender smsSender, ISmsOutboundRepository smsRepository, ILogger<SmsService> logger)
         {
             _smsSender = smsSender;
-            _smsRepository = smsRepository;
+            _smsOutboundRepository = smsRepository;
             _logger = logger;
         }
 
@@ -29,7 +29,7 @@ namespace SmsMachine.Services
 
             //TODO: Routing per gestire più SmsMachine
 
-            var sms = new Sms(new Recipient(recipient), text, multipart, notify, DateTime.Now);
+            var sms = new SmsOutbound(new Recipient(recipient), text, multipart, notify, DateTime.Now);
 
             try
             {
@@ -38,7 +38,7 @@ namespace SmsMachine.Services
                 sms.Index = index;
 
                 //salvataggio su db
-                _smsRepository.AddSms(sms);
+                _smsOutboundRepository.AddSms(sms);
                 _logger.LogInformation("SMS to {Recipient} sent and saved to database successfully", recipient);
 
             }
@@ -49,6 +49,7 @@ namespace SmsMachine.Services
                 throw;
             }
         }
+
 
     }
 }

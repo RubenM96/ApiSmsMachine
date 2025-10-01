@@ -11,9 +11,9 @@ namespace SmsMachine.Infrastructure.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Sms>(e =>
+            modelBuilder.Entity<SmsOutbound>(e =>
             {
-                e.ToTable("Sms");
+                e.ToTable("SmsOutbound");
                 e.HasKey(s => s.Id);
                 e.Property(t => t.Id).ValueGeneratedOnAdd();
                 e.OwnsOne(s => s.Recipient, r =>

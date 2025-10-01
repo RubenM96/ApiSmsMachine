@@ -4,25 +4,25 @@ using SmsMachine.Models;
 
 namespace SmsMachine.Infrastructure.Repositories
 {
-    public class SmsRepository : ISmsRepository
+    public class SmsOutboundRepository : ISmsOutboundRepository
     {
         private readonly SmsDbContext _context;
 
-        public SmsRepository(SmsDbContext context)
+        public SmsOutboundRepository(SmsDbContext context)
         {
             _context = context;
         }
 
-        public Sms AddSms(Sms sms)
+        public SmsOutbound AddSms(SmsOutbound sms)
         {
-            _context.Set<Sms>().Add(sms);
+            _context.Set<SmsOutbound>().Add(sms);
             _context.SaveChanges();
             return sms;
         }
 
-        public Sms? GetSms(int id)
+        public SmsOutbound? GetSms(int id)
         {
-            return _context.Set<Sms>().Find(id);
+            return _context.Set<SmsOutbound>().Find(id);
         }
 
     }

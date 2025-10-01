@@ -1,12 +1,12 @@
 ﻿namespace SmsMachine.Models
 {
-    public class Sms
+    public class SmsOutbound
     {
-        private Sms()
+        private SmsOutbound()
         {
         }
 
-        public Sms(Recipient recipient, string text, bool multipart, bool notify, DateTime sentAt)
+        public SmsOutbound(Recipient recipient, string text, bool multipart, bool notify, DateTime sentAt)
         {
             Recipient = recipient ?? throw new ArgumentNullException(nameof(recipient));
             Text = text ?? throw new ArgumentNullException(nameof(text));
