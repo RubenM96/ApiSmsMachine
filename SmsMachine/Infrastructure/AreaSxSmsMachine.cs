@@ -5,8 +5,8 @@
 
         public static class Endpoints
         {
-            public const string SendSms = "smssend.cgi"; // Example endpoint for sending SMS
-            public const string CheckStatus = "/status.cgi"; // Example endpoint for checking status
+            public const string SendSms = "smssend.cgi"; // Endpoint for sending SMS
+            public const string DiscardSms = "smserror.cgi"; // Endpoint for checking discarded SMS
         }
     }
 

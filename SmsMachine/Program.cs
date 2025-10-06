@@ -38,6 +38,11 @@ builder.Services.AddHttpClient<ISmsSender, AreaSxSmsSender>(client =>
     var baseUrl = builder.Configuration["AreaSx:BaseUrl"];
     client.BaseAddress = new Uri(baseUrl);
 });
+builder.Services.AddHttpClient<ISmsDiscard, AreaSxSmsDiscard>(client =>
+{
+    var baseUrl = builder.Configuration["AreaSx:BaseUrl"];
+    client.BaseAddress = new Uri(baseUrl);
+});
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
