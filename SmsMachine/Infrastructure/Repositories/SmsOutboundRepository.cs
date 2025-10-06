@@ -25,5 +25,12 @@ namespace SmsMachine.Infrastructure.Repositories
             return _context.Set<SmsOutbound>().Find(id);
         }
 
+        //metodo per cercare messaggio nel db in base a recipient e indexSms
+        public SmsOutbound? GetSmsOutboundByRecipientAndIndex(string recipient, int indexSms)
+        {
+            SmsOutbound? smsOutbound = _context.Set<SmsOutbound>().FirstOrDefault(s => s.Recipient.Value == recipient && s.Index == indexSms);           
+            return smsOutbound;
+        }
+
     }
 }

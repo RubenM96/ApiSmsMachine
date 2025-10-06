@@ -13,7 +13,7 @@ namespace SmsMachine.Infrastructure.Data
         {
             modelBuilder.Entity<SmsOutbound>(e =>
             {
-                e.ToTable("SmsOutbound");
+                e.ToTable("Sms");
                 e.HasKey(s => s.Id);
                 e.Property(t => t.Id).ValueGeneratedOnAdd();
                 e.OwnsOne(s => s.Recipient, r =>
@@ -24,7 +24,7 @@ namespace SmsMachine.Infrastructure.Data
                 e.Property(s => s.SentAt).IsRequired();
                 e.Property(s => s.Multipart).IsRequired();  
                 e.Property(s => s.Notify).IsRequired();
-                e.Property(s => s.Index);
+                e.Property(s => s.Index);        
             });
 
             //Tabella Notify
@@ -40,9 +40,10 @@ namespace SmsMachine.Infrastructure.Data
                 e.Property(n => n.DateTime).IsRequired();
                 e.Property(n => n.IndexSms).HasColumnName("SmsIndex").IsRequired();
                 e.Property(n => n.Status).IsRequired().HasMaxLength(10);
+                e.Property(n => n.SmsOutbounsId);
             });
+           
 
-            
             modelBuilder.Entity<SmsInbound>(e =>
             {
                 e.ToTable("SmsInbound");

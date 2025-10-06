@@ -1,7 +1,13 @@
-﻿namespace SmsMachine.Models
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace SmsMachine.Models
 {
+
+    //controllare questo
+    [Owned]
     public record Recipient
     {
+
         public Recipient(string value)
         {
             Value = value ?? throw new ArgumentNullException(nameof(value));

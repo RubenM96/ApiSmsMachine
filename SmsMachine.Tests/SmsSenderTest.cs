@@ -28,7 +28,7 @@ namespace SmsMachine.Tests
             var smsSender = app.Services.GetRequiredService<ISmsSender>();
 
             //3484041300
-            smsSender.SendSms("+393456702752", "Test message from SmsMachine", true);
+            smsSender.SendSms("+393466270684", "Test message from SmsMachine", true);
         }
     }
 }

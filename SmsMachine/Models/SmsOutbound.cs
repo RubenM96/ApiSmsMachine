@@ -1,4 +1,6 @@
-﻿namespace SmsMachine.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace SmsMachine.Models
 {
     public class SmsOutbound
     {
@@ -15,7 +17,7 @@
             SentAt = sentAt;
         }
 
-        public int Id { get; }
+        public int Id { get; set; }
         public Recipient Recipient { get; }
         public string Text { get; }
         public DateTime SentAt { get; }
