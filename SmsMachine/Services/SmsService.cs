@@ -1,4 +1,5 @@
-﻿using SmsMachine.Interfaces;
+﻿using SmsMachine.Infrastructure;
+using SmsMachine.Interfaces;
 using SmsMachine.Models;
 
 namespace SmsMachine.Services
@@ -16,7 +17,7 @@ namespace SmsMachine.Services
             _logger = logger;
         }
 
-        public void SendSms(string recipient, string text, bool multipart, bool notify)
+        public AreaSxSendResult SendSms(string recipient, string text, bool multipart, bool notify)
         {
             _logger.LogInformation("Preparing to send SMS to {Recipient} with text: {Text}, multipart: {Multipart}, notify: {Notify}", recipient, text, multipart, notify);
             
@@ -34,12 +35,14 @@ namespace SmsMachine.Services
             try
             {
                 //invio sms a AreaSx
-                int index = _smsSender.SendSms(recipient, text, notify);
-                sms.Index = index;
+                AreaSxSendResult respone = _smsSender.SendSms(recipient, text, notify);
+                sms.Index = respone.GetIndex();
 
                 //salvataggio su db
                 _smsOutboundRepository.AddSms(sms);
                 _logger.LogInformation("SMS to {Recipient} sent and saved to database successfully", recipient);
+
+                return respone;
 
             }
             catch (Exception ex)

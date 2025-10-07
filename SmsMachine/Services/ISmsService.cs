@@ -1,7 +1,9 @@
-﻿namespace SmsMachine.Services
+﻿using SmsMachine.Infrastructure;
+
+namespace SmsMachine.Services
 {
     public interface ISmsService
     {
-        void SendSms(string recipient, string text, bool multipart, bool notify);
+        AreaSxSendResult SendSms(string recipient, string text, bool multipart, bool notify);
     }
 }

@@ -17,7 +17,7 @@ namespace SmsMachine.Services
             _password = options.Password;
         }
 
-        public int SendSms(string recipient, string text, bool notify)
+        public AreaSxSendResult SendSms(string recipient, string text, bool notify)
         {
             _logger.LogInformation("Sending SMS to {Recipient} with text: {Text} and notify: {Notify}", recipient, text, notify);
             
@@ -62,7 +62,7 @@ namespace SmsMachine.Services
                         
             _logger.LogInformation("SMS sent successfully to {Recipient}", recipient);           
 
-            return result.GetIndex();
+            return result;
         }
     }
 
