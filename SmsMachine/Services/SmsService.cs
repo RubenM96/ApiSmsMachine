@@ -35,14 +35,20 @@ namespace SmsMachine.Services
             try
             {
                 //invio sms a AreaSx
-                AreaSxSendResult respone = _smsSender.SendSms(recipient, text, notify);
-                sms.Index = respone.GetIndex();
+                AreaSxSendResult responeSendSms = _smsSender.SendSms(recipient, text, notify);                
 
-                //salvataggio su db
+                if (responeSendSms.Refused)
+                    //TODO: Gestire il messaggio rifiutato a causa della coda piena (Errore durante l'invio del messaggio:  SMS Refused by AreaSx: SMS Queue Full)                                      
+                    throw new Exception("SMS Refused by AreaSx: " + responeSendSms.Errdesc);
+                 
+                if (!responeSendSms.IsSuccess)
+                    throw new Exception(responeSendSms.Errno);
+
+                sms.Index = responeSendSms.GetIndex();
                 _smsOutboundRepository.AddSms(sms);
                 _logger.LogInformation("SMS to {Recipient} sent and saved to database successfully", recipient);
-
-                return respone;
+             
+                return responeSendSms;
 
             }
             catch (Exception ex)
@@ -52,6 +58,10 @@ namespace SmsMachine.Services
                 throw;
             }
         }
+
+       
+
+
 
 
     }

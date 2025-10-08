@@ -51,14 +51,9 @@ namespace SmsMachine.Services
 
             var result = System.Text.Json.JsonSerializer.Deserialize<AreaSxSendResult>(json,
                 new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-            
-           // Console.WriteLine($"AreaSxSendResult: {result.Errno} , {result.Errdesc}, {result.Index}");
 
-            if (!result.IsSuccess)
-                if(result.Refused)
-                    throw new Exception("SMS Refused by AreaSx:" + result.Errdesc);
-                else
-                    throw new Exception(result.Errno);
+            //if (!result.IsSuccess)
+            //    throw new Exception(result.Errno);
                         
             _logger.LogInformation("SMS sent successfully to {Recipient}", recipient);           
 

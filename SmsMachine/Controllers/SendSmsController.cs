@@ -23,17 +23,16 @@ public class SendSmsController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        AreaSxSendResult response;
-
         try
         {
-            response = _smsService.SendSms(sms.Recipient, sms.Text, false, sms.Notify.Value);
-            return Ok(response);
+            var responeSendSms = _smsService.SendSms(sms.Recipient, sms.Text, false, sms.Notify.Value);
+            return Ok(responeSendSms);
         }
         catch (Exception ex)
         {
-            return BadRequest($"Errore durante l'invio del messaggio:  {ex.Message}");
+            return BadRequest($"Errore durante l'invio del messaggio: {ex.Message}");
         }
-
     }
+
+
 }

@@ -18,11 +18,11 @@ namespace SmsMachine.Controllers
         }
 
         [HttpPost]
-        public IActionResult DiscardSms()
+        public IActionResult CheckDiscardSms()
         {
             try
             {
-                var result = _smsDiscard.DiscardSms();
+                var result = _smsDiscard.CheckDiscardSms();
                 return Ok(result);
             }
             catch (Exception ex)
@@ -30,8 +30,8 @@ namespace SmsMachine.Controllers
                 _logger.LogError(ex, "Failed to discard SMS Request");
                 return StatusCode(500, "Internal server error");
             }
-
         }
+
 
     }
 }
