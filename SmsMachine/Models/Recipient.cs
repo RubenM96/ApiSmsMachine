@@ -3,8 +3,6 @@
 namespace SmsMachine.Models
 {
 
-    //controllare questo
-    [Owned]
     public record Recipient
     {
 

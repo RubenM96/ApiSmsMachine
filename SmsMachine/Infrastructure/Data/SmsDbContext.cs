@@ -58,7 +58,7 @@ namespace SmsMachine.Infrastructure.Data
                 e.Property(s => s.Multipart).IsRequired();
                 //e.Property(s => s.Notify).IsRequired();
             });
-            
+          
 
         }
     }
