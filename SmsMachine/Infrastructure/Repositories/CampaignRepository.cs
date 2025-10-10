@@ -27,6 +27,12 @@ namespace SmsMachine.Infrastructure.Repositories
         }
 
 
+        public CampaignSms UpdateCampaignStatus(CampaignSms campaign)
+        {
+            _context.Set<CampaignSms>().Update(campaign);
+            _context.SaveChanges();
+            return campaign;
+        }
 
     }
 }

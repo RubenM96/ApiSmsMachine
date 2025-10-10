@@ -18,7 +18,7 @@ namespace SmsMachine.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateCampaign([FromForm] CampaignReceiver campaignReceiver)
+        public IActionResult CreateCampaign([FromForm] CampaignForm campaignReceiver)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -42,17 +42,20 @@ namespace SmsMachine.Controllers
         {         
             var campaignSend = _campaignService.SendCampaign(id);
             return Ok(campaignSend);
-            
         }
 
-        //richiesta get per visualizzare le campagne
+        //richiesta get per visualizzare le campagne 
 
         //richiesta get per visualizzare i dettagli di una singola campagna {id}
-
+        [HttpGet("{id}/view")]
+        public IActionResult GetCampaign(int id)
+        {
+            var getOneCampaign = _campaignService.GetCampaign(id);
+            return Ok(getOneCampaign);
+        }
         //richiesta put per modificare una campagna {id}
 
         //richiesta delete per eliminare una campagna {id}
-
 
     }
 }

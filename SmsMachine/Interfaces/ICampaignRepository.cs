@@ -6,6 +6,7 @@ namespace SmsMachine.Interfaces
     {
         CampaignSms AddCampaign(CampaignSms campaign);
         CampaignSms GetCampaignId(int id);
+        CampaignSms UpdateCampaignStatus (CampaignSms campaign);
 
     }
 }

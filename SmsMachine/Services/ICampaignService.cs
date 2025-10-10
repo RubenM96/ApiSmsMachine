@@ -8,5 +8,8 @@ namespace SmsMachine.Services
         CampaignSms CreateCampaign(string title, string text, string recipientList, bool campaignNotify, string? description);
 
         CampaignSms SendCampaign(int id);
+
+        CampaignSms GetCampaign(int id);
+
     }
 }

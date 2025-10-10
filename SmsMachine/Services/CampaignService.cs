@@ -25,7 +25,6 @@ namespace SmsMachine.Services
             _logger.LogInformation("Created campaign with ID {CampaignId}", createdCampaign.Id);
             return createdCampaign;
         }
-
         public CampaignSms SendCampaign(int id)
         {
             CampaignSms? campaign = _campaignRepository.GetCampaignId(id);
@@ -53,9 +52,12 @@ namespace SmsMachine.Services
 
             campaign.Status = CampaignStatus.Finished;
             //aggiornarlo nel db
-            //_campaignRepository.UpdateCampaign(campaign);
+            _campaignRepository.UpdateCampaignStatus(campaign);
             return campaign;
-
+        }
+        public CampaignSms GetCampaign(int id)
+        {
+            return _campaignRepository.GetCampaignId(id);
         }
 
 
