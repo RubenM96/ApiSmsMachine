@@ -1,7 +1,6 @@
 ﻿using SmsMachine.Infrastructure.Utils;
 using SmsMachine.Interfaces;
 using SmsMachine.Models;
-using System.Globalization;
 
 namespace SmsMachine.Services;
 

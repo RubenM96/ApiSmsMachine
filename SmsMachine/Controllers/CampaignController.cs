@@ -18,7 +18,7 @@ namespace SmsMachine.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateCampaign([FromBody] CampaignReceiver campaignReceiver)
+        public IActionResult CreateCampaign([FromForm] CampaignReceiver campaignReceiver)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -26,22 +26,23 @@ namespace SmsMachine.Controllers
             try
             {
                 _logger.LogInformation("Creating new campaign");
-                _campaignService.CreateCampaign(campaignReceiver.Title, campaignReceiver.Text, campaignReceiver.RecipientList);
+                var createdCampaign = _campaignService.CreateCampaign(campaignReceiver.Title, campaignReceiver.Text, campaignReceiver.RecipientList, campaignReceiver.CampaignNotify, campaignReceiver.Description);
+                return Ok(createdCampaign);
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Error creating campaign: {ex.Message}");
                 return BadRequest($"Error creating campaign: {ex.Message}");
             }
-            return Ok("Campaign created successfully.");
-
         }
 
+
         [HttpPost("{id}/send")]
-        public IActionResult SendCampaign()
-        {
-            return Ok("Not implemented yet.");
-            //invia 
+        public IActionResult SendCampaign(int id)
+        {         
+            var campaignSend = _campaignService.SendCampaign(id);
+            return Ok(campaignSend);
+            
         }
 
         //richiesta get per visualizzare le campagne

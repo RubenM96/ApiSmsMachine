@@ -15,6 +15,9 @@ namespace SmsMachine.Models
         [Required]
         public string RecipientList { get; set; }
 
+        [Required]
+        public bool CampaignNotify { get; set; }
+
         public string? Description { get; set; }
     }
 }

@@ -1,8 +1,12 @@
-﻿namespace SmsMachine.Services
+﻿using SmsMachine.Models;
+
+namespace SmsMachine.Services
 {
     public interface ICampaignService
     {
         //scheduledAt non è ancora implementato
-        void CreateCampaign(string title, string text, string recipientList, string? description = null);
+        CampaignSms CreateCampaign(string title, string text, string recipientList, bool campaignNotify, string? description);
+
+        CampaignSms SendCampaign(int id);
     }
 }

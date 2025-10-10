@@ -28,8 +28,6 @@ namespace SmsMachine.Services
             if (text.Length > 300)
                 text = text.Substring(0, 300);
 
-            //TODO: Routing per gestire più SmsMachine
-
             var sms = new SmsOutbound(new Recipient(recipient), text, multipart, notify, DateTime.Now);
 
             try
@@ -39,6 +37,7 @@ namespace SmsMachine.Services
 
                 if (responeSendSms.Refused)
                     //TODO: Gestire il messaggio rifiutato a causa della coda piena (Errore durante l'invio del messaggio:  SMS Refused by AreaSx: SMS Queue Full)                                      
+                    //TODO: Routing per gestire più SmsMachine
                     throw new Exception("SMS Refused by AreaSx: " + responeSendSms.Errdesc);
                  
                 if (!responeSendSms.IsSuccess)
