@@ -53,9 +53,38 @@ namespace SmsMachine.Services
 
             campaign.Status = CampaignStatus.Finished;
             //aggiornarlo nel db
-            //_campaignRepository.UpdateCampaign(campaign);
+            _campaignRepository.UpdateCampaign(campaign);
             return campaign;
+        }
 
+        public IEnumerable<CampaignSms> GetAllCampaigns()
+        {
+            return _campaignRepository.GetAllCampaigns();
+        }
+
+        public CampaignSms? GetCampaignId(int id)
+        {
+            return _campaignRepository.GetCampaignId(id);
+        }
+
+        public CampaignSms UpdateCampaign(int id, string title, string text, string recipientList, bool campaignNotify, string? description)
+        {
+            CampaignSms? existingCampaign = _campaignRepository.GetCampaignId(id);
+            if (existingCampaign == null)
+            {
+                _logger.LogWarning("Campaign with ID {CampaignId} not found for update", id);
+                throw new ArgumentException($"Campaign with ID {id} not found");
+            }
+
+            existingCampaign.Title = title;
+            existingCampaign.Text = text;
+            existingCampaign.RecipientList = recipientList;
+            existingCampaign.CampaignNotify = campaignNotify;
+            existingCampaign.Description = description;
+            var updatedCampaign = _campaignRepository.UpdateCampaign(existingCampaign);
+
+            _logger.LogInformation("Updated campaign with ID {CampaignId}", updatedCampaign.Id);
+            return updatedCampaign;
         }
 
 

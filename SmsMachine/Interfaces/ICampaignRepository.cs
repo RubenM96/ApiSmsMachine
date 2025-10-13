@@ -5,7 +5,10 @@ namespace SmsMachine.Interfaces
     public interface ICampaignRepository
     {
         CampaignSms AddCampaign(CampaignSms campaign);
-        CampaignSms GetCampaignId(int id);
+
+        IEnumerable<CampaignSms> GetAllCampaigns();
+        CampaignSms? GetCampaignId(int id);
+        CampaignSms UpdateCampaign(CampaignSms campaign);
 
     }
 }

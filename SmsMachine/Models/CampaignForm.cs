@@ -2,7 +2,7 @@
 
 namespace SmsMachine.Models
 {
-    public class CampaignReceiver
+    public class CampaignForm
     {
 
         [Required]

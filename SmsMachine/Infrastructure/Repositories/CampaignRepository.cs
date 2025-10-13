@@ -21,12 +21,23 @@ namespace SmsMachine.Infrastructure.Repositories
             return campaign;
         }
 
+        public IEnumerable<CampaignSms> GetAllCampaigns()
+        {
+            return _context.Set<CampaignSms>().ToList();
+        }
+
         public CampaignSms? GetCampaignId(int id)
         {
             return _context.Set<CampaignSms>().Find(id);
         }
 
 
+        public CampaignSms UpdateCampaign(CampaignSms campaign)
+        {
+            _context.Set<CampaignSms>().Update(campaign);
+            _context.SaveChanges();
+            return campaign;
+        }
 
     }
 }
