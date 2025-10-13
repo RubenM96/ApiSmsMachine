@@ -45,7 +45,7 @@ namespace SmsMachine.Controllers
             
         }
 
-        //richiesta get per visualizzare le campagne
+        //richiesta get per visualizzare le campagne GettAll
 
         //richiesta get per visualizzare i dettagli di una singola campagna {id}
 
