@@ -42,7 +42,7 @@ namespace SmsMachine.Controllers
             return Ok(campaignSend);
         }
 
-        //richiesta get per visualizzare le campagne GettAll
+        //richiesta get per visualizzare tutte le campagne GettAll
         [HttpGet]
         public IActionResult GetAllCampaigns()
         {
