@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmsMachine", "SmsMachine\Sm
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmsMachine.Tests", "SmsMachine.Tests\SmsMachine.Tests.csproj", "{498F6E25-757E-4270-8097-62BFA1A083C2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmsMachineDashboard", "SmsMachineDashboard\SmsMachineDashboard.csproj", "{E449EE6B-9FF1-4488-BC9E-892E68058785}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{498F6E25-757E-4270-8097-62BFA1A083C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{498F6E25-757E-4270-8097-62BFA1A083C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{498F6E25-757E-4270-8097-62BFA1A083C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E449EE6B-9FF1-4488-BC9E-892E68058785}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E449EE6B-9FF1-4488-BC9E-892E68058785}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E449EE6B-9FF1-4488-BC9E-892E68058785}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E449EE6B-9FF1-4488-BC9E-892E68058785}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
