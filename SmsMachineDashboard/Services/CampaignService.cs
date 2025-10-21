@@ -1,4 +1,5 @@
 ﻿using SmsMachineDashboard.Models;
+using System.Text;
 
 public class CampaignService
 {
@@ -9,15 +10,15 @@ public class CampaignService
         _http = http;
     }
 
-    public async Task<List<CampaignForm>> GetAllCampaignsAsync()
+    public async Task<List<CampaignSms>> GetAllCampaignsAsync()
     {
-        var result = await _http.GetFromJsonAsync<List<CampaignForm>>("api/campaign");
-        return result ?? new List<CampaignForm>();
+        var result = await _http.GetFromJsonAsync<List<CampaignSms>>("api/campaign");
+        return result ?? new List<CampaignSms>();
     }
 
-    public async Task<CampaignForm?> GetCampaignAsync(int id)
+    public async Task<CampaignSms?> GetCampaignAsync(int id)
     {
-        return await _http.GetFromJsonAsync<CampaignForm>($"api/campaign/{id}/view");
+        return await _http.GetFromJsonAsync<CampaignSms>($"api/campaign/{id}/view");
     }
 
     public async Task<HttpResponseMessage> SendCampaignAsync(int id)
@@ -25,35 +26,5 @@ public class CampaignService
         return await _http.PostAsync($"api/campaign/{id}/send", null);
     }
 
-    public async Task<HttpResponseMessage> CreateCampaignAsync(CampaignForm form)
-    {
-        using var content = new MultipartFormDataContent
-        {
-            { new StringContent(form.Title), nameof(form.Title) },
-            { new StringContent(form.Text), nameof(form.Text) },
-            { new StringContent(form.RecipientList), nameof(form.RecipientList) },
-            { new StringContent(form.CampaignNotify.ToString()), nameof(form.CampaignNotify) },
-        };
-
-        if (!string.IsNullOrEmpty(form.Description))
-            content.Add(new StringContent(form.Description), nameof(form.Description));
-
-        return await _http.PostAsync("api/campaign", content);
-    }
-
-    public async Task<HttpResponseMessage> UpdateCampaignAsync(int id, CampaignForm form)
-    {
-        using var content = new MultipartFormDataContent
-        {
-            { new StringContent(form.Title), nameof(form.Title) },
-            { new StringContent(form.Text), nameof(form.Text) },
-            { new StringContent(form.RecipientList), nameof(form.RecipientList) },
-            { new StringContent(form.CampaignNotify.ToString()), nameof(form.CampaignNotify) },
-        };
-
-        if (!string.IsNullOrEmpty(form.Description))
-            content.Add(new StringContent(form.Description), nameof(form.Description));
-
-        return await _http.PutAsync($"api/campaign/{id}", content);
-    }
+    
 }

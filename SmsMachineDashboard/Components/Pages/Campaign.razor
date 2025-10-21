@@ -1,0 +1,34 @@
+﻿@page "/campaign/{id:int}"
+@using SmsMachineDashboard.Models
+@inject CampaignService campaignService
+
+
+<h2>Dettaglio Campagna</h2>
+
+@if (campaign == null)
+{
+    <p>Campagna non trovata</p>
+}
+else
+{
+    <ul>
+        <li><b>Titolo:</b> @campaign.Title</li>
+        <li><b>Messaggio:</b> @campaign.Text</li>
+        <li><b>Numeri:</b> @campaign.RecipientList</li>
+        <li><b>Data di creazione:</b> @campaign.CreatedAt</li>
+        <li><b>Descrizione:</b> @campaign.Description</li>
+        <li><b>Stato:</b> @campaign.Status</li>
+    </ul>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private CampaignSms campaign;
+
+    protected override async Task OnInitializedAsync()
+    {
+        campaign = await campaignService.GetCampaignAsync(Id);
+    }
+}

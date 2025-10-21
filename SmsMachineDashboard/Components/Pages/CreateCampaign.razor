@@ -1,0 +1,54 @@
+﻿@page "/createcampaign"
+@using SmsMachineDashboard.Models
+@using System.ComponentModel.DataAnnotations
+@inject CampaignService campaignService
+
+
+<h3>New Campaign </h3>
+
+<EditForm Model="@campaignForm" OnValidSubmit="@HandleValidSubmit" FormName="CampaignForm">
+
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group m-3">
+        <label for="todo-item">Title: </label>
+    <InputText id="todo-item" @bind-Value="@campaignForm.Title"></InputText>
+    </div>
+
+    <div class="form-group m-3">
+        <label for="todo-item">Text:</label>
+        <InputText id="todo-date" @bind-Value="@campaignForm.Text"></InputText>
+    </div>
+
+    <div class="form-group m-3">
+        <label for="todo-item">Numbers:</label>
+        <InputText id="todo-date" @bind-Value="@campaignForm.RecipientList"></InputText>
+    </div>
+
+    <div class="form-group m-3">
+        <label for="todo-important">Notify:</label>
+    <InputCheckbox id="todo-important" @bind-Value="@campaignForm.CampaignNotify"></InputCheckbox>
+    </div>
+
+    <div class="form-group m-3">
+        <label for="todo-item">Description:</label>
+        <InputText id="todo-date" @bind-Value="@campaignForm.Description"></InputText>
+    </div>
+    
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+</EditForm>
+
+
+@code {
+    private CampaignForm campaignForm = new();
+
+    protected async Task HandleValidSubmit()
+    {
+        await campaignService.CreateCampaignAsync(campaignForm);
+
+        campaignForm = new();
+    }
+}
