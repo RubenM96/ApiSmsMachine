@@ -26,5 +26,20 @@ public class CampaignService
         return await _http.PostAsync($"api/campaign/{id}/send", null);
     }
 
-    
+    public async Task<HttpResponseMessage> CreateCampaignAsync(CampaignForm campaignForm)
+    {
+        var formData = new MultipartFormDataContent
+        {
+            { new StringContent(campaignForm.Title), "Title" },
+            { new StringContent(campaignForm.Text), "Text" },
+            { new StringContent(campaignForm.RecipientList), "RecipientList" },
+            { new StringContent(campaignForm.CampaignNotify.ToString()), "CampaignNotify" }
+        };
+        if (!string.IsNullOrEmpty(campaignForm.Description))
+        {
+            formData.Add(new StringContent(campaignForm.Description), "Description");
+        }
+        return await _http.PostAsync("api/campaign", formData);
+
+    }
 }

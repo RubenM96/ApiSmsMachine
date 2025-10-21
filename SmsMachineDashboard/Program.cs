@@ -10,7 +10,7 @@ builder.Services.AddScoped<CampaignService>();
 
 builder.Services.AddScoped(sp => new HttpClient
 {
-    BaseAddress = new Uri("http://localhost:5000") // qui metti l’URL della tua API
+    BaseAddress = new Uri("http://localhost:5000")
 });
 
 var app = builder.Build();

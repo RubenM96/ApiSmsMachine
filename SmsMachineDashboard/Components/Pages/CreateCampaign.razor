@@ -2,38 +2,39 @@
 @using SmsMachineDashboard.Models
 @using System.ComponentModel.DataAnnotations
 @inject CampaignService campaignService
+@rendermode InteractiveServer
 
 
-<h3>New Campaign </h3>
+<h3>New Campaign</h3>
 
-<EditForm Model="@campaignForm" OnValidSubmit="@HandleValidSubmit" FormName="CampaignForm">
+<EditForm Model="@campaignForm" OnValidSubmit="@CampaignFormSubmit" FormName="CampaignForm">
 
     <DataAnnotationsValidator />
     <ValidationSummary />
 
     <div class="form-group m-3">
-        <label for="todo-item">Title: </label>
-    <InputText id="todo-item" @bind-Value="@campaignForm.Title"></InputText>
+        <label>Title: </label>
+        <InputText id="title" @bind-Value="@campaignForm.Title"></InputText>
     </div>
 
     <div class="form-group m-3">
-        <label for="todo-item">Text:</label>
-        <InputText id="todo-date" @bind-Value="@campaignForm.Text"></InputText>
+        <label >Text:</label>
+        <InputText id="text" @bind-Value="@campaignForm.Text"></InputText>
     </div>
 
     <div class="form-group m-3">
-        <label for="todo-item">Numbers:</label>
-        <InputText id="todo-date" @bind-Value="@campaignForm.RecipientList"></InputText>
+        <label>Numbers:</label>
+        <InputText id="numbers" @bind-Value="@campaignForm.RecipientList"></InputText>
     </div>
 
     <div class="form-group m-3">
-        <label for="todo-important">Notify:</label>
-    <InputCheckbox id="todo-important" @bind-Value="@campaignForm.CampaignNotify"></InputCheckbox>
+        <label>Notify:</label>
+    <InputCheckbox id="notify" @bind-Value="@campaignForm.CampaignNotify"></InputCheckbox>
     </div>
 
     <div class="form-group m-3">
-        <label for="todo-item">Description:</label>
-        <InputText id="todo-date" @bind-Value="@campaignForm.Description"></InputText>
+        <label>Description:</label>
+        <InputText id="description" @bind-Value="@campaignForm.Description"></InputText>
     </div>
     
     <div class="form-group">
@@ -43,12 +44,11 @@
 
 
 @code {
-    private CampaignForm campaignForm = new();
+    CampaignForm campaignForm = new();
 
-    protected async Task HandleValidSubmit()
+    private async void CampaignFormSubmit()
     {
         await campaignService.CreateCampaignAsync(campaignForm);
-
         campaignForm = new();
     }
 }
