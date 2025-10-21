@@ -1,0 +1,34 @@
+﻿@page "/campaigns"
+@using SmsMachineDashboard.Models
+@inject CampaignService campaignService
+
+
+<h1>Campagne esistenti</h1>
+@if (campagne == null)
+{
+    <p>Campagne non trovate</p>
+}
+else
+{
+    <ul>
+        @foreach (var c in campagne)
+        {
+            <h3>@c.Title</h3>
+            <li><b>Messaggio: </b>@c.Text</li>
+            <li><b>Numeri: </b> @c.RecipientList</li>
+            <li><b>Descrizione Campagna: </b>@c.Description</li>
+            <br />
+        }
+    </ul>
+}
+
+@code {
+    List<CampaignForm>? campagne;
+    CampaignForm form = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        campagne = await campaignService.GetAllCampaignsAsync();
+    }
+
+}
