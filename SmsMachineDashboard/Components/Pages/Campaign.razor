@@ -22,11 +22,6 @@ else
             <li><b>Stato: </b>@campaign.Status</li>
         </ul>
         <button class="btn btn-warning rounded" @onclick="SendCampaign">Send</button>
-        
-        <NavLink class="nav-link" href="@($"/editcampaign/{campaign.Id}")">
-            <button class="btn btn-primary">Edit Campaign</button>
-        </NavLink> 
-
     </div>
 
 }
@@ -35,7 +30,7 @@ else
     [Parameter]
     public int Id { get; set; }
 
-    private CampaignSms campaign;
+    private CampaignDetails campaign;
 
     protected override async Task OnInitializedAsync()
     {

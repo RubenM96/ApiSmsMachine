@@ -1,6 +1,6 @@
 ﻿namespace SmsMachineDashboard.Models
 {
-    public class CampaignSms
+    public class CampaignDetails
     {
         public int Id { get; set; }
         public string Title { get; set; }
