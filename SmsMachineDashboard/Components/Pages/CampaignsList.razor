@@ -31,7 +31,7 @@ else
                         Modifica
                     </a>
             
-                <br />
+                <br/>
             }
         </ul>
     }
@@ -43,8 +43,11 @@ else
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        campagne = await campaignService.GetAllCampaignsAsync();
-        isLoading = false;
-        StateHasChanged();
+        if(firstRender)
+        {            
+            campagne = await campaignService.GetAllCampaignsAsync();
+            isLoading = false;
+            StateHasChanged();
+        }
     }
 }
