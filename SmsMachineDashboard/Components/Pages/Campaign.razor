@@ -1,4 +1,5 @@
 ﻿@page "/campaign/{id:int}"
+@rendermode InteractiveServer
 @using SmsMachineDashboard.Models
 @inject CampaignService campaignService
 
@@ -11,14 +12,18 @@
 }
 else
 {
-    <ul>
-        <li><b>Titolo:</b> @campaign.Title</li>
-        <li><b>Messaggio:</b> @campaign.Text</li>
-        <li><b>Numeri:</b> @campaign.RecipientList</li>
-        <li><b>Data di creazione:</b> @campaign.CreatedAt</li>
-        <li><b>Descrizione:</b> @campaign.Description</li>
-        <li><b>Stato:</b> @campaign.Status</li>
-    </ul>
+    <div class ="form-group m-3">
+        <h3><b>Titolo:</b> @campaign.Title</h3>
+        <ul>
+            <li><b>Messaggio: </b>@campaign.Text</li>
+            <li><b>Numeri: </b>@campaign.RecipientList</li>
+            <li><b>Data di creazione: </b>@campaign.CreatedAt</li>
+            <li><b>Descrizione: </b>@campaign.Description</li>
+            <li><b>Stato: </b>@campaign.Status</li>
+        </ul>
+        <button class="btn btn-warning rounded" @onclick="SendCampaign">Send</button>
+    </div>
+
 }
 
 @code {
@@ -29,6 +34,11 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        campaign = await campaignService.GetCampaignAsync(Id);
+        campaign = await campaignService.GetCampaignIdAsync(Id);
+    }
+
+    protected async Task SendCampaign()
+    {
+        await campaignService.SendCampaignAsync(campaign.Id);
     }
 }
