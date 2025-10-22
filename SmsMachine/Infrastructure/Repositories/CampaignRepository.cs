@@ -39,5 +39,14 @@ namespace SmsMachine.Infrastructure.Repositories
             return campaign;
         }
 
+        public bool DeleteCampaign(int id)
+        {
+            var entity = _context.Set<CampaignSms>().Find(id);
+            if (entity is null) return false;
+
+            _context.Remove(entity);
+            _context.SaveChanges();
+            return true;
+        }
     }
 }

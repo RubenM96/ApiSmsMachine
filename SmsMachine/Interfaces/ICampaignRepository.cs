@@ -9,5 +9,7 @@ namespace SmsMachine.Interfaces
         CampaignSms? GetCampaignId(int id);
         CampaignSms UpdateCampaign(CampaignSms campaign);
 
+        bool DeleteCampaign(int id);
+
     }
 }

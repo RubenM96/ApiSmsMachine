@@ -79,6 +79,20 @@ namespace SmsMachine.Controllers
         }
 
         //richiesta delete per eliminare una campagna {id}
-
+        [HttpDelete("{id}")]
+        public IActionResult DeleteCampaign(int id) 
+        {
+            try
+            {
+                var ok = _campaignService.DeleteCampaign(id);
+                if (!ok) return NotFound($"Campagna {id} non trovata");
+                return NoContent(); // 204
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting campaign {Id}", id);
+                return BadRequest($"Error deleting campaign: {ex.Message}");
+            }
+        }
     }
 }
