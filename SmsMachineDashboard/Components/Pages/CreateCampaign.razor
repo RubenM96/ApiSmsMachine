@@ -5,7 +5,7 @@
 @rendermode InteractiveServer
 
 
-<h3>New Campaign</h3>
+<h3>Nuova Campagna SMS</h3>
 
 <EditForm Model="@campaignForm" OnValidSubmit="@CampaignFormSubmit" FormName="CampaignForm">
 
@@ -46,7 +46,7 @@
 @code {
     CampaignForm campaignForm = new();
 
-    private async void CampaignFormSubmit()
+    private async Task CampaignFormSubmit()
     {
         await campaignService.CreateCampaignAsync(campaignForm);
         campaignForm = new();

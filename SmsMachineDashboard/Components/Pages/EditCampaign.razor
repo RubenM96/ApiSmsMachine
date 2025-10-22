@@ -1,0 +1,72 @@
+﻿@page "/campaign/{id:int}/edit"
+@using SmsMachineDashboard.Models
+@inject CampaignService campaignService
+@inject NavigationManager Nav
+@rendermode InteractiveServer
+
+<h3>Modifica Campagna SMS</h3>
+
+<EditForm Model="@form" OnValidSubmit="@Save" FormName="CampaignEditForm">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group m-3">
+        <label>Title:</label>
+        <InputText id="title" @bind-Value="form.Title" />
+    </div>
+
+    <div class="form-group m-3">
+        <label>Text:</label>
+        <InputText id="text" @bind-Value="form.Text" />
+    </div>
+
+    <div class="form-group m-3">
+        <label>Numbers:</label>
+        <InputText id="numbers" @bind-Value="form.RecipientList" />
+    </div>
+
+    <div class="form-group m-3">
+        <label>Notify:</label>
+        <InputCheckbox id="notify" @bind-Value="form.CampaignNotify" />
+    </div>
+
+    <div class="form-group m-3">
+        <label>Description:</label>
+        <InputText id="description" @bind-Value="form.Description" />
+    </div>
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-secondary ms-2" @onclick="Back">Cancel</button>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter] public int id { get; set; }
+
+    CampaignForm form = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var dto = await campaignService.GetCampaignAsync(id);
+        if (dto != null)
+        {
+            form = new CampaignForm
+            {
+                Title = dto.Title,
+                Text = dto.Text,
+                RecipientList = dto.RecipientList,
+                CampaignNotify = dto.CampaignNotify,
+                Description = dto.Description
+            };
+        }
+    }
+
+    private async Task Save()
+    {
+        await campaignService.UpdateCampaignAsync(id, form);
+        Nav.NavigateTo("/campaignslist", forceLoad: true);
+    }
+
+    private void Back() => Nav.NavigateTo("/campaignslist");
+}

@@ -10,22 +10,22 @@ public class CampaignService
         _http = http;
     }
 
-    public async Task<List<CampaignSms>> GetAllCampaignsAsync()
+    public async Task<List<CampaignDetails>> GetAllCampaignsAsync()
     {
-        var result = await _http.GetFromJsonAsync<List<CampaignSms>>("api/campaign");
-        return result ?? new List<CampaignSms>();
+        var result = await _http.GetFromJsonAsync<List<CampaignDetails>>("api/campaign");
+        return result ?? new List<CampaignDetails>();
     }
 
-    public async Task<CampaignSms?> GetCampaignAsync(int id)
+    public async Task<CampaignDetails?> GetCampaignAsync(int id)
     {
-        return await _http.GetFromJsonAsync<CampaignSms>($"api/campaign/{id}/view");
+        return await _http.GetFromJsonAsync<CampaignDetails>($"api/campaign/{id}/view");
     }
 
     public async Task<HttpResponseMessage> SendCampaignAsync(int id)
     {
         return await _http.PostAsync($"api/campaign/{id}/send", null);
     }
-
+    //creazione
     public async Task<HttpResponseMessage> CreateCampaignAsync(CampaignForm campaignForm)
     {
         var formData = new MultipartFormDataContent
@@ -41,5 +41,23 @@ public class CampaignService
         }
         return await _http.PostAsync("api/campaign", formData);
 
+    }
+
+    //modifica
+    public Task<HttpResponseMessage> UpdateCampaignAsync(int id, CampaignForm campaignForm)
+         => _http.PutAsync($"api/campaign/{id}", BuildForm(campaignForm));
+
+    private static MultipartFormDataContent BuildForm(CampaignForm campaignForm)
+    {
+        var formData = new MultipartFormDataContent
+        {
+            { new StringContent(campaignForm.Title ?? string.Empty), "Title" },
+            { new StringContent(campaignForm.Text ?? string.Empty), "Text" },
+            { new StringContent(campaignForm.RecipientList ?? string.Empty), "RecipientList" },
+            { new StringContent(campaignForm.CampaignNotify.ToString()), "CampaignNotify" }
+        };
+        if (!string.IsNullOrWhiteSpace(campaignForm.Description))
+            formData.Add(new StringContent(campaignForm.Description), "Description");
+        return formData;
     }
 }
