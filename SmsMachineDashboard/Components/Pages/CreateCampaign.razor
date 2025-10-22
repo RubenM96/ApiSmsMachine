@@ -7,6 +7,11 @@
 
 <h3>Nuova Campagna SMS</h3>
 
+@if (!string.IsNullOrEmpty(message))
+{
+<div class="alert alert-success">@message</div>
+}
+
 <EditForm Model="@campaignForm" OnValidSubmit="@CampaignFormSubmit" FormName="CampaignForm">
 
     <DataAnnotationsValidator />
@@ -45,10 +50,23 @@
 
 @code {
     CampaignForm campaignForm = new();
+    string? message;
 
     private async Task CampaignFormSubmit()
     {
-        await campaignService.CreateCampaignAsync(campaignForm);
-        campaignForm = new();
+        var resp = await campaignService.CreateCampaignAsync(campaignForm);
+
+        if (resp.IsSuccessStatusCode)
+        {
+            message = "Campagna creata con successo.";
+
+            campaignForm = new();
+        }
+        else
+        {
+            var err = await resp.Content.ReadAsStringAsync();
+            message = null; // niente messaggio di successo
+            Console.WriteLine($"Errore creazione campagna: {err}");
+        }
     }
 }

@@ -2,6 +2,7 @@
 @using SmsMachineDashboard.Models
 @inject CampaignService campaignService
 @rendermode InteractiveServer
+@inject IJSRuntime JS
 
 
 <h1>Campagne esistenti</h1>
@@ -41,6 +42,7 @@ else
 @code {
     List<CampaignDetails>? campagne;
     public bool isLoading = true;
+    string? message;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -53,17 +55,21 @@ else
     }
     private async Task Delete(int id)
     {
-        // conferma 
+        // conferma di eliminazione
+        var ok = await JS.InvokeAsync<bool>("confirm", $"Eliminare definitivamente la campagna {id}?");
+        if (!ok) return;
+
         var resp = await campaignService.DeleteCampaignAsync(id);
         if (resp.IsSuccessStatusCode)
         {
             campagne?.RemoveAll(x => x.Id == id);
+            message = "Campagna SMS eliminata con successo.";
             StateHasChanged();
         }
         else
         {
             var msg = await resp.Content.ReadAsStringAsync();
-            Console.WriteLine($"Errore eliminazione : {msg}");
+            await JS.InvokeVoidAsync("alert", $"Errore eliminazione : {msg}");
         }
     }
 }
