@@ -48,7 +48,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var dto = await campaignService.GetCampaignAsync(id);
+        var dto = await campaignService.GetCampaignIdAsync(id);
         if (dto != null)
         {
             form = new CampaignForm
