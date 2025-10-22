@@ -5,16 +5,6 @@ namespace SmsMachineDashboard.Models
     public class CampaignForm
     {
 
-        public CampaignForm(){}
-        public CampaignForm(string title, string text, string recipientlist, bool campaignnotify, string? description)
-        {
-            Title = title;
-            Text = text;
-            RecipientList = recipientlist;
-            CampaignNotify = campaignnotify;
-            Description = description;
-        }
-
         [Required]
         public string Title { get; set; } = string.Empty;
 
