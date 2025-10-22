@@ -21,7 +21,6 @@ else
             <li><b>Descrizione: </b>@campaign.Description</li>
             <li><b>Stato: </b>@campaign.Status</li>
         </ul>
-        <button class="btn btn-warning rounded" @onclick="SendCampaign">Send</button>
     </div>
 
 }
@@ -37,8 +36,4 @@ else
         campaign = await campaignService.GetCampaignIdAsync(Id);
     }
 
-    protected async Task SendCampaign()
-    {
-        await campaignService.SendCampaignAsync(campaign.Id);
-    }
 }

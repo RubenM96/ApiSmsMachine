@@ -30,6 +30,7 @@ else
                     <a class="btn btn-sm btn-outline-primary custom-btn" href="@($"/campaign/{c.Id}/edit")">
                         Modifica
                     </a>
+                    <button class="btn btn-sm btn-warning ms-2" @onclick="() => SendCampaign(c.Id)">Send</button>
                     <button class="btn btn-sm btn-danger ms-2" @onclick="() => Delete(c.Id)">Elimina</button>
                 </li>
                 <br />
@@ -51,6 +52,12 @@ else
             StateHasChanged();
         }       
     }
+
+    protected async Task SendCampaign(int id)
+    {
+        await campaignService.SendCampaignAsync(id);
+    }
+
     private async Task Delete(int id)
     {
         // conferma 
