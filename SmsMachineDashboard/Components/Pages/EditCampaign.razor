@@ -1,0 +1,75 @@
+﻿@page "/editcampaign/{id}"
+@rendermode InteractiveServer
+@using SmsMachineDashboard.Models
+@inject CampaignService campaignService
+@using System.ComponentModel.DataAnnotations
+
+<h3>Edit Campaign</h3>
+
+<EditForm Model="@campaignForm" OnValidSubmit="@SaveChanges" FormName="CampaignForm">
+
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group m-3">
+        <label>Title:</label>
+        <InputText id="title" @bind-Value="@campaignForm.Title"></InputText>
+    </div>
+
+    <div class="form-group m-3">
+        <label>Text:</label>
+        <InputText id="text" @bind-Value="@campaignForm.Text"></InputText>
+    </div>
+
+    <div class="form-group m-3">
+        <label>Numbers:</label>
+        <InputText id="numbers" @bind-Value="@campaignForm.RecipientList"></InputText>
+    </div>
+
+    <div class="form-group m-3">
+        <label>Notify:</label>
+        <InputCheckbox id="notify" @bind-Value="@campaignForm.CampaignNotify"></InputCheckbox>
+    </div>
+
+    <div class="form-group m-3">
+        <label>Description:</label>
+        <InputText id="description" @bind-Value="@campaignForm.Description"></InputText>
+    </div>
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+</EditForm>
+
+
+@code {
+    [Parameter] public int Id { get; set; }
+
+    private Campaign campaign;
+    private CampaignForm campaignForm = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Recupera i dati della campagna da DB o API
+        var campaign = await campaignService.GetCampaignIdAsync(Id);
+
+        // Clona i dati in campaignForm per l’editing
+        campaignForm = new CampaignForm
+        {
+            Title = campaign.Title,
+            Text = campaign.Text,
+            RecipientList = campaign.RecipientList,
+            CampaignNotify = campaign.CampaignNotify,
+            Description = campaign.Description
+        };
+    }
+
+    private async Task SaveChanges()
+    {
+        //await CampaignService.UpdateCampaign(campaignForm);
+        Console.WriteLine("Campaign updated");
+    }
+
+}
+
+

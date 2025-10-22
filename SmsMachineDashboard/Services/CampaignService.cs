@@ -16,7 +16,7 @@ public class CampaignService
         return result ?? new List<CampaignSms>();
     }
 
-    public async Task<CampaignSms?> GetCampaignAsync(int id)
+    public async Task<CampaignSms?> GetCampaignIdAsync(int id)
     {
         return await _http.GetFromJsonAsync<CampaignSms>($"api/campaign/{id}/view");
     }
@@ -39,7 +39,10 @@ public class CampaignService
         {
             formData.Add(new StringContent(campaignForm.Description), "Description");
         }
+
         return await _http.PostAsync("api/campaign", formData);
 
     }
+
+
 }

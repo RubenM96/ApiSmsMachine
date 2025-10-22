@@ -6,7 +6,6 @@
 
 
 <h3>New Campaign</h3>
-
 <EditForm Model="@campaignForm" OnValidSubmit="@CampaignFormSubmit" FormName="CampaignForm">
 
     <DataAnnotationsValidator />
@@ -48,7 +47,8 @@
 
     private async void CampaignFormSubmit()
     {
-        await campaignService.CreateCampaignAsync(campaignForm);
+        var response = await campaignService.CreateCampaignAsync(campaignForm);
         campaignForm = new();
+        
     }
 }
