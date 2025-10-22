@@ -60,4 +60,8 @@ public class CampaignService
             formData.Add(new StringContent(campaignForm.Description), "Description");
         return formData;
     }
+
+    //elimina 
+    public Task<HttpResponseMessage> DeleteCampaignAsync(int id)
+    => _http.DeleteAsync($"api/campaign/{id}");
 }

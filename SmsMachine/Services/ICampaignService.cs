@@ -15,5 +15,6 @@ namespace SmsMachine.Services
 
         CampaignSms UpdateCampaign(int id, string title, string text, string recipientList, bool campaignNotify, string? description);
 
+        bool DeleteCampaign(int id);
     }
 }

@@ -87,6 +87,13 @@ namespace SmsMachine.Services
             return updatedCampaign;
         }
 
+        public bool DeleteCampaign(int id)
+        {
+            var exists = _campaignRepository.GetCampaignId(id);
+            if (exists is null) return false;
+
+            return _campaignRepository.DeleteCampaign(id);
+        }
 
     }
 }

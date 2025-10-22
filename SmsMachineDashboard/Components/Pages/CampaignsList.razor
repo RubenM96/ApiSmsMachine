@@ -26,12 +26,13 @@ else
                 <li><b>Data di creazione: </b>@c.CreatedAt</li>
                 <li><b>Descrizione Campagna: </b>@c.Description</li>
                 <li><b>Stato: </b>@c.Status</li>
-            
+                <li>
                     <a class="btn btn-sm btn-outline-primary custom-btn" href="@($"/campaign/{c.Id}/edit")">
                         Modifica
                     </a>
-            
-                <br/>
+                    <button class="btn btn-sm btn-danger ms-2" @onclick="() => Delete(c.Id)">Elimina</button>
+                </li>
+                <br />
             }
         </ul>
     }
@@ -43,11 +44,26 @@ else
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if(firstRender)
-        {            
+        if (firstRender)
+        {
             campagne = await campaignService.GetAllCampaignsAsync();
             isLoading = false;
             StateHasChanged();
+        }       
+    }
+    private async Task Delete(int id)
+    {
+        // conferma 
+        var resp = await campaignService.DeleteCampaignAsync(id);
+        if (resp.IsSuccessStatusCode)
+        {
+            campagne?.RemoveAll(x => x.Id == id);
+            StateHasChanged();
+        }
+        else
+        {
+            var msg = await resp.Content.ReadAsStringAsync();
+            Console.WriteLine($"Errore eliminazione : {msg}");
         }
     }
 }
