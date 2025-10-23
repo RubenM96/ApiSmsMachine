@@ -11,33 +11,33 @@
     <ValidationSummary />
 
     <div class="form-group m-3">
-        <label>Title:</label>
+        <label>Nome Campagna:</label>
         <InputText id="title" @bind-Value="form.Title" />
     </div>
 
     <div class="form-group m-3">
-        <label>Text:</label>
+        <label>Testo:</label>
         <InputText id="text" @bind-Value="form.Text" />
     </div>
 
     <div class="form-group m-3">
-        <label>Numbers:</label>
+        <label>Numeri di Telefono:</label>
         <InputText id="numbers" @bind-Value="form.RecipientList" />
     </div>
 
     <div class="form-group m-3">
-        <label>Notify:</label>
+        <label>Notifica:</label>
         <InputCheckbox id="notify" @bind-Value="form.CampaignNotify" />
     </div>
 
     <div class="form-group m-3">
-        <label>Description:</label>
+        <label>Descrizione:</label>
         <InputText id="description" @bind-Value="form.Description" />
     </div>
 
     <div class="form-group">
-        <button type="submit" class="btn btn-primary">Save</button>
-        <button type="button" class="btn btn-secondary ms-2" @onclick="Back">Cancel</button>
+        <button type="submit" class="btn btn-primary">Salva</button>
+        <button type="button" class="btn btn-secondary ms-2" @onclick="Back">Annulla</button>
     </div>
 </EditForm>
 
