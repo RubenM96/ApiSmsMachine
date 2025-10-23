@@ -22,7 +22,12 @@ else
             {
                 <NavLink class="nav-link" href="@($"/campaign/{c.Id}")"><h3>@c.Title</h3></NavLink>
                 <li><b>Messaggio: </b>@c.Text</li>
-                <li><b>Numeri: </b> @c.RecipientList</li>
+                <li>
+                    <b>Numeri:</b>
+                    <div style="width: 50%; max-height:100px; overflow:auto; white-space: pre-wrap; word-wrap: break-word; padding:5px; border-radius:5px;">
+                        @c.RecipientList
+                    </div>
+                </li>
                 <li><b>Data di creazione: </b>@c.CreatedAt</li>
                 <li><b>Descrizione Campagna: </b>@c.Description</li>
                 <li><b>Stato: </b>@c.Status</li>
