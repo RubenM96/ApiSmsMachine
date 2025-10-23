@@ -2,10 +2,16 @@
 @using SmsMachineDashboard.Models
 @using System.ComponentModel.DataAnnotations
 @inject CampaignService campaignService
+@inject NavigationManager Nav
 @rendermode InteractiveServer
 
 
 <h3>Nuova Campagna SMS</h3>
+
+@if (!string.IsNullOrEmpty(message))
+{
+<div class="alert alert-success">@message</div>
+}
 
 <EditForm Model="@campaignForm" OnValidSubmit="@CampaignFormSubmit" FormName="CampaignForm">
 
@@ -13,42 +19,58 @@
     <ValidationSummary />
 
     <div class="form-group m-3">
-        <label>Title: </label>
+        <label>Nome Campagna: </label>
         <InputText id="title" @bind-Value="@campaignForm.Title"></InputText>
     </div>
 
     <div class="form-group m-3">
-        <label >Text:</label>
+        <label >Testo:</label>
         <InputText id="text" @bind-Value="@campaignForm.Text"></InputText>
     </div>
 
     <div class="form-group m-3">
-        <label>Numbers:</label>
+        <label>Numeri di Telefono:</label>
         <InputTextArea id="numbers" @bind-Value="@campaignForm.RecipientList" class="form-control" style="width:50%; height:150px; resize: vertical; overflow:auto;" />
     </div>
 
     <div class="form-group m-3">
-        <label>Notify:</label>
+        <label>Notifica:</label>
     <InputCheckbox id="notify" @bind-Value="@campaignForm.CampaignNotify"></InputCheckbox>
     </div>
 
     <div class="form-group m-3">
-        <label>Description:</label>
+        <label>Descrizione:</label>
         <InputText id="description" @bind-Value="@campaignForm.Description"></InputText>
     </div>
     
     <div class="form-group">
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="submit" class="btn btn-primary">Salva</button>
+        <button type="button" class="btn btn-secondary ms-2" @onclick="Back">Annulla</button>
     </div>
 </EditForm>
 
 
 @code {
     CampaignForm campaignForm = new();
+    string? message;
 
     private async Task CampaignFormSubmit()
     {
-        await campaignService.CreateCampaignAsync(campaignForm);
-        campaignForm = new();
+        var resp = await campaignService.CreateCampaignAsync(campaignForm);
+
+        if (resp.IsSuccessStatusCode)
+        {
+            message = "Campagna creata con successo.";
+
+            campaignForm = new();
+        }
+        else
+        {
+            var err = await resp.Content.ReadAsStringAsync();
+            message = null; // niente messaggio di successo
+            Console.WriteLine($"Errore creazione campagna: {err}");
+        }
     }
+
+    private void Back() => Nav.NavigateTo("/campaignslist");
 }
