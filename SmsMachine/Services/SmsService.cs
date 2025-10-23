@@ -38,11 +38,14 @@ namespace SmsMachine.Services
                 //invio sms a AreaSx
                 AreaSxSendResult responeSendSms = _smsSender.SendSms(recipient, text, notify);                
 
-                if (responeSendSms.Refused)
+                if (responeSendSms.Refused) { 
                     //TODO: Gestire il messaggio rifiutato a causa della coda piena (Errore durante l'invio del messaggio:  SMS Refused by AreaSx: SMS Queue Full)                                      
                     //TODO: Routing per gestire più SmsMachine
+
+                    Task.Delay(15000).Wait(); //attendo 15 secondi prima di ritentare
                     throw new Exception("SMS Refused by AreaSx: " + responeSendSms.Errdesc);
-                 
+                }
+
                 if (!responeSendSms.IsSuccess)
                     throw new Exception(responeSendSms.Errno);
 
