@@ -42,7 +42,7 @@ namespace SmsMachine.Services
 
                 try
                 {
-                    _msService.SendSms(recipient, campaign.Text, false, campaign.CampaignNotify);
+                    _msService.SendSms(recipient, campaign.Text, false, campaign.CampaignNotify, campaign.Id);
                     _logger.LogInformation("Sent SMS to {Recipient} for Campaign ID {CampaignId}", recipient, id);
                 }
                 catch (Exception ex)

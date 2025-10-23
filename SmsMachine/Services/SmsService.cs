@@ -17,7 +17,7 @@ namespace SmsMachine.Services
             _logger = logger;
         }
 
-        public AreaSxSendResult SendSms(string recipient, string text, bool multipart, bool notify)
+        public AreaSxSendResult SendSms(string recipient, string text, bool multipart, bool notify, int? campaignId)
         {
             _logger.LogInformation("Preparing to send SMS to {Recipient} with text: {Text}, multipart: {Multipart}, notify: {Notify}", recipient, text, multipart, notify);
             
@@ -29,7 +29,10 @@ namespace SmsMachine.Services
                 text = text.Substring(0, 300);
 
             var sms = new SmsOutbound(new Recipient(recipient), text, multipart, notify, DateTime.Now);
-
+            
+            if(campaignId != null)
+                sms.CampaignId = campaignId;
+            
             try
             {
                 //invio sms a AreaSx

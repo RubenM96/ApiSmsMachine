@@ -24,7 +24,8 @@ namespace SmsMachine.Infrastructure.Data
                 e.Property(s => s.SentAt).IsRequired();
                 e.Property(s => s.Multipart).IsRequired();  
                 e.Property(s => s.Notify).IsRequired();
-                e.Property(s => s.Index);        
+                e.Property(s => s.Index);
+                e.Property(s => s.CampaignId);
             });
 
             //Tabella Notify

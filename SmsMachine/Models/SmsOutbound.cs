@@ -24,6 +24,7 @@ namespace SmsMachine.Models
         public bool Multipart { get; }
         public bool Notify { get; }
         public int? Index { get; set;}
+        public int? CampaignId { get; set; }
         public string? Error { get; }
 
 
