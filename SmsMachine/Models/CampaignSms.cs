@@ -15,6 +15,9 @@
             CreatedAt = DateTime.UtcNow;
             Status = CampaignStatus.Draft;
             Description = description;
+            TotalRecipients = 0;
+            DeliveredCount = 0;
+            FailedCount = 0;
         }
 
         public int Id { get; set; }
@@ -27,6 +30,9 @@
         public CampaignStatus Status { get; set;}
  
         public string? Description { get; set; }
+        public int TotalRecipients { get; private set; }
+        public int DeliveredCount { get; private set; }
+        public int FailedCount { get; private set; }
 
         public enum CampaignStatus
         {
@@ -35,6 +41,10 @@
             Finished = 2
         }
 
-
+        // helper per aggiornare i contatori 
+        public void SetTotal(int total) => TotalRecipients = total < 0 ? 0 : total;
+        public void IncDelivered() => DeliveredCount++;
+        public void IncFailed() => FailedCount++;
+        public bool IsComplete() => (DeliveredCount + FailedCount) >= TotalRecipients && TotalRecipients > 0;
     }
 }

@@ -10,7 +10,6 @@
         public DateTime CreatedAt { get; set; }
         public DateTime? ScheduledAt { get; set; }
         public CampaignStatus Status { get; set; }
-
         public string? Description { get; set; }
 
         public enum CampaignStatus

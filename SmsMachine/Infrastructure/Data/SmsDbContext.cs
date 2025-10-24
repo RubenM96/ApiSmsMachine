@@ -72,10 +72,27 @@ namespace SmsMachine.Infrastructure.Data
                 e.Property(c => c.CampaignNotify).IsRequired();
                 e.Property(c => c.CreatedAt).IsRequired();
                 e.Property(c => c.Status).IsRequired();
-                e.Property(c => c.Description).HasMaxLength(500);            
+                e.Property(c => c.Description).HasMaxLength(500);
+                e.Property(c => c.TotalRecipients).IsRequired();
+                e.Property(c => c.DeliveredCount).IsRequired();
+                e.Property(c => c.FailedCount).IsRequired();
             });
 
-
+            //Tabella SmsQueue
+            modelBuilder.Entity<SmsQueue>(e =>
+            {
+                e.ToTable("SmsQueue");
+                e.HasKey(s => s.Id);
+                e.Property(t => t.Id).ValueGeneratedOnAdd();
+                e.OwnsOne(s => s.Recipient, r =>
+                {
+                    r.Property(p => p.Value).HasColumnName("Recipient").IsRequired().HasMaxLength(50);
+                });
+                e.Property(s => s.Text).IsRequired().HasMaxLength(300);
+                e.Property(s => s.Multipart).IsRequired();
+                e.Property(s => s.Notify).IsRequired();
+                e.Property(s => s.CampaignId);
+            });
         }
     }
 }

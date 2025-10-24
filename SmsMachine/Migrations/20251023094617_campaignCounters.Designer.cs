@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SmsMachine.Infrastructure.Data;
 
@@ -11,9 +12,11 @@ using SmsMachine.Infrastructure.Data;
 namespace SmsMachine.Migrations
 {
     [DbContext(typeof(SmsDbContext))]
-    partial class SmsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251023094617_campaignCounters")]
+    partial class campaignCounters
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -165,33 +168,6 @@ namespace SmsMachine.Migrations
                     b.ToTable("Sms", (string)null);
                 });
 
-            modelBuilder.Entity("SmsMachine.Models.SmsQueue", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("CampaignId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("Multipart")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("Notify")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Text")
-                        .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("SmsQueue", (string)null);
-                });
-
             modelBuilder.Entity("SmsMachine.Models.Notify", b =>
                 {
                     b.OwnsOne("SmsMachine.Models.Recipient", "Recipient", b1 =>
@@ -261,31 +237,6 @@ namespace SmsMachine.Migrations
 
                             b1.WithOwner()
                                 .HasForeignKey("SmsOutboundId");
-                        });
-
-                    b.Navigation("Recipient")
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("SmsMachine.Models.SmsQueue", b =>
-                {
-                    b.OwnsOne("SmsMachine.Models.Recipient", "Recipient", b1 =>
-                        {
-                            b1.Property<int>("SmsQueueId")
-                                .HasColumnType("int");
-
-                            b1.Property<string>("Value")
-                                .IsRequired()
-                                .HasMaxLength(50)
-                                .HasColumnType("nvarchar(50)")
-                                .HasColumnName("Recipient");
-
-                            b1.HasKey("SmsQueueId");
-
-                            b1.ToTable("SmsQueue");
-
-                            b1.WithOwner()
-                                .HasForeignKey("SmsQueueId");
                         });
 
                     b.Navigation("Recipient")

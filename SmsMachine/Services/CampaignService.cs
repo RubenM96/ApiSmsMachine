@@ -16,7 +16,7 @@ namespace SmsMachine.Services
             _msService = msService;
             _logger = logger;
         }
-
+        //Creazione campagna
         public CampaignSms CreateCampaign(string title, string text, string recipientList, bool campaignNotify, string? description)
         {
             CampaignSms campaign = new CampaignSms(title, text, recipientList, campaignNotify, description);
@@ -25,7 +25,7 @@ namespace SmsMachine.Services
             _logger.LogInformation("Created campaign with ID {CampaignId}", createdCampaign.Id);
             return createdCampaign;
         }
-
+        // Invio Campagna
         public CampaignSms SendCampaign(int id)
         {
             CampaignSms? campaign = _campaignRepository.GetCampaignId(id);
@@ -35,6 +35,16 @@ namespace SmsMachine.Services
                 _logger.LogWarning("Campaign with ID {CampaignId} not found", id);
                 throw new ArgumentException($"Campaign with ID {id} not found");
             }
+
+            //Counter destinatari
+            var recipients = campaign.RecipientList
+                .Split(new[] { ',', ';', ' ', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(r => r.Trim())
+                .ToList();
+
+            campaign.SetTotal(recipients.Count);           // imposta TotalRecipients
+            campaign.Status = CampaignSms.CampaignStatus.InProgress;
+            _campaignRepository.UpdateCampaign(campaign);  // persisto subito i cambi
 
             foreach (var recipient in campaign.RecipientList.Split(new[] { ',', ';', ' ', '\n' }, StringSplitOptions.RemoveEmptyEntries).Select(r => r.Trim()))
             {
@@ -56,17 +66,17 @@ namespace SmsMachine.Services
             _campaignRepository.UpdateCampaign(campaign);
             return campaign;
         }
-
+        // Mostra tutte le Campagne
         public IEnumerable<CampaignSms> GetAllCampaigns()
         {
             return _campaignRepository.GetAllCampaigns();
         }
-
+        // Mostra Singola Campagna
         public CampaignSms? GetCampaignId(int id)
         {
             return _campaignRepository.GetCampaignId(id);
         }
-
+        // Modifica Campagna
         public CampaignSms UpdateCampaign(int id, string title, string text, string recipientList, bool campaignNotify, string? description)
         {
             CampaignSms? existingCampaign = _campaignRepository.GetCampaignId(id);
@@ -86,7 +96,7 @@ namespace SmsMachine.Services
             _logger.LogInformation("Updated campaign with ID {CampaignId}", updatedCampaign.Id);
             return updatedCampaign;
         }
-
+        // Elimina Campagna
         public bool DeleteCampaign(int id)
         {
             var exists = _campaignRepository.GetCampaignId(id);
