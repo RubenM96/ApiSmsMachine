@@ -1,7 +1,6 @@
 ﻿using SmsMachine.Infrastructure.Data;
 using SmsMachine.Interfaces;
 using SmsMachine.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace SmsMachine.Infrastructure.Repositories
 {
@@ -32,5 +31,6 @@ namespace SmsMachine.Infrastructure.Repositories
             _context.SaveChanges();
             return true;
         }
+
     }
 }

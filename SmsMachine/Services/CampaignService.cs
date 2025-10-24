@@ -16,6 +16,7 @@ namespace SmsMachine.Services
             _msService = msService;
             _logger = logger;
         }
+
         //Creazione campagna
         public CampaignSms CreateCampaign(string title, string text, string recipientList, bool campaignNotify, string? description)
         {
@@ -25,6 +26,7 @@ namespace SmsMachine.Services
             _logger.LogInformation("Created campaign with ID {CampaignId}", createdCampaign.Id);
             return createdCampaign;
         }
+
         // Invio Campagna
         public CampaignSms SendCampaign(int id)
         {
@@ -61,21 +63,26 @@ namespace SmsMachine.Services
                 }
             }
 
+            //metodo per tentare l'invio dei messaggi nella coda (SmsQueue)
+
             campaign.Status = CampaignStatus.Finished;
             //aggiornarlo nel db
             _campaignRepository.UpdateCampaign(campaign);
             return campaign;
         }
+
         // Mostra tutte le Campagne
         public IEnumerable<CampaignSms> GetAllCampaigns()
         {
             return _campaignRepository.GetAllCampaigns();
         }
+
         // Mostra Singola Campagna
         public CampaignSms? GetCampaignId(int id)
         {
             return _campaignRepository.GetCampaignId(id);
         }
+
         // Modifica Campagna
         public CampaignSms UpdateCampaign(int id, string title, string text, string recipientList, bool campaignNotify, string? description)
         {
@@ -96,6 +103,7 @@ namespace SmsMachine.Services
             _logger.LogInformation("Updated campaign with ID {CampaignId}", updatedCampaign.Id);
             return updatedCampaign;
         }
+
         // Elimina Campagna
         public bool DeleteCampaign(int id)
         {

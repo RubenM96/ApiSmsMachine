@@ -8,7 +8,8 @@ namespace SmsMachine.Services
     {
         private readonly ISmsSender _smsSender;
         private readonly ISmsOutboundRepository _smsOutboundRepository;
-        private readonly ILogger<SmsService> _logger;
+        private readonly ISmsQueueService _smsQueueService;       
+        private readonly ILogger<SmsService> _logger;      
 
         public SmsService(ISmsSender smsSender, ISmsOutboundRepository smsRepository, ILogger<SmsService> logger)
         {
@@ -36,22 +37,30 @@ namespace SmsMachine.Services
             try
             {
                 //invio sms a AreaSx
-                AreaSxSendResult responeSendSms = _smsSender.SendSms(recipient, text, notify);                
+                AreaSxSendResult responeSendSms = _smsSender.SendSms(recipient, text, notify);
 
-                if (responeSendSms.Refused)
+                if (responeSendSms.IsSuccess)
+                {
+                    sms.Index = responeSendSms.GetIndex();
+                    _smsOutboundRepository.AddSms(sms);
+                    _logger.LogInformation("SMS to {Recipient} sent and saved to database successfully", recipient);
+                }
+                else if (responeSendSms.Refused)
+                {
                     //TODO: Gestire il messaggio rifiutato a causa della coda piena (Errore durante l'invio del messaggio:  SMS Refused by AreaSx: SMS Queue Full)                                      
+                    _smsQueueService.EnqueueSms(new Recipient(recipient), text, multipart, notify, campaignId);
+
+                    _logger.LogWarning("SMS to {Recipient} was refused by AreaSx: {Errdesc}. Enqueued to SMS queue.", recipient, responeSendSms.Errdesc);
+
                     //TODO: Routing per gestire più SmsMachine
-                    throw new Exception("SMS Refused by AreaSx: " + responeSendSms.Errdesc);
-                 
-                if (!responeSendSms.IsSuccess)
+                    Task.Delay(10000).Wait(); //attesa di 10 secondi prima di ritentare l'invio
+                }
+                else
+                {
                     throw new Exception(responeSendSms.Errno);
+                }
 
-                sms.Index = responeSendSms.GetIndex();
-                _smsOutboundRepository.AddSms(sms);
-                _logger.LogInformation("SMS to {Recipient} sent and saved to database successfully", recipient);
-             
                 return responeSendSms;
-
             }
             catch (Exception ex)
             {

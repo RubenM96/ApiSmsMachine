@@ -1,5 +1,4 @@
-﻿using System.IO;
-
+﻿
 namespace SmsMachine.Models
 {
     public class SmsInbound
