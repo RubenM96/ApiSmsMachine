@@ -34,6 +34,7 @@ builder.Services.AddTransient<ISmsReceiver, AreaSxSmsReceiver>();
 builder.Services.AddTransient<INotifyService, NotifyService>();
 builder.Services.AddTransient<ISmsInbound, SmsInboundService>();
 builder.Services.AddTransient<ICampaignService, CampaignService>();
+builder.Services.AddTransient<ISmsQueueService, SmsQueueService>();
 
 builder.Services.AddHttpClient<ISmsSender, AreaSxSmsSender>(client =>
 {

@@ -1,8 +1,6 @@
 ﻿using SmsMachine.Infrastructure.Utils;
 using SmsMachine.Interfaces;
 using SmsMachine.Models;
-using System.Globalization;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace SmsMachine.Services
 {
