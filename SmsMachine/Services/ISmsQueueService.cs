@@ -6,5 +6,6 @@ namespace SmsMachine.Services
     {
         void EnqueueSms(Recipient recipient, string text, bool multipart, bool notify, int? campaignId);
 
+
     }
 }

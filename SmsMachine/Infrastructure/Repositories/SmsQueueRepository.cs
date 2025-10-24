@@ -1,4 +1,5 @@
-﻿using SmsMachine.Infrastructure.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using SmsMachine.Infrastructure.Data;
 using SmsMachine.Interfaces;
 using SmsMachine.Models;
 
@@ -23,7 +24,7 @@ namespace SmsMachine.Infrastructure.Repositories
         {
             return _context.Set<SmsQueue>().Find(id);
         }
-        public bool Delete (int id)
+        public bool Delete(int id)
         {
             var entity = _context.Set<SmsQueue>().Find(id);
             if (entity is null) return false;
@@ -31,6 +32,16 @@ namespace SmsMachine.Infrastructure.Repositories
             _context.SaveChanges();
             return true;
         }
+        public List<SmsQueue>? GetByCampaign(int CampaignId)
+        {
+            return _context.Set<SmsQueue>()
+                            .AsNoTracking()
+                            .Where(x => x.CampaignId == CampaignId)
+                            .OrderBy(x => x.Id)
+                            .ToList();
+        }
+
+
 
     }
 }

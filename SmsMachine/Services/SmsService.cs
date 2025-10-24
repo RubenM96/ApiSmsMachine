@@ -11,10 +11,11 @@ namespace SmsMachine.Services
         private readonly ISmsQueueService _smsQueueService;       
         private readonly ILogger<SmsService> _logger;      
 
-        public SmsService(ISmsSender smsSender, ISmsOutboundRepository smsRepository, ILogger<SmsService> logger)
+        public SmsService(ISmsSender smsSender, ISmsOutboundRepository smsRepository, ILogger<SmsService> logger, ISmsQueueService smsQueueService)
         {
             _smsSender = smsSender;
             _smsOutboundRepository = smsRepository;
+            _smsQueueService = smsQueueService;
             _logger = logger;
         }
 
@@ -49,11 +50,8 @@ namespace SmsMachine.Services
                 {
                     //TODO: Gestire il messaggio rifiutato a causa della coda piena (Errore durante l'invio del messaggio:  SMS Refused by AreaSx: SMS Queue Full)                                      
                     _smsQueueService.EnqueueSms(new Recipient(recipient), text, multipart, notify, campaignId);
-
-                    _logger.LogWarning("SMS to {Recipient} was refused by AreaSx: {Errdesc}. Enqueued to SMS queue.", recipient, responeSendSms.Errdesc);
-
                     //TODO: Routing per gestire più SmsMachine
-                    Task.Delay(10000).Wait(); //attesa di 10 secondi prima di ritentare l'invio
+
                 }
                 else
                 {

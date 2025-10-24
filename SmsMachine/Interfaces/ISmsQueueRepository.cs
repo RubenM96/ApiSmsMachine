@@ -7,5 +7,7 @@ namespace SmsMachine.Interfaces
         SmsQueue AddSmsQueue(SmsQueue smsQueue);
         SmsQueue? GetById(int id);
         bool Delete(int id);
+
+        List<SmsQueue> GetByCampaign(int CampaignId);
     }
 }
