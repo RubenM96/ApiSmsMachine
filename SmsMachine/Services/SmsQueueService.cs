@@ -8,9 +8,10 @@ namespace SmsMachine.Services
         private readonly ILogger<SmsQueueService> _logger;
         private readonly ISmsQueueRepository _smsQueueRepository;
 
-        public SmsQueueService(ILogger<SmsQueueService> logger)
+        public SmsQueueService(ILogger<SmsQueueService> logger, ISmsQueueRepository smsQueueRepository)
         {
             _logger = logger;
+            _smsQueueRepository = smsQueueRepository;
         }
 
         public void EnqueueSms(Recipient recipient, string text, bool multipart, bool notify, int? campaignId)
