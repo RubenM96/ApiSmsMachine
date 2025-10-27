@@ -24,7 +24,7 @@ namespace SmsMachine.Services
         public CampaignSms CreateCampaign(string title, string text, string recipientList, bool campaignNotify, string? description)
         {
             CampaignSms campaign = new CampaignSms(title, text, recipientList, campaignNotify, description);
-            
+
             var createdCampaign = _campaignRepository.AddCampaign(campaign);
             _logger.LogInformation("Created campaign with ID {CampaignId}", createdCampaign.Id);
             return createdCampaign;
@@ -35,7 +35,7 @@ namespace SmsMachine.Services
         {
             CampaignSms? campaign = _campaignRepository.GetCampaignId(id);
 
-            if(campaign == null)
+            if (campaign == null)
             {
                 _logger.LogWarning("Campaign with ID {CampaignId} not found", id);
                 throw new ArgumentException($"Campaign with ID {id} not found");
@@ -67,9 +67,9 @@ namespace SmsMachine.Services
             }
 
             // do while finche la lista non è vuota=0
-            do {
-                await RetryQueuedForCampaignAsync(campaign.Id, TimeSpan.FromSeconds(10)); // tentativo di invio dei messaggi in coda 
-            } while (_smsQueueService.GetSmsQueueByCampaign(campaign.Id).Count > 0);
+
+            await RetryQueuedForCampaignAsync(campaign.Id, TimeSpan.FromSeconds(5)); // tentativo di invio dei messaggi in coda 
+
 
             campaign.Status = CampaignStatus.Finished;
             //aggiornarlo nel db
@@ -124,36 +124,38 @@ namespace SmsMachine.Services
         {
             try
             {
-                // 1) aspetta SENZA bloccare thread di request
-                await Task.Delay(delay);
-
-                // 2) carica gli elementi in coda per quella campagna
-                var queued = _smsQueueService.GetSmsQueueByCampaign(campaignId);
-
-                foreach (var smsQueue in queued)
+                do
                 {
-                    try
-                    {
-                        _smsService.SendSms(smsQueue.Recipient.Value, smsQueue.Text, smsQueue.Multipart, smsQueue.Notify, campaignId);
+                    // 1) aspetta SENZA bloccare thread di request
+                    await Task.Delay(delay);
 
-                        // se l’invio è riuscito (o almeno non “queue full”), rimuovi dalla coda
-                        _smsQueueService.DeleteSmsInQueue(smsQueue.Id);
-                    }
-                    catch (Exception ex)
+                    // 2) carica gli elementi in coda per quella campagna
+                    var queued = _smsQueueService.GetSmsQueueByCampaign(campaignId);
+
+                    foreach (var smsQueue in queued)
                     {
-                        //  errore: logga e lascia l’item in coda
-                        _logger.LogError(ex, "Retry fallito per Campaign {CampaignId}, Recipient {Recipient}",
-                            campaignId, smsQueue.Recipient.Value);
+                        try
+                        {
+                            _smsService.SendSms(smsQueue.Recipient.Value, smsQueue.Text, smsQueue.Multipart, smsQueue.Notify, campaignId);
+
+                            // se l’invio è riuscito (o almeno non “queue full”), rimuovi dalla coda
+                            _smsQueueService.DeleteSmsInQueue(smsQueue.Id);
+                        }
+                        catch (Exception ex)
+                        {
+                            //  errore: logga e lascia l’item in coda
+                            _logger.LogError(ex, "Retry fallito per Campaign {CampaignId}, Recipient {Recipient}",
+                                campaignId, smsQueue.Recipient.Value);
+                        }
                     }
-                }
+                } while (_smsQueueService.GetSmsQueueByCampaign(campaignId).Count > 0);
+
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Errore nel task di retry per Campaign {CampaignId}", campaignId);
             }
         }
-
-
 
     }
 }

@@ -36,13 +36,13 @@ namespace SmsMachine.Controllers
         }
 
         [HttpPost("{id}/send")]
-        public IActionResult SendCampaign(int id)
+        public async Task<IActionResult> SendCampaign(int id)
         {         
-            var campaignSend = _campaignService.SendCampaign(id);
+            var campaignSend = await _campaignService.SendCampaign(id);
             return Ok(campaignSend);
         }
 
-        //richiesta get per visualizzare tutte le campagne GettAll
+        //richiesta get per visualizzare tutte le campagne GetAll
         [HttpGet]
         public IActionResult GetAllCampaigns()
         {
