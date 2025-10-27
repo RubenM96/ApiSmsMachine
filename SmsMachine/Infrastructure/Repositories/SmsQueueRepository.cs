@@ -24,14 +24,7 @@ namespace SmsMachine.Infrastructure.Repositories
         {
             return _context.Set<SmsQueue>().Find(id);
         }
-        public bool Delete(int id)
-        {
-            var entity = _context.Set<SmsQueue>().Find(id);
-            if (entity is null) return false;
-            _context.Set<SmsQueue>().Remove(entity);
-            _context.SaveChanges();
-            return true;
-        }
+
         public List<SmsQueue>? GetByCampaign(int CampaignId)
         {
             return _context.Set<SmsQueue>()
@@ -41,7 +34,14 @@ namespace SmsMachine.Infrastructure.Repositories
                             .ToList();
         }
 
-
+        public bool Delete(int id)
+        {
+            var entity = _context.Set<SmsQueue>().Find(id);
+            if (entity is null) return false;
+            _context.Set<SmsQueue>().Remove(entity);
+            _context.SaveChanges();
+            return true;
+        }
 
     }
 }

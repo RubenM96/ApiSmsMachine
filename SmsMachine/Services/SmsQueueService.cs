@@ -1,4 +1,5 @@
-﻿using SmsMachine.Interfaces;
+﻿using SmsMachine.Infrastructure.Repositories;
+using SmsMachine.Interfaces;
 using SmsMachine.Models;
 
 namespace SmsMachine.Services
@@ -22,7 +23,14 @@ namespace SmsMachine.Services
             _logger.LogInformation("Enqueued SMS for {Recipient} (campaign {CampaignId})", recipient.Value, campaignId);
         }
 
-       
+       public List<SmsQueue> GetSmsQueueByCampaign(int campaignId)
+        {
+            return _smsQueueRepository.GetByCampaign(campaignId);
+        }
 
+        public bool DeleteSmsInQueue(int id)
+        {
+            return _smsQueueRepository.Delete(id);
+        }
     }
 }

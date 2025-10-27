@@ -7,7 +7,7 @@ namespace SmsMachine.Services
         //scheduledAt non è ancora implementato
         CampaignSms CreateCampaign(string title, string text, string recipientList, bool campaignNotify, string? description);
 
-        CampaignSms SendCampaign(int id);
+        Task<CampaignSms> SendCampaign(int id);
 
         IEnumerable<CampaignSms> GetAllCampaigns();
 
@@ -16,5 +16,7 @@ namespace SmsMachine.Services
         CampaignSms UpdateCampaign(int id, string title, string text, string recipientList, bool campaignNotify, string? description);
 
         bool DeleteCampaign(int id);
+
+        public Task RetryQueuedForCampaignAsync(int campaignId, TimeSpan delay);
     }
 }

@@ -6,6 +6,7 @@ namespace SmsMachine.Services
     {
         void EnqueueSms(Recipient recipient, string text, bool multipart, bool notify, int? campaignId);
 
-
+        public List<SmsQueue> GetSmsQueueByCampaign(int campaignId);
+        public bool DeleteSmsInQueue(int id);
     }
 }
