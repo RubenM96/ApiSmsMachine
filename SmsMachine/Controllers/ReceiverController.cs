@@ -36,7 +36,8 @@ namespace SmsMachine.Controllers
 
                 _smsReceiver.Receive(sms.sms_code, sms.sms_num, sms.sms_text, sms.sms_date, sms.sms_id, sms.sms_totparts, sms.sms_thispart, sms.sms_status);
 
-            }catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 return BadRequest($"Errore durante la ricezzione del messaggio: {ex.Message}");
             }

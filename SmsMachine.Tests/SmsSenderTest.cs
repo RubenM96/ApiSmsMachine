@@ -22,7 +22,7 @@ namespace SmsMachine.Tests
                     client.BaseAddress = new Uri(baseUrl);
                 });
             });
-             
+
             var app = builder.Build();
 
             var smsSender = app.Services.GetRequiredService<ISmsSender>();

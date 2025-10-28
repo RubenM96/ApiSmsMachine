@@ -1,5 +1,4 @@
-﻿using SmsMachine.Infrastructure.Repositories;
-using SmsMachine.Interfaces;
+﻿using SmsMachine.Interfaces;
 using SmsMachine.Models;
 using static SmsMachine.Models.CampaignSms;
 

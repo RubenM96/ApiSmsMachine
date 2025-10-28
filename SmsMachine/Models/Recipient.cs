@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-namespace SmsMachine.Models
+﻿namespace SmsMachine.Models
 {
 
     public record Recipient
@@ -9,7 +7,7 @@ namespace SmsMachine.Models
         public Recipient(string value)
         {
             Value = value ?? throw new ArgumentNullException(nameof(value));
-            
+
             if (!IsValid(value))
                 throw new ArgumentException("Invalid phone number format", nameof(value));
         }

@@ -1,10 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SmsMachine.Infrastructure;
-using SmsMachine.Models;
 using SmsMachine.Services;
-using System;
-using static System.Net.Mime.MediaTypeNames;
 
 
 namespace SmsMachine.Tests

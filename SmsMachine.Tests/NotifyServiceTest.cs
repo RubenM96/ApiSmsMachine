@@ -1,14 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc.ApplicationParts;
-using Microsoft.EntityFrameworkCore;
-using Moq;
-using SmsMachine.Infrastructure.Data;
-using SmsMachine.Infrastructure.Repositories;
+﻿using Moq;
 using SmsMachine.Infrastructure.Utils;
 using SmsMachine.Interfaces;
 using SmsMachine.Models;
-using SmsMachine.Services;
-using static System.Net.Mime.MediaTypeNames;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
 namespace SmsMachine.Tests
@@ -30,16 +23,16 @@ namespace SmsMachine.Tests
             mock.Setup(repo => repo.GetSmsOutboundByRecipientAndIndex(recipientSms, smsOutboundTest.Index.Value)).Returns(smsOutboundTest);
 
             var result = mock.Object.GetSmsOutboundByRecipientAndIndex(recipient, indexSms);
-            
+
             return result;
         }
 
         // Act
         [DataTestMethod]
         [DataRow("0", "+393466270684", "STATUS REPORT TEST", "2024-06-17 10:30:00", 12, "0")]
-        public void NotifyTest(string index, string recipient, string text, string date, int indexSms, string status) 
+        public void NotifyTest(string index, string recipient, string text, string date, int indexSms, string status)
         {
-            
+
             SmsOutbound? smsOutbound = SetupMockSmsOutboundRepository(recipient, indexSms);
 
             DateTime dateTime = SmsDateParser.ParseDateNotify(date);
@@ -54,7 +47,8 @@ namespace SmsMachine.Tests
                 Console.WriteLine($"Info Notify: num {recipient} text: {text}, date {dateTime}, index {indexSms}, status {status}, smsId {smsOutbound}");
 
             }
-            else{
+            else
+            {
                 Console.WriteLine("SmsOutbound found");
 
                 var notify = new Notify(new Recipient(recipient), text, dateTime, indexSms, status, smsOutbound.Id);

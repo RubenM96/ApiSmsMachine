@@ -1,6 +1,4 @@
-﻿using Azure;
-using Microsoft.AspNetCore.Mvc;
-using SmsMachine.Infrastructure;
+﻿using Microsoft.AspNetCore.Mvc;
 using SmsMachine.Models;
 using SmsMachine.Services;
 

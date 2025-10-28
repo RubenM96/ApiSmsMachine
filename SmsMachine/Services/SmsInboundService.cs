@@ -4,7 +4,7 @@ using SmsMachine.Models;
 
 namespace SmsMachine.Services
 {
-    public class SmsInboundService : ISmsInbound 
+    public class SmsInboundService : ISmsInbound
     {
         private readonly ILogger<SmsInboundService> _logger;
         private readonly ISmsInboundRepository _smsInboundRepository;
@@ -23,7 +23,7 @@ namespace SmsMachine.Services
             {
                 receivedAtUtc = SmsDateParser.ParseDateFromSmsMachine(date);
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 _logger.LogWarning(ex, "Formato data non valido: {Date}", date);
                 receivedAtUtc = DateTime.UtcNow;
@@ -33,9 +33,9 @@ namespace SmsMachine.Services
                 text = text[..300];
 
             var smsInbound = new SmsInbound(new Recipient(recipient), text, multipart: false, receivedAt: receivedAtUtc);
-            
 
-            try 
+
+            try
             {
                 _smsInboundRepository.AddSmsInbound(smsInbound);
                 _logger.LogInformation("Inbound SMS saved: Id={Id}, Recipient={Recipient}, Text={Text}", smsInbound.Id, recipient, text);

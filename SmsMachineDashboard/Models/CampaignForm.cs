@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SmsMachineDashboard.Models
+namespace SmsMachine.Dashboard.Models
 {
     public class CampaignForm
     {
@@ -17,7 +17,7 @@ namespace SmsMachineDashboard.Models
 
         [Required]
         public bool CampaignNotify { get; set; }
-        
+
         public string? Description { get; set; }
     }
 }

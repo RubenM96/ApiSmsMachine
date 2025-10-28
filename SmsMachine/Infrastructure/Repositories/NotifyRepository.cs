@@ -25,6 +25,6 @@ namespace SmsMachine.Infrastructure.Repositories
             return _context.Set<Notify>().Find(id);
         }
 
-     
+
     }
 }

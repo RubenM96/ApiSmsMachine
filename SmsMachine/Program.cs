@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using SmsMachine.Infrastructure;
 using SmsMachine.Infrastructure.Data;
 using SmsMachine.Infrastructure.Repositories;
 using SmsMachine.Interfaces;
 using SmsMachine.Services;
-using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -57,7 +57,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowBlazor",
         policy => policy
-            .WithOrigins("https://localhost:7069") 
+            .WithOrigins("https://localhost:7069")
             .AllowAnyHeader()
             .AllowAnyMethod());
 });

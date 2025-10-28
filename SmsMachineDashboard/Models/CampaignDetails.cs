@@ -1,4 +1,4 @@
-﻿namespace SmsMachineDashboard.Models
+﻿namespace SmsMachine.Dashboard.Models
 {
     public class CampaignDetails
     {

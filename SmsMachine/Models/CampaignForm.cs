@@ -7,11 +7,11 @@ namespace SmsMachine.Models
 
         [Required]
         public string Title { get; set; }
-        
+
         [Required]
         [StringLength(160, ErrorMessage = "Il testo non può superare 160 caratteri.")]
         public string Text { get; set; }
-        
+
         [Required]
         public string RecipientList { get; set; }
 

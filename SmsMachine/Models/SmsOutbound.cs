@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-namespace SmsMachine.Models
+﻿namespace SmsMachine.Models
 {
     public class SmsOutbound
     {
@@ -23,7 +21,7 @@ namespace SmsMachine.Models
         public DateTime SentAt { get; }
         public bool Multipart { get; }
         public bool Notify { get; }
-        public int? Index { get; set;}
+        public int? Index { get; set; }
         public int? CampaignId { get; set; }
         public string? Error { get; }
 

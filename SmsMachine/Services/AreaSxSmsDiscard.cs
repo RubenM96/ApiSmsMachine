@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Serilog;
+﻿using Serilog;
 using SmsMachine.Infrastructure;
 
 namespace SmsMachine.Services
@@ -11,17 +10,17 @@ namespace SmsMachine.Services
         private readonly ILogger<AreaSxSmsDiscard> _logger;
         private readonly string _password;
 
-        public AreaSxSmsDiscard() { }
+        private AreaSxSmsDiscard() { }
         public AreaSxSmsDiscard(HttpClient httpClient, ILogger<AreaSxSmsDiscard> logger, AreaSxOptions options)
         {
             _httpClient = httpClient;
             _logger = logger;
             _password = options.Password;
         }
-        
+
         public AreaSxSmsNotSent CheckDiscardSms()
         {
-            using var request= new HttpRequestMessage(HttpMethod.Post, AreaSxSmsMachine.Endpoints.DiscardSms);
+            using var request = new HttpRequestMessage(HttpMethod.Post, AreaSxSmsMachine.Endpoints.DiscardSms);
 
             var data = new Dictionary<string, string>
             {

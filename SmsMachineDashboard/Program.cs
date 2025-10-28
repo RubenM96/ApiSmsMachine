@@ -1,4 +1,4 @@
-using SmsMachineDashboard.Components;
+using SmsMachine.Dashboard.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -22,7 +22,7 @@ namespace SmsMachine.Infrastructure.Data
                 });
                 e.Property(s => s.Text).IsRequired().HasMaxLength(300);
                 e.Property(s => s.SentAt).IsRequired();
-                e.Property(s => s.Multipart).IsRequired();  
+                e.Property(s => s.Multipart).IsRequired();
                 e.Property(s => s.Notify).IsRequired();
                 e.Property(s => s.Index);
                 e.Property(s => s.CampaignId);
@@ -43,7 +43,7 @@ namespace SmsMachine.Infrastructure.Data
                 e.Property(n => n.Status).IsRequired().HasMaxLength(10);
                 e.Property(n => n.SmsOutbounsId);
             });
-           
+
 
             modelBuilder.Entity<SmsInbound>(e =>
             {

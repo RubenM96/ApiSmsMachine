@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.36414.22
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmsMachine", "SmsMachine\SmsMachine.csproj", "{0D745C82-C937-4E45-A148-928610F45A12}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmsMachine.Api", "SmsMachine\SmsMachine.Api.csproj", "{0D745C82-C937-4E45-A148-928610F45A12}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmsMachine.Tests", "SmsMachine.Tests\SmsMachine.Tests.csproj", "{498F6E25-757E-4270-8097-62BFA1A083C2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmsMachineDashboard", "SmsMachineDashboard\SmsMachineDashboard.csproj", "{E449EE6B-9FF1-4488-BC9E-892E68058785}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmsMachine.Dashboard", "SmsMachineDashboard\SmsMachine.Dashboard.csproj", "{E449EE6B-9FF1-4488-BC9E-892E68058785}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

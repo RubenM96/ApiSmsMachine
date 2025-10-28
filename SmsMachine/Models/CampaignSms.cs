@@ -11,7 +11,7 @@
             Title = title ?? throw new ArgumentNullException(nameof(title));
             Text = text ?? throw new ArgumentNullException(nameof(text));
             RecipientList = recipientList ?? throw new ArgumentNullException(nameof(recipientList));
-            CampaignNotify = campaignNotify; 
+            CampaignNotify = campaignNotify;
             CreatedAt = DateTime.UtcNow;
             Status = CampaignStatus.Draft;
             Description = description;
@@ -27,8 +27,8 @@
         public bool CampaignNotify { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? ScheduledAt { get; set; }
-        public CampaignStatus Status { get; set;}
- 
+        public CampaignStatus Status { get; set; }
+
         public string? Description { get; set; }
         public int TotalRecipients { get; private set; }
         public int DeliveredCount { get; private set; }

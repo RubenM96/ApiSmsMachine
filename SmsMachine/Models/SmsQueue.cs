@@ -1,8 +1,9 @@
 ﻿namespace SmsMachine.Models;
 
-public class SmsQueue{
-    private SmsQueue(){}
-    
+public class SmsQueue
+{
+    private SmsQueue() { }
+
     public SmsQueue(Recipient recipient, string text, bool multipart, bool notify, int? campaignId)
     {
         Recipient = recipient ?? throw new ArgumentNullException(nameof(recipient));

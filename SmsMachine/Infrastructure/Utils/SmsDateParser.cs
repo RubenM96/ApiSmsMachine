@@ -1,6 +1,4 @@
 ﻿using System.Globalization;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-
 
 namespace SmsMachine.Infrastructure.Utils
 {
@@ -26,7 +24,7 @@ namespace SmsMachine.Infrastructure.Utils
 
         // Formato Notifica: "yyyy-MM-dd HH:mm:ss +GMT:00"
         public static DateTime ParseDateNotify(string date)
-        {          
+        {
             date = date.Substring(0, 19);
 
             DateTime dateTime = DateTime.ParseExact(

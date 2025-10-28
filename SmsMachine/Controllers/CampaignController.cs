@@ -37,7 +37,7 @@ namespace SmsMachine.Controllers
 
         [HttpPost("{id}/send")]
         public async Task<IActionResult> SendCampaign(int id)
-        {         
+        {
             var campaignSend = await _campaignService.SendCampaign(id);
             return Ok(campaignSend);
         }
@@ -62,12 +62,12 @@ namespace SmsMachine.Controllers
         [HttpPut("{id}")]
         public IActionResult UpdateCampaign(int id, [FromForm] CampaignForm campaignReceiver)
         {
-         
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             try
-            {              
+            {
                 var updatedCampaign = _campaignService.UpdateCampaign(id, campaignReceiver.Title, campaignReceiver.Text, campaignReceiver.RecipientList, campaignReceiver.CampaignNotify, campaignReceiver.Description);
                 return Ok(updatedCampaign);
             }
@@ -80,13 +80,13 @@ namespace SmsMachine.Controllers
 
         //richiesta delete per eliminare una campagna {id}
         [HttpDelete("{id}")]
-        public IActionResult DeleteCampaign(int id) 
+        public IActionResult DeleteCampaign(int id)
         {
             try
             {
                 var ok = _campaignService.DeleteCampaign(id);
                 if (!ok) return NotFound($"Campagna {id} non trovata");
-                return NoContent(); // 204
+                return NoContent();
             }
             catch (Exception ex)
             {

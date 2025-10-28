@@ -31,10 +31,10 @@ public class NotifyService : INotifyService
 
         DateTime dateTime = SmsDateParser.ParseDateNotify(date);
 
-        var notify = new Notify(new Recipient(recipient), text, dateTime, indexSms, status, smsOutbound.Id);     
-        
-        _logger.LogInformation("Info Notify: num {Recipient} text: {Text}, date {Date}, index {Index}, status {Status}, smsId {smsOutbound.Id} ", recipient, text, dateTime, indexSms.ToString() , status, smsOutbound.Id);        
-       
+        var notify = new Notify(new Recipient(recipient), text, dateTime, indexSms, status, smsOutbound.Id);
+
+        _logger.LogInformation("Info Notify: num {Recipient} text: {Text}, date {Date}, index {Index}, status {Status}, smsId {smsOutbound.Id} ", recipient, text, dateTime, indexSms.ToString(), status, smsOutbound.Id);
+
         _notifyRepository.AddNotify(notify);
 
     }

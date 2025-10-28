@@ -8,8 +8,8 @@ namespace SmsMachine.Services
     {
         private readonly ISmsSender _smsSender;
         private readonly ISmsOutboundRepository _smsOutboundRepository;
-        private readonly ISmsQueueService _smsQueueService;       
-        private readonly ILogger<SmsService> _logger;      
+        private readonly ISmsQueueService _smsQueueService;
+        private readonly ILogger<SmsService> _logger;
 
         public SmsService(ISmsSender smsSender, ISmsOutboundRepository smsRepository, ILogger<SmsService> logger, ISmsQueueService smsQueueService)
         {
@@ -22,7 +22,7 @@ namespace SmsMachine.Services
         public AreaSxSendResult SendSms(string recipient, string text, bool multipart, bool notify, int? campaignId)
         {
             _logger.LogInformation("Preparing to send SMS to {Recipient} with text: {Text}, multipart: {Multipart}, notify: {Notify}", recipient, text, multipart, notify);
-            
+
             //controlli input
             if (text.Length > 160 && !multipart)
                 text = text.Substring(0, 160);
@@ -31,10 +31,10 @@ namespace SmsMachine.Services
                 text = text.Substring(0, 300);
 
             var sms = new SmsOutbound(new Recipient(recipient), text, multipart, notify, DateTime.Now);
-            
-            if(campaignId != null)
+
+            if (campaignId != null)
                 sms.CampaignId = campaignId;
-            
+
             try
             {
                 //invio sms a AreaSx
@@ -68,7 +68,7 @@ namespace SmsMachine.Services
             }
         }
 
-       
+
 
 
 

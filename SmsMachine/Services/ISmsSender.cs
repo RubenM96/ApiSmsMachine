@@ -1,5 +1,4 @@
-﻿
-using SmsMachine.Infrastructure;
+﻿using SmsMachine.Infrastructure;
 
 namespace SmsMachine.Services
 {

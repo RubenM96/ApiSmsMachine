@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SmsMachine\SmsMachine.csproj" />
+    <ProjectReference Include="..\SmsMachine\SmsMachine.Api.csproj" />
   </ItemGroup>
 
   <ItemGroup>

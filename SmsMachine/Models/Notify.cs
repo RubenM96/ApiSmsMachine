@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-namespace SmsMachine.Models
+﻿namespace SmsMachine.Models
 {
     public class Notify
     {
@@ -24,5 +22,5 @@ namespace SmsMachine.Models
         public string Status { get; }
         public int? SmsOutbounsId { get; }
 
-     }
+    }
 }
