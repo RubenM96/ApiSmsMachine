@@ -43,16 +43,35 @@ namespace SmsMachine.Controllers
         [HttpPost("{id}/[action]")]
         public async Task<IActionResult> SendCampaign(int id)
         {
-            var campaignSend = await _campaignService.SendCampaign(id);
-            return Ok(campaignSend);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            try
+            {
+                var campaignSend = await _campaignService.SendCampaign(id);
+                return Ok(campaignSend);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error sending campaign: {ex.Message}");
+                return BadRequest($"Error sending campaign: {ex.Message}");
+            }           
         }
 
-        //richiesta get per visualizzare tutte le campagne GetAll
         [HttpGet("[action]")]
         public IActionResult GetAllCampaigns()
         {
-            var getAllCampaigns = _campaignRepository.GetAllCampaigns();
-            return Ok(getAllCampaigns);
+            try 
+            { 
+                var getAllCampaigns = _campaignRepository.GetAllCampaigns();
+                return Ok(getAllCampaigns);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error retrieving campaigns: {ex.Message}");
+                return BadRequest($"Error retrieving campaigns: {ex.Message}");
+            }
         }
 
         [HttpGet("AllCampaignViews")]
@@ -62,8 +81,6 @@ namespace SmsMachine.Controllers
             return Ok(getAllCampaignsViews);
         }
 
-
-        //richiesta get per visualizzare la singola campagna {id}
         [HttpGet("{id}")]
         public IActionResult GetCampaign(int id)
         {
@@ -71,7 +88,6 @@ namespace SmsMachine.Controllers
             return Ok(getOneCampaign);
         }
 
-        //richiesta put per modificare una campagna {id}
         [HttpPut("{id}")]
         public IActionResult UpdateCampaign(int id, [FromForm] CampaignForm campaignReceiver)
         {
@@ -91,15 +107,14 @@ namespace SmsMachine.Controllers
             }
         }
 
-        //richiesta delete per eliminare una campagna {id}
         [HttpDelete("{id}")]
         public IActionResult DeleteCampaign(int id)
         {
             try
             {
-                var ok = _campaignService.DeleteCampaign(id);
+                var ok = _campaignRepository.DeleteCampaign(id);
                 if (!ok) return NotFound($"Campaign {id} not found");
-                return NoContent();
+                return Ok("Campaign delete");
             }
             catch (Exception ex)
             {

@@ -11,18 +11,18 @@ public class CampaignService
 
     public async Task<List<CampaignDetails>> GetAllCampaignsAsync()
     {
-        var result = await _http.GetFromJsonAsync<List<CampaignDetails>>("api/campaign");
+        var result = await _http.GetFromJsonAsync<List<CampaignDetails>>("api/campaign/GetAllCampaigns");
         return result ?? new List<CampaignDetails>();
     }
 
     public async Task<CampaignDetails?> GetCampaignIdAsync(int id)
     {
-        return await _http.GetFromJsonAsync<CampaignDetails>($"api/campaign/{id}/view");
+        return await _http.GetFromJsonAsync<CampaignDetails>($"api/campaign/{id}");
     }
 
     public async Task<HttpResponseMessage> SendCampaignAsync(int id)
     {
-        return await _http.PostAsync($"api/campaign/{id}/send", null);
+        return await _http.PostAsync($"api/campaign/{id}/SendCampaign", null);
     }
 
     //creazione
@@ -40,7 +40,7 @@ public class CampaignService
             formData.Add(new StringContent(campaignForm.Description), "Description");
         }
 
-        return await _http.PostAsync("api/campaign", formData);
+        return await _http.PostAsync("api/campaign/CreateCampaign", formData);
 
     }
 

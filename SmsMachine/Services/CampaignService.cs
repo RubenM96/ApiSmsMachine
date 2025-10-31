@@ -44,13 +44,11 @@ namespace SmsMachine.Services
             }
 
             campaign.Status = CampaignStatus.InProgress;
-            _campaignRepository.UpdateCampaign(campaign);  // persisto subito i cambi
+            _campaignRepository.UpdateCampaign(campaign); 
 
             //foreach (var recipient in campaign.RecipientList.Split(new[] { ',', ';', ' ', '\n' }, StringSplitOptions.RemoveEmptyEntries).Select(r => r.Trim()))
             foreach (var recipient in campaign.GetRecipientToList(campaign.RecipientList))
             {
-                campaign.Status = CampaignStatus.InProgress;
-
                 try
                 {
                     _smsService.SendSms(recipient, campaign.Text, false, campaign.CampaignNotify, campaign.Id);
@@ -69,8 +67,7 @@ namespace SmsMachine.Services
             _campaignRepository.UpdateCampaign(campaign);
             return campaign;
         }
-
-        
+       
         // Modifica Campagna
         public CampaignSms UpdateCampaign(int id, string title, string text, string recipientList, bool campaignNotify, string? description)
         {
@@ -96,26 +93,15 @@ namespace SmsMachine.Services
             return updatedCampaign;
         }
 
-        // Elimina Campagna
-        public bool DeleteCampaign(int id)
-        {
-            var exists = _campaignRepository.GetCampaignId(id);
-            if (exists is null) return false;
-
-            return _campaignRepository.DeleteCampaign(id);
-        }
-
-
+        //tentativo di invio dei messaggi in coda per una campagna specifica
         public async Task RetryQueuedForCampaignAsync(int campaignId, TimeSpan delay)
         {
             try
             {
                 do
                 {
-                    // 1) aspetta SENZA bloccare thread di request
                     await Task.Delay(delay);
 
-                    // 2) carica gli elementi in coda per quella campagna
                     var queued = _smsQueueRepository.GetSmsQueueByCampaign(campaignId);
 
                     foreach (var smsQueue in queued)
@@ -124,12 +110,11 @@ namespace SmsMachine.Services
                         {
                             _smsService.SendSms(smsQueue.Recipient.Value, smsQueue.Text, smsQueue.Multipart, smsQueue.Notify, campaignId);
 
-                            // se l’invio è riuscito (o almeno non “queue full”), rimuovi dalla coda
+                            // se l’invio è riuscito, rimuovi sms dalla coda
                             _smsQueueRepository.Delete(smsQueue.Id);
                         }
                         catch (Exception ex)
                         {
-                            //  errore: logga e lascia l’item in coda
                             _logger.LogError(ex, "Retry failed for Campaign {CampaignId}, Recipient {Recipient}",
                                 campaignId, smsQueue.Recipient.Value);
                         }

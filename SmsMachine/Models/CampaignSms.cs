@@ -60,7 +60,6 @@ namespace SmsMachine.Models
                 {
                     throw new ArgumentException($"Phone number {recipient} contains invalid characters", nameof(recipient));
                 }
-
             }
             return string.Join(",", recipientList);
         }

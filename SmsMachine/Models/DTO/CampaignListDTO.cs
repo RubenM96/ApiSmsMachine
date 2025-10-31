@@ -11,5 +11,5 @@ public class CampaignListDTO
     public DateTime CreatedAt { get; set; }
     public CampaignStatus Status { get; set; }
 
-  
+ 
 }
