@@ -8,7 +8,6 @@ namespace SmsMachine.Services
         private readonly ILogger<SmsQueueService> _logger;
         private readonly ISmsQueueRepository _smsQueueRepository;
 
-
         public SmsQueueService(ILogger<SmsQueueService> logger, ISmsQueueRepository smsQueueRepository)
         {
             _logger = logger;
@@ -22,14 +21,6 @@ namespace SmsMachine.Services
             _logger.LogInformation("Enqueued SMS for {Recipient} (campaign {CampaignId})", recipient.Value, campaignId);
         }
 
-        public List<SmsQueue> GetSmsQueueByCampaign(int campaignId)
-        {
-            return _smsQueueRepository.GetByCampaign(campaignId);
-        }
-
-        public bool DeleteSmsInQueue(int id)
-        {
-            return _smsQueueRepository.Delete(id);
-        }
+       
     }
 }

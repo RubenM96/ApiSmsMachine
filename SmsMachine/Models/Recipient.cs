@@ -1,9 +1,7 @@
 ﻿namespace SmsMachine.Models
 {
-
     public record Recipient
     {
-
         public Recipient(string value)
         {
             Value = value ?? throw new ArgumentNullException(nameof(value));

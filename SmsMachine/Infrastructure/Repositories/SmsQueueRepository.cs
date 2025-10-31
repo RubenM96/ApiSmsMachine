@@ -25,7 +25,7 @@ namespace SmsMachine.Infrastructure.Repositories
             return _context.Set<SmsQueue>().Find(id);
         }
 
-        public List<SmsQueue>? GetByCampaign(int CampaignId)
+        public List<SmsQueue>? GetSmsQueueByCampaign(int CampaignId)
         {
             return _context.Set<SmsQueue>()
                             .AsNoTracking()

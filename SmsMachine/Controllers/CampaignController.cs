@@ -85,7 +85,7 @@ namespace SmsMachine.Controllers
             try
             {
                 var ok = _campaignService.DeleteCampaign(id);
-                if (!ok) return NotFound($"Campagna {id} non trovata");
+                if (!ok) return NotFound($"Campaign {id} not found");
                 return NoContent();
             }
             catch (Exception ex)
