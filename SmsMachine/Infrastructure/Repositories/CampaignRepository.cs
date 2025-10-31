@@ -1,4 +1,5 @@
-﻿using SmsMachine.Infrastructure.Data;
+﻿using SmsMachine.Api.Models.DTO;
+using SmsMachine.Infrastructure.Data;
 using SmsMachine.Interfaces;
 using SmsMachine.Models;
 
@@ -26,6 +27,22 @@ namespace SmsMachine.Infrastructure.Repositories
             return _context.Set<CampaignSms>().ToList();
         }
 
+        public IEnumerable<CampaignListDTO> GetAllCampaignsViews()
+        {
+            return _context.Set<CampaignSms>()
+                .Select(c => new CampaignListDTO
+                {
+                    Id = c.Id,
+                    Title = c.Title,
+                    Text = c.Text,
+                    TotalRecipients = c.TotalRecipients,
+                    CreatedAt = c.CreatedAt,
+                    Status = c.Status
+                })
+                .OrderByDescending(a => a.Id)
+                .ToList();
+        }
+
         public CampaignSms? GetCampaignId(int id)
         {
             return _context.Set<CampaignSms>().Find(id);
@@ -48,5 +65,8 @@ namespace SmsMachine.Infrastructure.Repositories
             _context.SaveChanges();
             return true;
         }
+
+
+
     }
 }

@@ -1,7 +1,6 @@
-﻿using SmsMachine.Infrastructure.Repositories;
+﻿using SmsMachine.Api.Infrastructure.Utils;
 using SmsMachine.Interfaces;
 using SmsMachine.Models;
-using static SmsMachine.Models.CampaignSms;
 
 namespace SmsMachine.Services
 {
@@ -14,7 +13,7 @@ namespace SmsMachine.Services
 
         public CampaignService(ICampaignRepository campaignRepository,
             ISmsQueueRepository smsQueueRepository,
-            ISmsService msService, 
+            ISmsService msService,
             ILogger<CampaignService> logger)
         {
             _campaignRepository = campaignRepository;
@@ -43,11 +42,12 @@ namespace SmsMachine.Services
                 _logger.LogWarning("Campaign with ID {CampaignId} not found", id);
                 throw new ArgumentException($"Campaign with ID {id} not found");
             }
-            
-            campaign.Status = CampaignSms.CampaignStatus.InProgress;
+
+            campaign.Status = CampaignStatus.InProgress;
             _campaignRepository.UpdateCampaign(campaign);  // persisto subito i cambi
 
-            foreach (var recipient in campaign.RecipientList.Split(new[] { ',', ';', ' ', '\n' }, StringSplitOptions.RemoveEmptyEntries).Select(r => r.Trim()))
+            //foreach (var recipient in campaign.RecipientList.Split(new[] { ',', ';', ' ', '\n' }, StringSplitOptions.RemoveEmptyEntries).Select(r => r.Trim()))
+            foreach (var recipient in campaign.GetRecipientToList(campaign.RecipientList))
             {
                 campaign.Status = CampaignStatus.InProgress;
 
@@ -70,18 +70,7 @@ namespace SmsMachine.Services
             return campaign;
         }
 
-        // Mostra tutte le Campagne
-        public IEnumerable<CampaignSms> GetAllCampaigns()
-        {
-            return _campaignRepository.GetAllCampaigns();
-        }
-
-        // Mostra Singola Campagna
-        public CampaignSms? GetCampaignId(int id)
-        {
-            return _campaignRepository.GetCampaignId(id);
-        }
-
+        
         // Modifica Campagna
         public CampaignSms UpdateCampaign(int id, string title, string text, string recipientList, bool campaignNotify, string? description)
         {

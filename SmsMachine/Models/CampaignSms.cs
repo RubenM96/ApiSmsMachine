@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+﻿using SmsMachine.Api.Infrastructure.Utils;
 using System.Text.RegularExpressions;
 
 namespace SmsMachine.Models
@@ -39,12 +39,7 @@ namespace SmsMachine.Models
         public int DeliveredCount { get; private set; }
         public int FailedCount { get; private set; }
 
-        public enum CampaignStatus
-        {
-            Draft = 0,
-            InProgress = 1,
-            Finished = 2
-        }
+
 
         // helper per aggiornare i contatori e controllare la lista di numeri
         public List<string> GetRecipientToList(string recipientList)
@@ -57,20 +52,20 @@ namespace SmsMachine.Models
         }
 
         public string RegrexRecipient(List<string> recipientList)
-        {       
+        {
             foreach (var recipient in recipientList)
             {
                 var isValid = Regex.IsMatch(recipient, @"^\+\d+$");
-                if(!isValid)
+                if (!isValid)
                 {
                     throw new ArgumentException($"Phone number {recipient} contains invalid characters", nameof(recipient));
                 }
 
             }
-            return string.Join(",", recipientList);           
+            return string.Join(",", recipientList);
         }
 
-        public int CalculateTotalRecipients(List<string> recipientList) 
+        public int CalculateTotalRecipients(List<string> recipientList)
         {
             if (recipientList.Count < 1)
                 throw new ArgumentException("The recipient list must contain at least one valid phone number.");

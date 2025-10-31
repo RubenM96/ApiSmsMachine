@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using SmsMachine.Interfaces;
 using SmsMachine.Models;
 using SmsMachine.Services;
 
@@ -9,15 +10,19 @@ namespace SmsMachine.Controllers
     public class CampaignController : ControllerBase
     {
         private readonly ICampaignService _campaignService;
+        private readonly ICampaignRepository _campaignRepository;
         private readonly ILogger<CampaignController> _logger;
 
-        public CampaignController(ICampaignService campaignService, ILogger<CampaignController> logger)
+        public CampaignController(ICampaignService campaignService, 
+            ICampaignRepository campaignRepository, 
+            ILogger<CampaignController> logger)
         {
             _campaignService = campaignService;
+            _campaignRepository = campaignRepository;
             _logger = logger;
         }
 
-        [HttpPost]
+        [HttpPost("[action]")]
         public IActionResult CreateCampaign([FromForm] CampaignForm campaignReceiver)
         {
             if (!ModelState.IsValid)
@@ -35,7 +40,7 @@ namespace SmsMachine.Controllers
             }
         }
 
-        [HttpPost("{id}/send")]
+        [HttpPost("{id}/[action]")]
         public async Task<IActionResult> SendCampaign(int id)
         {
             var campaignSend = await _campaignService.SendCampaign(id);
@@ -43,18 +48,26 @@ namespace SmsMachine.Controllers
         }
 
         //richiesta get per visualizzare tutte le campagne GetAll
-        [HttpGet]
+        [HttpGet("[action]")]
         public IActionResult GetAllCampaigns()
         {
-            var getAllCampaigns = _campaignService.GetAllCampaigns();
+            var getAllCampaigns = _campaignRepository.GetAllCampaigns();
             return Ok(getAllCampaigns);
         }
 
+        [HttpGet("AllCampaignViews")]
+        public IActionResult GetAllCampaignsViews()
+        {
+            var getAllCampaignsViews = _campaignRepository.GetAllCampaignsViews();
+            return Ok(getAllCampaignsViews);
+        }
+
+
         //richiesta get per visualizzare la singola campagna {id}
-        [HttpGet("{id}/view")]
+        [HttpGet("{id}")]
         public IActionResult GetCampaign(int id)
         {
-            var getOneCampaign = _campaignService.GetCampaignId(id);
+            var getOneCampaign = _campaignRepository.GetCampaignId(id);
             return Ok(getOneCampaign);
         }
 
