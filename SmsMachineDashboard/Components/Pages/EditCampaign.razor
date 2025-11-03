@@ -62,10 +62,11 @@
         }
     }
 
-    private async Task Save()
+    private async Task<HttpResponseMessage> Save()
     {
-        await campaignService.UpdateCampaignAsync(id, form);
+        var response = await campaignService.UpdateCampaignAsync(id, form);
         Nav.NavigateTo("/campaignslist", forceLoad: true);
+        return response;
     }
 
     private void Back() => Nav.NavigateTo("/campaignslist");

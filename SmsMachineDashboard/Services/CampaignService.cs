@@ -46,7 +46,10 @@ public class CampaignService
 
     //modifica
     public Task<HttpResponseMessage> UpdateCampaignAsync(int id, CampaignForm campaignForm)
-         => _http.PutAsync($"api/campaign/{id}", BuildForm(campaignForm));
+    {
+        var response = _http.PutAsync($"api/campaign/{id}", BuildForm(campaignForm));       
+        return response;
+    }
 
     private static MultipartFormDataContent BuildForm(CampaignForm campaignForm)
     {
