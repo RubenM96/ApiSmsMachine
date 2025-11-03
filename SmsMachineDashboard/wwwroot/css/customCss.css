@@ -1,3 +1,23 @@
 ﻿.custom-btn {
 
 }
+/* card compatta, con clamping su titolo e testi lunghi */
+.campaign-card .card-title {
+    max-width: 18rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* clamp multi-riga */
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* numero di righe */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* spaziatura e piccoli tocchi */
+.campaign-card .badge {
+    font-weight: 600;
+}

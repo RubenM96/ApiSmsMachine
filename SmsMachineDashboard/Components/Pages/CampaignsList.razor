@@ -1,73 +1,113 @@
 ﻿@page "/campaignslist"
 @using SmsMachine.Dashboard.Models
+@using SmsMachine.Dashboard.Components.Shared
 @inject CampaignService campaignService
-@rendermode InteractiveServer
 @inject IJSRuntime JS
+@inject NavigationManager Nav
+@rendermode InteractiveServer
 
+<h1 class="mb-3">Campagne</h1>
 
-<h1>Campagne esistenti</h1>
-@if(isLoading)
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger">@errorMessage</div>
+}
+
+@if (isLoading)
 {
     <p>Sto recuperando le campagne...</p>
 }
+else if (campagne is null || campagne.Count == 0)
+{
+    <div class="alert alert-info">Nessuna campagna presente.</div>
+}
 else
-{    
-    @if (campagne == null)
-    {
-        <p>Campagne non trovate</p>
-    }
-    else
-    {
-        <ul>
-            @foreach (var c in campagne)
-            {
-                <NavLink class="nav-link" href="@($"/campaign/{c.Id}")"><h3>@c.Title</h3></NavLink>
-                <li><b>Messaggio: </b>@c.Text</li>
-                <li>
-                    <b>Numeri:</b>
-                    <div style="width: 50%; max-height:100px; overflow:auto; white-space: pre-wrap; word-wrap: break-word; padding:5px; border-radius:5px;">
-                        @c.RecipientList
-                    </div>
-                </li>
-                <li><b>Data di creazione: </b>@c.CreatedAt</li>
-                <li><b>Descrizione Campagna: </b>@c.Description</li>
-                <li><b>Stato: </b>@c.Status</li>
-                <li>
-                    <a class="btn btn-sm btn-outline-primary custom-btn" href="@($"/campaign/{c.Id}/edit")">
-                        Modifica
-                    </a>
-                    <button class="btn btn-sm btn-warning ms-2" @onclick="() => SendCampaign(c.Id)">Invia</button>
-                    <button class="btn btn-sm btn-danger ms-2" @onclick="() => Delete(c.Id)">Elimina</button>
-                </li>
-                <br/>
-            }
-        </ul>
-    }
+{
+    <FiltersBar Filters="filters" OnChange="ApplyFilters" />
+
+    <CampaignsTable Items="Paged"
+                    TotalCount="FilteredCount"
+                    PageState="page"
+                    OnEdit="HandleEdit"
+                    OnSend="HandleSend"
+                    OnDelete="HandleDelete" />
+
+    <Pager State="page"
+           TotalCount="FilteredCount"
+           OnPageChanged="HandlePageChanged"
+           OnPageSizeChanged="HandlePageSizeChanged" />
 }
 
 @code {
-    List<CampaignDetails>? campagne;
-    public bool isLoading = true;
-    string? message;
+    private List<CampaignDetails>? campagne;
+    private bool isLoading = true;
+
+    private PageState page = new(); // stato di paginazione
+    private CampaignFilters filters = new(); // stato filtri
+    string? errorMessage;
+
+    //  collezione filtrata
+    private IEnumerable<CampaignDetails> Filtered => (campagne ?? new())
+        .Where(c =>
+            string.IsNullOrWhiteSpace(filters.Title)
+            || (c.Title?.Contains(filters.Title, StringComparison.OrdinalIgnoreCase) ?? false)
+        );
+
+    private int FilteredCount => Filtered.Count();
+
+    //  paginazione applicata sulla collezione filtrata
+    private IEnumerable<CampaignDetails> Paged => Filtered
+        .Skip((page.CurrentPage - 1) * page.PageSize)
+        .Take(page.PageSize);
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
+        if (!firstRender) return; 
+
+        try
         {
+            isLoading = true;
+            StateHasChanged(); 
+
             campagne = await campaignService.GetAllCampaignsAsync();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Errore nel caricamento : {ex.Message}";
+        }
+        finally
+        {
             isLoading = false;
+            StateHasChanged(); 
+        }
+    }
+
+    // --- Eventi/azioni ---
+
+    private Task HandleEdit(int id)
+    {
+        Nav.NavigateTo($"/campaigns/{id}/edit");
+        return Task.CompletedTask;
+    }
+
+    private async Task HandleSend(int id)
+    {
+        var resp = await campaignService.SendCampaignAsync(id);
+        if (resp.IsSuccessStatusCode)
+        {
+            // ricarico per aggiornare lo stato righe
+            campagne = await campaignService.GetAllCampaignsAsync();
             StateHasChanged();
-        }       
+        }
+        else
+        {
+            var msg = await resp.Content.ReadAsStringAsync();
+            await JS.InvokeVoidAsync("alert", $"Invio fallito: {msg}");
+        }
     }
 
-    protected async Task SendCampaign(int id)
+    private async Task HandleDelete(int id)
     {
-        await campaignService.SendCampaignAsync(id);
-    }
-
-    private async Task Delete(int id)
-    {
-        // conferma di eliminazione
         var ok = await JS.InvokeAsync<bool>("confirm", $"Eliminare definitivamente la campagna {id}?");
         if (!ok) return;
 
@@ -75,7 +115,11 @@ else
         if (resp.IsSuccessStatusCode)
         {
             campagne?.RemoveAll(x => x.Id == id);
-            message = "Campagna SMS eliminata con successo.";
+
+            // se la pagina è vuota dopo la delete, torna indietro
+            if (campagne != null && (page.CurrentPage - 1) * page.PageSize >= campagne.Count && page.CurrentPage > 1)
+                page.CurrentPage--;
+
             StateHasChanged();
         }
         else
@@ -83,5 +127,22 @@ else
             var msg = await resp.Content.ReadAsStringAsync();
             await JS.InvokeVoidAsync("alert", $"Errore eliminazione : {msg}");
         }
+    }
+
+    private void HandlePageChanged(int newPage)
+    {
+        page.CurrentPage = newPage;
+    }
+
+    private void HandlePageSizeChanged(int newSize)
+    {
+        page.PageSize = newSize;
+        page.CurrentPage = 1;
+    }
+    private Task ApplyFilters() // quando cambia il filtro, torna alla pagina 1
+    {
+        page.CurrentPage = 1;
+        StateHasChanged();
+        return Task.CompletedTask;
     }
 }

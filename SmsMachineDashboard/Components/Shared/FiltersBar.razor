@@ -1,0 +1,41 @@
+﻿@using SmsMachine.Dashboard.Models
+@* Barra filtri minimale: notifica SOLO quando l’utente digita *@
+<div class="d-flex flex-wrap align-items-end gap-2 mb-3">
+    <div class="me-2">
+        <label class="form-label small mb-1" for="flt-title">Titolo</label>
+        <input id="flt-title"
+               class="form-control form-control-sm"
+               placeholder="Cerca per titolo..."
+               value="@_title"
+               @oninput="OnTitleChanged" />
+    </div>
+
+    <button class="btn btn-sm btn-outline-secondary" @onclick="Clear">Pulisci</button>
+</div>
+
+@code {
+    [Parameter] public CampaignFilters Filters { get; set; } = new();
+    [Parameter] public EventCallback OnChange { get; set; }
+
+    private string? _title;
+
+    protected override void OnParametersSet()
+    {
+        // Mantieni il campo allineato quando il parent cambia Filters
+        _title = Filters.Title;
+    }
+
+    private async Task OnTitleChanged(ChangeEventArgs e)
+    {
+        _title = e.Value?.ToString();
+        Filters.Title = _title;
+        await OnChange.InvokeAsync();   // <-- Notifica SOLO quando l’utente digita
+    }
+
+    private async Task Clear()
+    {
+        _title = string.Empty;
+        Filters.Title = string.Empty;
+        await OnChange.InvokeAsync();
+    }
+}
