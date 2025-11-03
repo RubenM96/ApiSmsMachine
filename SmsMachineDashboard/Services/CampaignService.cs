@@ -47,7 +47,6 @@ public class CampaignService
         }
 
         return await _http.PostAsync("api/campaign/CreateCampaign", formData);
-
     }
 
     //modifica

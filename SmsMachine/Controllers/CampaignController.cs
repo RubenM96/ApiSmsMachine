@@ -75,9 +75,9 @@ namespace SmsMachine.Controllers
         }
 
         [HttpGet("AllCampaignViews")]
-        public IActionResult GetAllCampaignsViews()
+        public async Task< IActionResult> GetAllCampaignsViews()
         {
-            var getAllCampaignsViews = _campaignRepository.GetAllCampaignsViews();
+            var  getAllCampaignsViews = await _campaignRepository.GetAllCampaignsViews();
             return Ok(getAllCampaignsViews);
         }
 

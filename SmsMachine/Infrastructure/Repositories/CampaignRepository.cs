@@ -1,4 +1,5 @@
-﻿using SmsMachine.Api.Models.DTO;
+﻿using Microsoft.EntityFrameworkCore;
+using SmsMachine.Api.Models.DTO;
 using SmsMachine.Infrastructure.Data;
 using SmsMachine.Interfaces;
 using SmsMachine.Models;
@@ -27,9 +28,9 @@ namespace SmsMachine.Infrastructure.Repositories
             return _context.Set<CampaignSms>().ToList();
         }
 
-        public IEnumerable<CampaignListDTO> GetAllCampaignsViews()
+        public async Task<IEnumerable<CampaignListDTO>> GetAllCampaignsViews()
         {
-            return _context.Set<CampaignSms>()
+            return await _context.Set<CampaignSms>()
                 .Select(c => new CampaignListDTO
                 {
                     Id = c.Id,
@@ -40,7 +41,7 @@ namespace SmsMachine.Infrastructure.Repositories
                     Status = c.Status
                 })
                 .OrderByDescending(a => a.Id)
-                .ToList();
+                .ToListAsync();
         }
 
         public CampaignSms? GetCampaignId(int id)
