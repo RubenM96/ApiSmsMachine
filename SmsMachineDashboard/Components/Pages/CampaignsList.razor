@@ -69,7 +69,7 @@ else
             isLoading = true;
             StateHasChanged(); 
 
-            campagne = await campaignService.GetAllCampaignsAsync();
+            campagne = await campaignService.GetAllCampaignsAsynViews();
         }
         catch (Exception ex)
         {
