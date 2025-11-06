@@ -1,6 +1,7 @@
 ﻿@page "/campaignslist"
 @using SmsMachine.Dashboard.Models
 @using SmsMachine.Dashboard.Components.Shared
+@using Microsoft.AspNetCore.Components.Forms
 @inject CampaignService campaignService
 @inject IJSRuntime JS
 @inject NavigationManager Nav
@@ -12,73 +13,100 @@
 {
     <div class="alert alert-danger">@errorMessage</div>
 }
+<div class="card mb-3">
+    <div class="card-body">
+        <div class="row g-2">
+            <div class="col-sm-4">
+                <label class="form-label">Titolo</label>
+                <input class="form-control" @bind="query.Title" @bind:event="oninput" />
+            </div>
+
+            <div class="col-sm-3">
+                <label class="form-label">Da</label>
+                <InputDate TValue="DateTime?" class="form-control" @bind-Value="query.From" />
+            </div>
+
+            <div class="col-sm-3">
+                <label class="form-label">A</label>
+                <InputDate TValue="DateTime?" class="form-control" @bind-Value="query.To" />
+            </div>
+
+            <div class="col-sm-2 d-flex align-items-end">
+                <button class="btn btn-primary w-100" @onclick="ApplyFilters">Filtra</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 @if (isLoading)
 {
     <p>Sto recuperando le campagne...</p>
 }
-else if (campagne is null || campagne.Count == 0)
+else if (data.Total == 0)
 {
     <div class="alert alert-info">Nessuna campagna presente.</div>
 }
 else
 {
-    <FiltersBar Filters="filters" OnChange="ApplyFilters" />
-
-    <CampaignsTable Items="Paged"
-                    TotalCount="FilteredCount"
-                    PageState="page"
+    <CampaignsTable Items="data.Items"
+                    TotalCount="data.Total"
+                    CurrentPage="query.Page"
+                    PageSize="query.PageSize"
                     OnEdit="HandleEdit"
                     OnSend="HandleSend"
                     OnDelete="HandleDelete" />
 
-    <Pager State="page"
-           TotalCount="FilteredCount"
-           OnPageChanged="HandlePageChanged"
-           OnPageSizeChanged="HandlePageSizeChanged" />
+    <div class="mt-2">
+        <Pager CurrentPage="query.Page"
+               PageSize="query.PageSize"
+               TotalCount="data.Total"
+               OnPageChanged="HandlePageChanged"
+               OnPageSizeChanged="HandlePageSizeChanged" />
+    </div>
 }
 
 @code {
-    private List<CampaignDetails>? campagne;
+    private CampaignSearchQuery query = new() { Page = 1, PageSize = 10 };
+    private PagedResult<CampaignListDTO> data = new();
     private bool isLoading = true;
-
-    private PageState page = new(); // stato di paginazione
-    private CampaignFilters filters = new(); // stato filtri
     string? errorMessage;
 
-    //  collezione filtrata
-    private IEnumerable<CampaignDetails> Filtered => (campagne ?? new())
-        .Where(c =>
-            string.IsNullOrWhiteSpace(filters.Title)
-            || (c.Title?.Contains(filters.Title, StringComparison.OrdinalIgnoreCase) ?? false)
-        );
+    private string? fromStr
+    {
+        get => query.From?.ToString("yyyy-MM-dd");
+        set => query.From = string.IsNullOrWhiteSpace(value) ? null : DateTime.Parse(value);
+    }
+   
+    private string? toStr
+    {
+        get => query.To?.ToString("yyyy-MM-dd");
+        set => query.To = string.IsNullOrWhiteSpace(value) ? null : DateTime.Parse(value);
+    }
 
-    private int FilteredCount => Filtered.Count();
-
-    //  paginazione applicata sulla collezione filtrata
-    private IEnumerable<CampaignDetails> Paged => Filtered
-        .Skip((page.CurrentPage - 1) * page.PageSize)
-        .Take(page.PageSize);
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!firstRender) return; 
-
+        if (!firstRender) return;
+        await ReloadAsync();
+    }
+    private async Task ReloadAsync()
+    {
         try
         {
             isLoading = true;
-            StateHasChanged(); 
+            StateHasChanged();
 
-            campagne = await campaignService.GetAllCampaignsAsync();
+            // CHANGED: chiama il backend con query server-side (title, from, to, page, size)
+            data = await campaignService.SearchAsync(query);
         }
         catch (Exception ex)
         {
-            errorMessage = $"Errore nel caricamento : {ex.Message}";
+            errorMessage = $"Errore nel caricamento: {ex.Message}";
         }
         finally
         {
             isLoading = false;
-            StateHasChanged(); 
+            StateHasChanged();
         }
     }
 
@@ -93,56 +121,45 @@ else
     private async Task HandleSend(int id)
     {
         var resp = await campaignService.SendCampaignAsync(id);
-        if (resp.IsSuccessStatusCode)
-        {
-            // ricarico per aggiornare lo stato righe
-            campagne = await campaignService.GetAllCampaignsAsync();
-            StateHasChanged();
-        }
-        else
+        if (!resp.IsSuccessStatusCode)
         {
             var msg = await resp.Content.ReadAsStringAsync();
             await JS.InvokeVoidAsync("alert", $"Invio fallito: {msg}");
         }
-    }
-
+        await ReloadAsync(); // refresh per aggiornare stato riga
+        }
     private async Task HandleDelete(int id)
     {
         var ok = await JS.InvokeAsync<bool>("confirm", $"Eliminare definitivamente la campagna {id}?");
         if (!ok) return;
 
         var resp = await campaignService.DeleteCampaignAsync(id);
-        if (resp.IsSuccessStatusCode)
-        {
-            campagne?.RemoveAll(x => x.Id == id);
-
-            // se la pagina è vuota dopo la delete, torna indietro
-            if (campagne != null && (page.CurrentPage - 1) * page.PageSize >= campagne.Count && page.CurrentPage > 1)
-                page.CurrentPage--;
-
-            StateHasChanged();
-        }
-        else
+        if (!resp.IsSuccessStatusCode)
         {
             var msg = await resp.Content.ReadAsStringAsync();
             await JS.InvokeVoidAsync("alert", $"Errore eliminazione : {msg}");
         }
+        await ReloadAsync(); // refresh pagina corrente (server-side)
+    }
+    private async Task ApplyFilters()
+    {
+        query.Page = 1; // reset alla prima pagina quando cambi filtri
+        await ReloadAsync();
     }
 
-    private void HandlePageChanged(int newPage)
+    private async Task HandlePageChanged(int newPage)
     {
-        page.CurrentPage = newPage;
+        query.Page = newPage;
+        await ReloadAsync();
     }
 
-    private void HandlePageSizeChanged(int newSize)
+    private async Task HandlePageSizeChanged(int newSize)
     {
-        page.PageSize = newSize;
-        page.CurrentPage = 1;
+        query.PageSize = newSize;
+        query.Page = 1;
+        await ReloadAsync();
     }
-    private Task ApplyFilters() // quando cambia il filtro, torna alla pagina 1
-    {
-        page.CurrentPage = 1;
-        StateHasChanged();
-        return Task.CompletedTask;
+
     }
-}
+
+   

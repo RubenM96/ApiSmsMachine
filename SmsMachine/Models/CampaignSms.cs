@@ -58,7 +58,7 @@ namespace SmsMachine.Models
                 var isValid = Regex.IsMatch(recipient, @"^\+\d+$");
                 if (!isValid)
                 {
-                    throw new ArgumentException($"Phone number {recipient} contains invalid characters", nameof(recipient));
+                    throw new ArgumentException($"Il numero '{recipient}' non è valido. Usa il formato +[prefisso][numero] e solo cifre.");
                 }
             }
             return string.Join(",", recipientList);
@@ -67,7 +67,7 @@ namespace SmsMachine.Models
         public int CalculateTotalRecipients(List<string> recipientList)
         {
             if (recipientList.Count < 1)
-                throw new ArgumentException("The recipient list must contain at least one valid phone number.");
+                throw new ArgumentException("La lista di destinatari deve contenere almeno un numero di telefono valido.");
 
             return recipientList.Count();
         }

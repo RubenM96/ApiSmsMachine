@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using SmsMachine.Api.Models;
+using SmsMachine.Api.Models.DTO;
 using SmsMachine.Interfaces;
 using SmsMachine.Models;
 using SmsMachine.Services;
@@ -33,10 +35,17 @@ namespace SmsMachine.Controllers
                 var createdCampaign = _campaignService.CreateCampaign(campaignReceiver.Title, campaignReceiver.Text, campaignReceiver.RecipientList, campaignReceiver.CampaignNotify, campaignReceiver.Description);
                 return Ok(createdCampaign);
             }
+            catch (ArgumentException ex) when (ex.ParamName is "recipient" or "recipientList")
+            {
+                ModelState.AddModelError("RecipientList", ex.Message);
+                _logger.LogWarning(ex, "Error validation recipientList");
+                return ValidationProblem(ModelState);
+
+            }
             catch (Exception ex)
             {
                 _logger.LogError($"Error creating campaign: {ex.Message}");
-                return BadRequest($"Error creating campaign: {ex.Message}");
+                return BadRequest($"Errore nella creazione della campagna: {ex.Message}");
             }
         }
 
@@ -121,6 +130,13 @@ namespace SmsMachine.Controllers
                 _logger.LogError(ex, "Error deleting campaign {Id}", id);
                 return BadRequest($"Error deleting campaign: {ex.Message}");
             }
+        }
+
+        [HttpGet("search")]
+        public async Task<ActionResult<PagedResult<CampaignListDTO>>> Search([FromQuery] CampaignFilter filter)
+        {
+            var result = await _campaignService.SearchAsync(filter);
+            return Ok(result);
         }
     }
 }

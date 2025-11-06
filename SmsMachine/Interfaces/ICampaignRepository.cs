@@ -1,4 +1,5 @@
-﻿using SmsMachine.Api.Models.DTO;
+﻿using SmsMachine.Api.Models;
+using SmsMachine.Api.Models.DTO;
 using SmsMachine.Models;
 
 namespace SmsMachine.Interfaces
@@ -11,6 +12,6 @@ namespace SmsMachine.Interfaces
         CampaignSms? GetCampaignId(int id);
         CampaignSms UpdateCampaign(CampaignSms campaign);
         bool DeleteCampaign(int id);
-
+        Task<PagedResult<CampaignListDTO>> SearchAsync(CampaignFilter filter);
     }
 }

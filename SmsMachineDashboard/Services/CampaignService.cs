@@ -1,4 +1,6 @@
 ﻿using SmsMachine.Dashboard.Models;
+using System.Web;
+using System.Net.Http.Json;
 
 public class CampaignService
 {
@@ -68,4 +70,25 @@ public class CampaignService
     //elimina 
     public Task<HttpResponseMessage> DeleteCampaignAsync(int id)
     => _http.DeleteAsync($"api/campaign/{id}");
+
+    public async Task<PagedResult<CampaignListDTO>> SearchAsync(CampaignSearchQuery q)
+    {
+        //querystring
+        var qs = HttpUtility.ParseQueryString(string.Empty);
+        if (!string.IsNullOrWhiteSpace(q.Title)) qs["title"] = q.Title;
+        if (q.From.HasValue) qs["from"] = q.From.Value.ToString("yyyy-MM-dd");
+        if (q.To.HasValue) qs["to"] = q.To.Value.ToString("yyyy-MM-dd");
+        qs["page"] = (q.Page <= 0 ? 1 : q.Page).ToString();
+        qs["pageSize"] = (q.PageSize <= 0 ? 10 : q.PageSize).ToString();
+
+        var url = $"api/campaign/search?{qs}";
+        var res = await _http.GetFromJsonAsync<PagedResult<CampaignListDTO>>(url);
+        return res ?? new PagedResult<CampaignListDTO>
+        {
+            Items = Array.Empty<CampaignListDTO>(),
+            Total = 0,
+            Page = q.Page <= 0 ? 1 : q.Page,
+            PageSize = q.PageSize <= 0 ? 10 : q.PageSize
+        };
+    }
 }

@@ -4,69 +4,247 @@
 @inject NavigationManager Nav
 @rendermode InteractiveServer
 
-<h3>Modifica Campagna SMS</h3>
+<h1 class="mb-3">Modifica Campagna SMS</h1>
 
-<EditForm Model="@form" OnValidSubmit="@Save" FormName="CampaignEditForm">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
-
-    <div class="form-group m-3">
-        <label>Nome Campagna:</label>
-        <InputText id="title" @bind-Value="form.Title" />
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @errorMessage
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
+}
 
-    <div class="form-group m-3">
-        <label>Testo:</label>
-        <InputText id="text" @bind-Value="form.Text" />
+@if (!string.IsNullOrEmpty(successMessage))
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @successMessage
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
+}
 
-    <div class="form-group m-3">
-        <label>Numeri di Telefono:</label>
-        <InputTextArea id="numbers" @bind-Value="form.RecipientList" class="form-control" style="width:50%; height:150px; resize: vertical; overflow:auto;" />
-    </div>
+@if (isLoading)
+{
+    <div class="text-muted">Sto caricando la campagna…</div>
+}
+else if (notFound)
+{
+    <div class="alert alert-warning">Campagna non trovata.</div>
+}
+else
+{
+    <EditForm Model="@campaignForm" OnValidSubmit="@SubmitAsync">
+        <DataAnnotationsValidator />
+        <ValidationSummary class="mb-3" />
 
-    <div class="form-group m-3">
-        <label>Notifica:</label>
-        <InputCheckbox id="notify" @bind-Value="form.CampaignNotify" />
-    </div>
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="row g-3">
+                    <!-- Titolo -->
+                    <div class="col-md-6">
+                        <label for="title" class="form-label">Nome campagna</label>
+                        <InputText id="title" class="form-control" placeholder="Es. Campagna rinnovo abbonamento"
+                                   @bind-Value="campaignForm.Title" />
+                        <ValidationMessage For="() => campaignForm.Title" />
+                    </div>
 
-    <div class="form-group m-3">
-        <label>Descrizione:</label>
-        <InputText id="description" @bind-Value="form.Description" />
-    </div>
+                    <!-- Switch Notifica -->
+                    <div class="col-md-3 d-flex align-items-end">
+                        <div class="form-check form-switch">
+                            <InputCheckbox id="notify" class="form-check-input"
+                                           @bind-Value="campaignForm.CampaignNotify" />
+                            <label class="form-check-label ms-2" for="notify">Invia notifica consegna</label>
+                        </div>
+                    </div>
 
-    <div class="form-group">
-        <button type="submit" class="btn btn-primary">Salva</button>
-        <button type="button" class="btn btn-secondary ms-2" @onclick="Back">Annulla</button>
-    </div>
-</EditForm>
+                    <!-- Descrizione -->
+                    <div class="col-12">
+                        <label for="description" class="form-label">Descrizione (opzionale)</label>
+                        <InputText id="description" class="form-control" placeholder="Breve descrizione per riconoscere la campagna"
+                                   @bind-Value="campaignForm.Description" />
+                        <ValidationMessage For="() => campaignForm.Description" />
+                    </div>
+
+                    <!-- Testo SMS con counter -->
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <label for="text" class="form-label mb-0">Testo SMS</label>
+                            <small class="text-muted">
+                                <span class="badge bg-light text-dark">
+                                    @TextLength / 300
+                                </span>
+                                @if (TextLength > 160)
+                                {
+                                    <span class="ms-2 badge text-bg-warning">oltre 160 char</span>
+                                }
+                            </small>
+                        </div>
+                        <InputTextArea id="text"
+                                       class="form-control"
+                                       rows="4"
+                                       placeholder="Scrivi il messaggio da inviare…"
+                                       @bind-Value="campaignForm.Text"
+                                       @oninput="OnTextChanged" />
+                        <div class="form-text">
+                            Oltre 160 caratteri il testo può essere spezzato in più SMS. (max 300 caratteri)
+                        </div>
+                        <ValidationMessage For="() => campaignForm.Text" />
+                    </div>
+
+                    <!-- Destinatari -->
+                    <div class="col-12">
+                        <label for="numbers" class="form-label">Destinatari</label>
+                        <InputTextArea id="numbers"
+                                       class="form-control"
+                                       rows="6"
+                                       placeholder="Inserisci i numeri separati da virgola, punto e virgola o a capo"
+                                       style="resize: vertical;"
+                                       @bind-Value="campaignForm.RecipientList" />
+                        @if (!string.IsNullOrEmpty(serverRecipientError))
+                        {
+                            <div class="text-danger small mt-1">@serverRecipientError</div>
+                        }
+                        <div class="form-text">
+                            Esempio: +393471234567, +393397654321; +393401112233
+                        </div>
+                        <ValidationMessage For="() => campaignForm.RecipientList" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer d-flex justify-content-end gap-2">
+                <button type="button" class="btn btn-outline-secondary" @onclick="Back">
+                    <i class="bi bi-arrow-left me-1"></i> Annulla
+                </button>
+                <button type="submit" class="btn btn-primary" disabled="@isSubmitting">
+                    @if (isSubmitting)
+                    {
+                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    }
+                    <i class="bi bi-save me-1"></i> Salva
+                </button>
+            </div>
+        </div>
+    </EditForm>
+}
 
 @code {
-    [Parameter] public int id { get; set; }
+    [Parameter] public int Id { get; set; }
 
-    CampaignForm form = new();
+    CampaignForm campaignForm = new();
+    bool isLoading = true;
+    bool notFound = false;
+    bool isSubmitting = false;
 
-    protected override async Task OnInitializedAsync()
+    string? errorMessage;          // alert rosso in alto
+    string? successMessage;        // alert verde in alto
+    string? serverRecipientError;  // messaggio specifico sotto "Destinatari"
+
+    int TextLength => campaignForm.Text?.Length ?? 0;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        var dto = await campaignService.GetCampaignIdAsync(id);
-        if (dto != null)
+        if (!firstRender) return;
+
+        try
         {
-            form = new CampaignForm
+            isLoading = true;
+            StateHasChanged();
+
+            var dto = await campaignService.GetCampaignIdAsync(Id);
+            if (dto is null)
             {
-                Title = dto.Title,
-                Text = dto.Text,
-                RecipientList = dto.RecipientList,
+                notFound = true;
+                return;
+            }
+
+            // Mappo il DTO nella form
+            campaignForm = new CampaignForm
+            {
+                Title = dto.Title ?? string.Empty,
+                Text = dto.Text ?? string.Empty,
+                RecipientList = dto.RecipientList ?? string.Empty,
                 CampaignNotify = dto.CampaignNotify,
                 Description = dto.Description
             };
         }
+        catch (Exception ex)
+        {
+            errorMessage = $"Errore nel caricamento: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
     }
 
-    private async Task<HttpResponseMessage> Save()
+    private async Task SubmitAsync()
     {
-        var response = await campaignService.UpdateCampaignAsync(id, form);
-        Nav.NavigateTo("/campaignslist", forceLoad: true);
-        return response;
+        if (isSubmitting) return;
+        isSubmitting = true;
+
+        // reset messaggi
+        errorMessage = null;
+        successMessage = null;
+        serverRecipientError = null;
+
+        try
+        {
+            var resp = await campaignService.UpdateCampaignAsync(Id, campaignForm);
+
+            if (resp.IsSuccessStatusCode)
+            {
+                successMessage = "Campagna aggiornata con successo.";
+            }
+            else if ((int)resp.StatusCode == 400)
+            {
+                // ValidationProblemDetails dal server
+                try
+                {
+                    var vpd = await resp.Content.ReadFromJsonAsync<Microsoft.AspNetCore.Mvc.ValidationProblemDetails>();
+                    if (vpd?.Errors != null && vpd.Errors.Count > 0)
+                    {
+                        var all = vpd.Errors.SelectMany(kvp => kvp.Value).ToArray();
+                        errorMessage = string.Join(" ", all);
+
+                        if (vpd.Errors.TryGetValue(nameof(campaignForm.RecipientList), out var recErrs))
+                            serverRecipientError = string.Join(" ", recErrs);
+                        else
+                            serverRecipientError ??= errorMessage; // fallback sotto il campo
+                    }
+                    else
+                    {
+                        var body = await resp.Content.ReadAsStringAsync();
+                        errorMessage = string.IsNullOrWhiteSpace(body) ? "Richiesta non valida." : body;
+                        serverRecipientError ??= errorMessage;
+                    }
+                }
+                catch
+                {
+                    var body = await resp.Content.ReadAsStringAsync();
+                    errorMessage = string.IsNullOrWhiteSpace(body) ? "Richiesta non valida." : body;
+                    serverRecipientError ??= errorMessage;
+                }
+            }
+            else
+            {
+                var body = await resp.Content.ReadAsStringAsync();
+                errorMessage = string.IsNullOrWhiteSpace(body)
+                    ? $"Errore server ({(int)resp.StatusCode})."
+                    : body;
+            }
+        }
+        finally
+        {
+            isSubmitting = false;
+            StateHasChanged();
+        }
+    }
+
+    void OnTextChanged(ChangeEventArgs e)
+    {
+        campaignForm.Text = e.Value?.ToString() ?? string.Empty;
+        StateHasChanged(); // aggiorna subito il badge del counter
     }
 
     private void Back() => Nav.NavigateTo("/campaignslist");

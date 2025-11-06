@@ -7,40 +7,68 @@
 </div>
 
 <div class="table-responsive">
-    <table class="table table-sm align-middle table-hover">
+    <table class="table table-sm table-hover align-middle">
         <thead class="table-light">
             <tr>
-                <th style="width: 56px;">#</th>
-                <th>Titolo</th>
-                <th>Creato</th>
-                <th>Stato</th>
-                <th style="width: 280px;">Azioni</th>
+                <th class="text-start">Titolo</th>
+                <th class="text-center" style="width:140px;">Destinatari</th>
+                <th class="text-center" style="width:140px;">Stato</th>
+                <th class="text-nowrap" style="width:180px;">Creato</th>
+                <th class="text-center" style="width:320px;">Azioni</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var c in Items)
             {
                 <tr>
-                    <td>@c.Id</td>
+                    <!-- Titolo -->
                     <td class="text-truncate" style="max-width: 420px;" title="@c.Title">@c.Title</td>
-                    <td>@c.CreatedAt</td>
-                    <td><span class="badge @StatusClass(c.Status)">@c.Status.ToString()</span></td>
-                    <td>
-                        <a class="btn btn-sm btn-outline-secondary me-2"
-                           href="@($"/campaign/{c.Id}")"
-                           title="Dettagli" aria-label="Dettagli">
-                            <i class="bi bi-search"></i>
-                        </a>
 
-                        <a class="btn btn-sm btn-outline-primary me-2" href="@($"/campaign/{c.Id}/edit")">Modifica</a>
+                    <!-- Totale destinatari (centrato) -->
+                    <td class="text-center">@c.TotalRecipients</td>
 
-                        <button class="btn btn-sm btn-danger me-2" @onclick="() => OnDelete.InvokeAsync(c.Id)">Elimina</button>
+                    <!-- Stato come badge (centrato) -->
+                    <td class="text-center">
+                        <span class="badge @StatusClass(c.Status)"style="color:black">@c.Status.ToString()</span>
+                    </td>
 
-                        @if (c.Status != CampaignDetails.CampaignStatus.Finished)
-                        {
-                            <button class="btn btn-sm btn-warning" @onclick="() => OnSend.InvokeAsync(c.Id)">Invia</button>
-                        }
+                    <!-- Creato (formattato) -->
+                    <td class="text-nowrap">@c.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
 
+                    <!-- Azioni (allineate a destra) -->
+                    <td class="text-center">
+                        <div class="d-inline-flex justify-content-center align-items-center gap-2">
+                            <a class="btn btn-sm btn-outline-secondary"
+                               href="@($"/campaign/{c.Id}")"
+                               title="Dettagli" aria-label="Dettagli">
+                                <i class="bi bi-search"></i>
+                                <span class="visually-hidden">Dettagli</span>
+                            </a>
+
+                            <a class="btn btn-sm btn-outline-primary"
+                               href="@($"/campaign/{c.Id}/edit")"
+                               title="Modifica" aria-label="Modifica">
+                                <i class="bi bi-pencil"></i>
+                                <span class="visually-hidden">Modifica</span>
+                            </a>
+
+                            <button class="btn btn-sm btn-outline-danger"
+                                    title="Elimina" aria-label="Elimina"
+                                    @onclick="() => OnDelete.InvokeAsync(c.Id)">
+                                <i class="bi bi-trash"></i>
+                                <span class="visually-hidden">Elimina</span>
+                            </button>
+
+                            @if (c.Status != CampaignListDTO.CampaignStatus.Finished)
+                            {
+                                <button class="btn btn-sm btn-warning"
+                                        title="Invia" aria-label="Invia"
+                                        @onclick="() => OnSend.InvokeAsync(c.Id)">
+                                    <i class="bi bi-send"></i>
+                                    <span class="visually-hidden">Invia</span>
+                                </button>
+                            }
+                        </div>
                     </td>
                 </tr>
             }
@@ -48,22 +76,27 @@
     </table>
 </div>
 
+
 @code {
-    [Parameter] public IEnumerable<CampaignDetails> Items { get; set; } = Enumerable.Empty<CampaignDetails>();
+    [Parameter] public IEnumerable<CampaignListDTO> Items { get; set; } = Enumerable.Empty<CampaignListDTO>();
     [Parameter] public int TotalCount { get; set; }
-    [Parameter] public PageState PageState { get; set; } = default!;
-    [Parameter] public EventCallback<int> OnEdit { get; set; }   // opzionale (non usato qui)
+
+    
+    [Parameter] public int CurrentPage { get; set; } = 1;
+    [Parameter] public int PageSize { get; set; } = 10;
+
+    [Parameter] public EventCallback<int> OnEdit { get; set; }   
     [Parameter] public EventCallback<int> OnSend { get; set; }
     [Parameter] public EventCallback<int> OnDelete { get; set; }
 
-    int Start => (PageState.CurrentPage - 1) * PageState.PageSize;
-    int End => Math.Min(PageState.CurrentPage * PageState.PageSize, TotalCount);
+    int Start => Math.Max(0, (CurrentPage - 1) * PageSize);
+    int End => Math.Min(CurrentPage * PageSize, TotalCount);
 
-    static string StatusClass(CampaignDetails.CampaignStatus status) => status switch
+    static string StatusClass(CampaignListDTO.CampaignStatus status) => status switch
     {
-        CampaignDetails.CampaignStatus.Draft => "text-bg-secondary",
-        CampaignDetails.CampaignStatus.InProgress => "text-bg-warning",
-        CampaignDetails.CampaignStatus.Finished => "text-bg-success",
+        CampaignListDTO.CampaignStatus.Draft => "text-bg-secondary",
+        CampaignListDTO.CampaignStatus.InProgress => "text-bg-warning",
+        CampaignListDTO.CampaignStatus.Finished => "text-bg-success",
         _ => "text-bg-light"
     };
 }

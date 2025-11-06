@@ -1,4 +1,6 @@
 ﻿using SmsMachine.Api.Infrastructure.Utils;
+using SmsMachine.Api.Models;
+using SmsMachine.Api.Models.DTO;
 using SmsMachine.Interfaces;
 using SmsMachine.Models;
 
@@ -127,6 +129,10 @@ namespace SmsMachine.Services
                 _logger.LogError(ex, "Error in retry sms queue for Campaign {CampaignId}", campaignId);
             }
         }
-
+        public async Task<PagedResult<CampaignListDTO>> SearchAsync(CampaignFilter filter)
+        {
+            filter.Normalize();                      // normalizza page/pageSize e From/To
+            return await _campaignRepository.SearchAsync(filter);
+        }
     }
 }

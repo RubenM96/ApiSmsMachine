@@ -1,4 +1,6 @@
-﻿using SmsMachine.Models;
+﻿using SmsMachine.Api.Models;
+using SmsMachine.Api.Models.DTO;
+using SmsMachine.Models;
 
 namespace SmsMachine.Services
 {
@@ -11,5 +13,7 @@ namespace SmsMachine.Services
         CampaignSms UpdateCampaign(int id, string title, string text, string recipientList, bool campaignNotify, string? description);
         
         public Task RetryQueuedForCampaignAsync(int campaignId, TimeSpan delay);
+
+        Task<PagedResult<CampaignListDTO>> SearchAsync(CampaignFilter filter);
     }
 }

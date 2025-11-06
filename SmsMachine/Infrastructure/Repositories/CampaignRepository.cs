@@ -1,4 +1,6 @@
-﻿using SmsMachine.Api.Models.DTO;
+﻿using Microsoft.EntityFrameworkCore;
+using SmsMachine.Api.Models;
+using SmsMachine.Api.Models.DTO;
 using SmsMachine.Infrastructure.Data;
 using SmsMachine.Interfaces;
 using SmsMachine.Models;
@@ -66,6 +68,55 @@ namespace SmsMachine.Infrastructure.Repositories
             return true;
         }
 
+        public async Task<PagedResult<CampaignListDTO>> SearchAsync(CampaignFilter filter)
+        {
+            // NB: il Service chiama filter.Normalize(); qui gestiamo comunque difensivo
+            var title = string.IsNullOrWhiteSpace(filter.Title) ? null : filter.Title.Trim();
+            DateTime? from = filter.From?.Date;
+            DateTime? toInclusive = filter.To?.Date.AddDays(1); // include tutto il giorno “To”
+
+            var q = _context.Set<CampaignSms>()
+                            .AsNoTracking()
+                            .AsQueryable();
+
+            if (!string.IsNullOrEmpty(title))
+                q = q.Where(c => c.Title.Contains(title));
+
+            if (from.HasValue)
+                q = q.Where(c => c.CreatedAt >= from.Value);
+
+            if (toInclusive.HasValue)
+                q = q.Where(c => c.CreatedAt < toInclusive.Value);
+
+            // totale con filtri
+            var total = await q.CountAsync();
+
+            // ordinamento consigliato: più recenti in alto
+            q = q.OrderByDescending(c => c.CreatedAt);
+
+            
+            var items = await q
+                .Skip((filter.Page - 1) * filter.PageSize)
+                .Take(filter.PageSize)
+                .Select(c => new CampaignListDTO
+                {
+                    Id = c.Id,
+                    Title = c.Title,
+                    Text = c.Text,
+                    TotalRecipients = c.TotalRecipients,
+                    CreatedAt = c.CreatedAt,
+                    Status = c.Status
+                })
+                .ToListAsync();
+
+            return new PagedResult<CampaignListDTO>
+            {
+                Items = items,
+                Total = total,
+                Page = filter.Page,
+                PageSize = filter.PageSize
+            };
+        }
 
 
     }

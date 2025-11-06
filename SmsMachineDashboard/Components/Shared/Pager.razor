@@ -1,79 +1,49 @@
 ﻿@code {
-    [Parameter] public PageState State { get; set; } = default!;
-    [Parameter] public int TotalCount { get; set; }
+    [Parameter] public int CurrentPage { get; set; } = 1;
+    [Parameter] public int PageSize { get; set; } = 10;
+    [Parameter] public int TotalCount { get; set; } = 0;
+
+    // callback verso il parent
     [Parameter] public EventCallback<int> OnPageChanged { get; set; }
     [Parameter] public EventCallback<int> OnPageSizeChanged { get; set; }
 
-    int TotalPages => Math.Max(1, (int)Math.Ceiling(TotalCount / (double)State.PageSize));
+    int TotalPages => Math.Max(1, (int)Math.Ceiling((double)TotalCount / Math.Max(1, PageSize)));
+    bool CanPrev => CurrentPage > 1;
+    bool CanNext => CurrentPage < TotalPages;
 
-    IEnumerable<int> VisiblePages
+    async Task GoFirst() { if (CanPrev) await OnPageChanged.InvokeAsync(1); }
+    async Task GoPrev() { if (CanPrev) await OnPageChanged.InvokeAsync(CurrentPage - 1); }
+    async Task GoNext() { if (CanNext) await OnPageChanged.InvokeAsync(CurrentPage + 1); }
+    async Task GoLast() { if (CanNext) await OnPageChanged.InvokeAsync(TotalPages); }
+
+    async Task ChangeSize(ChangeEventArgs e)
     {
-        get
-        {
-            var total = TotalPages;
-            var current = State.CurrentPage;
-            const int window = 5;
-
-            var start = Math.Max(1, current - 2);
-            var end = Math.Min(total, start + window - 1);
-            start = Math.Max(1, end - window + 1);
-
-            return Enumerable.Range(start, end - start + 1);
-        }
-    }
-
-    async Task GoTo(int p)
-    {
-        if (p < 1 || p > TotalPages) return;
-        await OnPageChanged.InvokeAsync(p);
-    }
-
-    async Task Prev()
-    {
-        if (State.CurrentPage > 1)
-            await OnPageChanged.InvokeAsync(State.CurrentPage - 1);
-    }
-
-    async Task Next()
-    {
-        if (State.CurrentPage < TotalPages)
-            await OnPageChanged.InvokeAsync(State.CurrentPage + 1);
-    }
-
-    async Task PageSizeChanged(ChangeEventArgs e)
-    {
-        if (int.TryParse(e.Value?.ToString(), out var size) && size > 0)
-            await OnPageSizeChanged.InvokeAsync(size);
+        if (int.TryParse(e.Value?.ToString(), out var s) && s > 0)
+            await OnPageSizeChanged.InvokeAsync(s);
     }
 }
 
-<div class="d-flex align-items-center justify-content-between">
-    <div class="d-flex align-items-center gap-2">
-        <label class="form-label m-0 small">Per pagina</label>
-        <select class="form-select form-select-sm w-auto" @onchange="PageSizeChanged">
-            <option value="5" selected="@((State.PageSize == 5))">5</option>
-            <option value="10" selected="@((State.PageSize == 10))">10</option>
-            <option value="20" selected="@((State.PageSize == 20))">20</option>
-            <option value="50" selected="@((State.PageSize == 50))">50</option>
-        </select>
+<div class="d-flex justify-content-between align-items-center gap-2">
+    <div>Totale: <b>@TotalCount</b></div>
+
+    <div class="btn-group" role="group" aria-label="Pager">
+        <button class="btn btn-outline-secondary" disabled="@(!CanPrev)" @onclick="GoFirst">««</button>
+        <button class="btn btn-outline-secondary" disabled="@(!CanPrev)" @onclick="GoPrev">«</button>
+
+        <span class="btn btn-outline-secondary disabled">
+            Pagina @CurrentPage / @TotalPages
+        </span>
+
+        <button class="btn btn-outline-secondary" disabled="@(!CanNext)" @onclick="GoNext">»</button>
+        <button class="btn btn-outline-secondary" disabled="@(!CanNext)" @onclick="GoLast">»»</button>
     </div>
 
-    <nav aria-label="Paginazione">
-        <ul class="pagination pagination-sm mb-0">
-            <li class="page-item @(State.CurrentPage == 1 ? "disabled" : null)">
-                <button class="page-link" @onclick="Prev">«</button>
-            </li>
-
-            @foreach (var p in VisiblePages)
-            {
-                <li class="page-item @(p == State.CurrentPage ? "active" : null)">
-                    <button class="page-link" @onclick="(() => GoTo(p))">@p</button>
-                </li>
-            }
-
-            <li class="page-item @(State.CurrentPage == Math.Max(1, (int)Math.Ceiling(TotalCount / (double)State.PageSize)) ? "disabled" : null)">
-                <button class="page-link" @onclick="Next">»</button>
-            </li>
-        </ul>
-    </nav>
+    <div class="d-flex align-items-center">
+        <span class="me-2">Righe:</span>
+        <select class="form-select" style="width:120px" @onchange="ChangeSize">
+            <option value="10" selected="@(PageSize == 10)">10</option>
+            <option value="25" selected="@(PageSize == 25)">25</option>
+            <option value="50" selected="@(PageSize == 50)">50</option>
+        </select>
+    </div>
 </div>
