@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace SmsMachine.Models
 {
-    public class CampaignSms
+    public class CampaignSms 
     {
         private CampaignSms()
         {
