@@ -54,7 +54,7 @@
                         <label for="text" class="form-label mb-0">Testo SMS</label>
                         <small class="text-muted">
                             <span class="badge bg-light text-dark">
-                                @TextLength / 300
+                                @TextLength / 160
                             </span>
                             @if (TextLength > 160)
                             {
@@ -69,7 +69,7 @@
                                    @bind-Value="campaignForm.Text"
                                    @oninput="OnTextChanged" />
                     <div class="form-text">
-                        Oltre 160 caratteri il testo può essere spezzato in più SMS. (max 300 caratteri)
+                        (max 160 caratteri)
                     </div>
                     <ValidationMessage For="() => campaignForm.Text" />
                 </div>

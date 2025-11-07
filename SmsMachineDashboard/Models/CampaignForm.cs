@@ -11,7 +11,7 @@ namespace SmsMachine.Dashboard.Models
         [Display(Name = "Testo SMS")]
         [Required(ErrorMessage = "Inserisci il testo del messaggio.")]
         
-        [StringLength(160, ErrorMessage = "Il testo non può superare 16 caratteri.")]
+        [StringLength(160, ErrorMessage = "Il testo non può superare 160 caratteri.")]
         public string Text { get; set; } = string.Empty;
 
         [Display(Name = "Destinatari")]
