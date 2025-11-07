@@ -17,6 +17,12 @@ public class CampaignService
         return result ?? new List<CampaignDetails>();
     }
 
+    public async Task<List<CampaignDetails>> GetAllCampaignsAsynViews()
+    {
+        var result = await _http.GetFromJsonAsync<List<CampaignDetails>>("api/campaign/AllCampaignViews");
+        return result ?? new List<CampaignDetails>();
+    }
+
     public async Task<CampaignDetails?> GetCampaignIdAsync(int id)
     {
         return await _http.GetFromJsonAsync<CampaignDetails>($"api/campaign/{id}");
@@ -43,7 +49,6 @@ public class CampaignService
         }
 
         return await _http.PostAsync("api/campaign/CreateCampaign", formData);
-
     }
 
     //modifica
