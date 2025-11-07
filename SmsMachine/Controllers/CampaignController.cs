@@ -83,11 +83,11 @@ namespace SmsMachine.Controllers
             }
         }
 
-        [HttpGet("AllCampaignViews")]
-        public async Task< IActionResult> GetAllCampaignsViews()
+        [HttpGet("[action]")]
+        public async Task<ActionResult<PagedResult<CampaignListDTO>>> Search([FromQuery] CampaignFilter filter)
         {
-            var  getAllCampaignsViews = await _campaignRepository.GetAllCampaignsViews();
-            return Ok(getAllCampaignsViews);
+            var result = await _campaignService.SearchAsync(filter);
+            return Ok(result);
         }
 
         [HttpGet("{id}")]
@@ -132,11 +132,6 @@ namespace SmsMachine.Controllers
             }
         }
 
-        [HttpGet("search")]
-        public async Task<ActionResult<PagedResult<CampaignListDTO>>> Search([FromQuery] CampaignFilter filter)
-        {
-            var result = await _campaignService.SearchAsync(filter);
-            return Ok(result);
-        }
+      
     }
 }

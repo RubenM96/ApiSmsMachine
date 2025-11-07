@@ -29,45 +29,6 @@ namespace SmsMachine.Infrastructure.Repositories
             return _context.Set<CampaignSms>().ToList();
         }
 
-        public async Task<IEnumerable<CampaignListDTO>> GetAllCampaignsViews()
-        {
-            return await _context.Set<CampaignSms>()
-                .Select(c => new CampaignListDTO
-                {
-                    Id = c.Id,
-                    Title = c.Title,
-                    Text = c.Text,
-                    TotalRecipients = c.TotalRecipients,
-                    CreatedAt = c.CreatedAt,
-                    Status = c.Status
-                })
-                .OrderByDescending(a => a.Id)
-                .ToListAsync();
-        }
-
-        public CampaignSms? GetCampaignId(int id)
-        {
-            return _context.Set<CampaignSms>().Find(id);
-        }
-
-
-        public CampaignSms UpdateCampaign(CampaignSms campaign)
-        {
-            _context.Set<CampaignSms>().Update(campaign);
-            _context.SaveChanges();
-            return campaign;
-        }
-
-        public bool DeleteCampaign(int id)
-        {
-            var entity = _context.Set<CampaignSms>().Find(id);
-            if (entity is null) return false;
-
-            _context.Remove(entity);
-            _context.SaveChanges();
-            return true;
-        }
-
         public async Task<PagedResult<CampaignListDTO>> SearchAsync(CampaignFilter filter)
         {
             // NB: il Service chiama filter.Normalize(); qui gestiamo comunque difensivo
@@ -94,7 +55,7 @@ namespace SmsMachine.Infrastructure.Repositories
             // ordinamento consigliato: più recenti in alto
             q = q.OrderByDescending(c => c.CreatedAt);
 
-            
+
             var items = await q
                 .Skip((filter.Page - 1) * filter.PageSize)
                 .Take(filter.PageSize)
@@ -118,6 +79,28 @@ namespace SmsMachine.Infrastructure.Repositories
             };
         }
 
+        public CampaignSms? GetCampaignId(int id)
+        {
+            return _context.Set<CampaignSms>().Find(id);
+        }
+
+
+        public CampaignSms UpdateCampaign(CampaignSms campaign)
+        {
+            _context.Set<CampaignSms>().Update(campaign);
+            _context.SaveChanges();
+            return campaign;
+        }
+
+        public bool DeleteCampaign(int id)
+        {
+            var entity = _context.Set<CampaignSms>().Find(id);
+            if (entity is null) return false;
+
+            _context.Remove(entity);
+            _context.SaveChanges();
+            return true;
+        }
 
     }
 }

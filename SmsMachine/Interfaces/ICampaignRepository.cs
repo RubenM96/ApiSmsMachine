@@ -8,7 +8,6 @@ namespace SmsMachine.Interfaces
     {
         CampaignSms AddCampaign(CampaignSms campaign);
         IEnumerable<CampaignSms> GetAllCampaigns();
-        Task<IEnumerable<CampaignListDTO>> GetAllCampaignsViews();
         CampaignSms? GetCampaignId(int id);
         CampaignSms UpdateCampaign(CampaignSms campaign);
         bool DeleteCampaign(int id);
