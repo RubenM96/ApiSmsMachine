@@ -3,7 +3,7 @@ namespace SmsMachine.Api.Models.DTO;
 
 public class CampaignListDTO
 {
-   
+
     public int Id { get; set; }
     public string Title { get; set; }
     public string Text { get; set; }
@@ -11,5 +11,5 @@ public class CampaignListDTO
     public DateTime CreatedAt { get; set; }
     public CampaignStatus Status { get; set; }
 
- 
+
 }

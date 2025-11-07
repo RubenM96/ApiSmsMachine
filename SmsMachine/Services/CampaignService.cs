@@ -46,7 +46,7 @@ namespace SmsMachine.Services
             }
 
             campaign.Status = CampaignStatus.InProgress;
-            _campaignRepository.UpdateCampaign(campaign); 
+            _campaignRepository.UpdateCampaign(campaign);
 
             //foreach (var recipient in campaign.RecipientList.Split(new[] { ',', ';', ' ', '\n' }, StringSplitOptions.RemoveEmptyEntries).Select(r => r.Trim()))
             foreach (var recipient in campaign.GetRecipientToList(campaign.RecipientList))
@@ -69,7 +69,7 @@ namespace SmsMachine.Services
             _campaignRepository.UpdateCampaign(campaign);
             return campaign;
         }
-       
+
         // Modifica Campagna
         public CampaignSms UpdateCampaign(int id, string title, string text, string recipientList, bool campaignNotify, string? description)
         {

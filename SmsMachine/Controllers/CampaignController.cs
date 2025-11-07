@@ -15,8 +15,8 @@ namespace SmsMachine.Controllers
         private readonly ICampaignRepository _campaignRepository;
         private readonly ILogger<CampaignController> _logger;
 
-        public CampaignController(ICampaignService campaignService, 
-            ICampaignRepository campaignRepository, 
+        public CampaignController(ICampaignService campaignService,
+            ICampaignRepository campaignRepository,
             ILogger<CampaignController> logger)
         {
             _campaignService = campaignService;
@@ -65,14 +65,14 @@ namespace SmsMachine.Controllers
             {
                 _logger.LogError($"Error sending campaign: {ex.Message}");
                 return BadRequest($"Error sending campaign: {ex.Message}");
-            }           
+            }
         }
 
         [HttpGet("[action]")]
         public IActionResult GetAllCampaigns()
         {
-            try 
-            { 
+            try
+            {
                 var getAllCampaigns = _campaignRepository.GetAllCampaigns();
                 return Ok(getAllCampaigns);
             }
@@ -132,6 +132,6 @@ namespace SmsMachine.Controllers
             }
         }
 
-      
+
     }
 }

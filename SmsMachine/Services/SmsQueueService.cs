@@ -21,6 +21,6 @@ namespace SmsMachine.Services
             _logger.LogInformation("Enqueued SMS for {Recipient} (campaign {CampaignId})", recipient.Value, campaignId);
         }
 
-       
+
     }
 }
