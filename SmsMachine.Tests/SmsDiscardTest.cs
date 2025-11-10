@@ -28,7 +28,7 @@ namespace SmsMachine.Tests
 
             var smsDiscard = app.Services.GetRequiredService<ISmsDiscard>();
 
-            AreaSxSmsNotSent result = (AreaSxSmsNotSent)smsDiscard.CheckDiscardSms();
+            AreaSxSmsNotSent result = (AreaSxSmsNotSent)smsDiscard.SmsNotSend();
 
             Console.WriteLine($"errno:{result.Errno}, errdesc:{result.Errdesc}, SmsTxErrIdx:{result.SmsTxErrIdx}");
         }

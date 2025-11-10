@@ -7,5 +7,6 @@ namespace SmsMachine.Interfaces
         SmsOutbound AddSms(SmsOutbound sms);
         SmsOutbound? GetSmsById(int id);
         SmsOutbound? GetSmsOutboundByRecipientAndIndex(string recipient, int indexSms);
+        SmsOutbound? GetSmsOutboundByIndexAndCampaignId(int indexSms, int campaignId);
     }
 }

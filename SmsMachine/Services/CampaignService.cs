@@ -65,6 +65,7 @@ namespace SmsMachine.Services
             //Tentativi di invio della coda
             await RetryQueuedForCampaignAsync(campaign.Id, TimeSpan.FromSeconds(5)); // tentativo di invio dei messaggi in coda 
 
+
             //controllo messaggi consegnati/ falliti e cambio stato campagna
 
             campaign.Status = CampaignStatus.Finished;
@@ -138,7 +139,8 @@ namespace SmsMachine.Services
             return await _campaignRepository.SearchAsync(filter);
         }
 
-        //metodo per recuperare i messaggi scartati
+        //metodo per contare i messaggi scartati
+
 
         //metodo per gestire lo stato della campagna in base ai messaggi inviati/ falliti
     }

@@ -32,5 +32,10 @@ namespace SmsMachine.Infrastructure.Repositories
             return smsOutbound;
         }
 
+        public SmsOutbound? GetSmsOutboundByIndexAndCampaignId(int indexSms, int campaignId)
+        {
+            SmsOutbound? smsOutbound = _context.Set<SmsOutbound>().FirstOrDefault(s => s.Index == indexSms && s.CampaignId == campaignId);
+            return smsOutbound;
+        }
     }
 }

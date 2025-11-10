@@ -4,6 +4,6 @@ namespace SmsMachine.Services
 {
     public interface ISmsDiscard
     {
-        AreaSxSmsNotSent CheckDiscardSms();
+        AreaSxSmsNotSent SmsNotSend();
     }
 }

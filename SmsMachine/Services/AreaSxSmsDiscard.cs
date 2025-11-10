@@ -18,7 +18,7 @@ namespace SmsMachine.Services
             _password = options.Password;
         }
 
-        public AreaSxSmsNotSent CheckDiscardSms()
+        public AreaSxSmsNotSent SmsNotSend()
         {
             using var request = new HttpRequestMessage(HttpMethod.Post, AreaSxSmsMachine.Endpoints.DiscardSms);
 

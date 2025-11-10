@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using SmsMachine.Api.Services;
+using SmsMachine.Interfaces;
 using SmsMachine.Services;
+
 
 namespace SmsMachine.Controllers
 {
@@ -9,20 +12,24 @@ namespace SmsMachine.Controllers
     public class DiscardSmsController : ControllerBase
     {
         private readonly ISmsDiscard _smsDiscard;
+        private readonly IDiscardSmsService _discardSmsService;
         private readonly ILogger<DiscardSmsController> _logger;
 
-        public DiscardSmsController(ISmsDiscard smsDiscard, ILogger<DiscardSmsController> logger)
+        public DiscardSmsController(ISmsDiscard smsDiscard, 
+            IDiscardSmsService discardSmsService,
+            ILogger<DiscardSmsController> logger)
         {
             _smsDiscard = smsDiscard;
+            _discardSmsService = discardSmsService;
             _logger = logger;
         }
 
-        [HttpPost]
+        [HttpPost("[action]")]
         public IActionResult CheckDiscardSms()
         {
             try
             {
-                var result = _smsDiscard.CheckDiscardSms();
+                var result = _smsDiscard.SmsNotSend();
                 return Ok(result);
             }
             catch (Exception ex)
@@ -32,6 +39,20 @@ namespace SmsMachine.Controllers
             }
         }
 
-
+        
+        [HttpGet("[action]")]
+        public IActionResult RecoveryDiscardedSmsFromCampaign(int campaignId)
+        {
+            try
+            {
+                var result = _discardSmsService.RecoveryDiscardedSmsByCampaignId(campaignId);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while recovering discarded SMS.");
+                return StatusCode(500);
+            }
+        }
     }
 }
