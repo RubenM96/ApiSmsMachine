@@ -12,7 +12,7 @@ namespace SmsMachine.Services
 
         CampaignSms UpdateCampaign(int id, string title, string text, string recipientList, bool campaignNotify, string? description);
 
-        public Task RetryQueuedForCampaignAsync(int campaignId, TimeSpan delay);
+        Task RetryQueuedForCampaignAsync(int campaignId, TimeSpan delay);
 
         Task<PagedResult<CampaignListDTO>> SearchAsync(CampaignFilter filter);
     }

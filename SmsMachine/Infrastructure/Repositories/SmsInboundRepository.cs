@@ -15,7 +15,7 @@ namespace SmsMachine.Infrastructure.Repositories
             _context.SaveChanges();
             return smsInbound;
         }
-        public SmsInbound? GetSmsInbound(int id)
+        public SmsInbound? GetSmsInboundById(int id)
         {
             return _context.Set<SmsInbound>().Find(id);
         }

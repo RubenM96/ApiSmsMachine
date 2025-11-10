@@ -20,7 +20,7 @@ namespace SmsMachine.Infrastructure.Repositories
             return sms;
         }
 
-        public SmsOutbound? GetSms(int id)
+        public SmsOutbound? GetSmsById(int id)
         {
             return _context.Set<SmsOutbound>().Find(id);
         }

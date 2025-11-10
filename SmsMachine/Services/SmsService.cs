@@ -47,11 +47,9 @@ namespace SmsMachine.Services
                     _logger.LogInformation("SMS to {Recipient} sent and saved to database successfully", recipient);
                 }
                 else if (responeSendSms.Refused)
-                {
-                    //TODO: Gestire il messaggio rifiutato a causa della coda piena (Errore durante l'invio del messaggio:  SMS Refused by AreaSx: SMS Queue Full)                                      
+                {                                
                     _smsQueueService.EnqueueSms(new Recipient(recipient), text, multipart, notify, campaignId);
                     //TODO: Routing per gestire più SmsMachine
-
                 }
                 else
                 {
@@ -67,9 +65,6 @@ namespace SmsMachine.Services
                 throw;
             }
         }
-
-
-
 
 
 

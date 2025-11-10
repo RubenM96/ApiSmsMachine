@@ -52,7 +52,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-//prova blazor
+//blazor
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowBlazor",

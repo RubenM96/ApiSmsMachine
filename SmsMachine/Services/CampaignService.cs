@@ -65,8 +65,11 @@ namespace SmsMachine.Services
             //Tentativi di invio della coda
             await RetryQueuedForCampaignAsync(campaign.Id, TimeSpan.FromSeconds(5)); // tentativo di invio dei messaggi in coda 
 
+            //controllo messaggi consegnati/ falliti e cambio stato campagna
+
             campaign.Status = CampaignStatus.Finished;
             _campaignRepository.UpdateCampaign(campaign);
+            
             return campaign;
         }
 
@@ -112,7 +115,7 @@ namespace SmsMachine.Services
                         {
                             _smsService.SendSms(smsQueue.Recipient.Value, smsQueue.Text, smsQueue.Multipart, smsQueue.Notify, campaignId);
 
-                            // se l’invio è riuscito, rimuovi sms dalla coda
+                            //rimuovi sms dalla coda
                             _smsQueueRepository.Delete(smsQueue.Id);
                         }
                         catch (Exception ex)
@@ -134,5 +137,9 @@ namespace SmsMachine.Services
             filter.Normalize();                      // normalizza page/pageSize e From/To
             return await _campaignRepository.SearchAsync(filter);
         }
+
+        //metodo per recuperare i messaggi scartati
+
+        //metodo per gestire lo stato della campagna in base ai messaggi inviati/ falliti
     }
 }

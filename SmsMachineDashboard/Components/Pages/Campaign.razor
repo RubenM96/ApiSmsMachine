@@ -16,7 +16,9 @@ else
         <h3><b>Titolo:</b> @campaign.Title</h3>
         <ul>
             <li><b>Messaggio: </b>@campaign.Text</li>
-            <li><b>Numeri: </b>@campaign.RecipientList</li>
+            <li style="white-space: normal; overflow-wrap: anywhere;">
+                <b>Numeri: </b><br/> @(campaign.RecipientList.Replace(",", ",\u200B"))
+            </li>
             <li><b>Data di creazione: </b>@campaign.CreatedAt</li>
             <li><b>Descrizione: </b>@campaign.Description</li>
             <li><b>Stato: </b>@campaign.Status</li>

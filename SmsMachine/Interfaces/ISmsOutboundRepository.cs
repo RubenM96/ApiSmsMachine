@@ -5,7 +5,7 @@ namespace SmsMachine.Interfaces
     public interface ISmsOutboundRepository
     {
         SmsOutbound AddSms(SmsOutbound sms);
-        SmsOutbound? GetSms(int id);
+        SmsOutbound? GetSmsById(int id);
         SmsOutbound? GetSmsOutboundByRecipientAndIndex(string recipient, int indexSms);
     }
 }
