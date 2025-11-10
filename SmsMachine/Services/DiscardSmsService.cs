@@ -22,7 +22,7 @@ namespace SmsMachine.Api.Services
         {
             try
             {
-                var indexSmsList = _smsDiscard.SmsNotSend().SmsTxErrIdx.Split('.').Select(int.Parse).ToList();
+                var indexSmsList = _smsDiscard.SmsNotSend().SmsTxErrIdx.Split('.', StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToList();
                 var recoveredSmsList = new List<SmsOutbound>();
 
                 foreach (var indexSms in indexSmsList)

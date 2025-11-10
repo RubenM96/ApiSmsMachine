@@ -46,6 +46,13 @@ namespace SmsMachine.Controllers
             try
             {
                 var result = _discardSmsService.RecoveryDiscardedSmsByCampaignId(campaignId);
+
+                if (!result.Any())
+                {
+                    _logger.LogInformation("No discarded SMS to recover.");
+                    return Ok("No discarded SMS to recover.");
+                }
+
                 return Ok(result);
             }
             catch (Exception ex)
