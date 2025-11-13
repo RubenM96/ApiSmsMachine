@@ -1,6 +1,7 @@
 ﻿using SmsMachine.Api.Infrastructure.Utils;
 using SmsMachine.Api.Models;
 using SmsMachine.Api.Models.DTO;
+using SmsMachine.Api.Services;
 using SmsMachine.Interfaces;
 using SmsMachine.Models;
 
@@ -10,16 +11,20 @@ namespace SmsMachine.Services
     {
         private readonly ICampaignRepository _campaignRepository;
         private readonly ISmsQueueRepository _smsQueueRepository;
+        private readonly IDiscardSmsService _discardSmsService;
         private readonly ISmsService _smsService;
         private readonly ILogger<CampaignService> _logger;
 
-        public CampaignService(ICampaignRepository campaignRepository,
+        public CampaignService(
+            ICampaignRepository campaignRepository,
             ISmsQueueRepository smsQueueRepository,
+            IDiscardSmsService discardSmsService,
             ISmsService msService,
             ILogger<CampaignService> logger)
         {
             _campaignRepository = campaignRepository;
             _smsQueueRepository = smsQueueRepository;
+            _discardSmsService = discardSmsService;
             _smsService = msService;
             _logger = logger;
         }
@@ -67,6 +72,7 @@ namespace SmsMachine.Services
 
 
             //controllo messaggi consegnati/ falliti e cambio stato campagna
+
 
             campaign.Status = CampaignStatus.Finished;
             _campaignRepository.UpdateCampaign(campaign);
@@ -133,6 +139,7 @@ namespace SmsMachine.Services
                 _logger.LogError(ex, "Error in retry sms queue for Campaign {CampaignId}", campaignId);
             }
         }
+
         public async Task<PagedResult<CampaignListDTO>> SearchAsync(CampaignFilter filter)
         {
             filter.Normalize();                      // normalizza page/pageSize e From/To
@@ -140,8 +147,12 @@ namespace SmsMachine.Services
         }
 
         //metodo per contare i messaggi scartati
-
+        public int CountDiscardedSmsByCampaignId(int campaignId)
+        {
+            return _discardSmsService.RecoveryDiscardedSmsByCampaignId(campaignId).Count();
+        }
 
         //metodo per gestire lo stato della campagna in base ai messaggi inviati/ falliti
+
     }
 }

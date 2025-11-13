@@ -36,9 +36,9 @@
                 _logger.LogInformation("Receveing SMS from {Recipient} with text: {Text}", recipient, text);
 
                 if (string.IsNullOrEmpty(recipient))
-                    throw new ArgumentException("Numero mancante");
+                    throw new ArgumentException("Recipient Empty");
                 if (string.IsNullOrEmpty(text))
-                    throw new ArgumentException("Testo del messaggio mancante");
+                    throw new ArgumentException("Sms Text Empty");
 
                 _smsInboundService.SmsInbound(recipient, text, date);
 

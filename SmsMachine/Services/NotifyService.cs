@@ -26,7 +26,7 @@ public class NotifyService : INotifyService
         if (smsOutbound == null)
         {
             _logger.LogWarning("Not found SmsOutbound for recipient {Recipient} and index {Index}", recipient, indexSms.ToString());
-            throw new ArgumentException("Messaggio non trovato");
+            throw new ArgumentException("Sms not found");
         }
 
         DateTime dateTime = SmsDateParser.ParseDateNotify(date);

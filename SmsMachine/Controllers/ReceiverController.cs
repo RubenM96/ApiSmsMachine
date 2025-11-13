@@ -26,7 +26,7 @@ namespace SmsMachine.Controllers
 
             try
             {
-                _logger.LogInformation("Sms o notifica arrivata!");
+                _logger.LogInformation("Sms or Notify received!");
 
                 _logger.LogInformation(
                     $"Informazioni complete: {sms.sms_code}, {sms.sms_num}, {sms.sms_text}, {sms.sms_date}\n" +
