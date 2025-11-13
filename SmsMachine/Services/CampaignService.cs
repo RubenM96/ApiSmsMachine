@@ -154,8 +154,11 @@ namespace SmsMachine.Services
             return failedSmsCount;
         }
 
+        //metodo per contare i messaggi inviati con successo
+
+
         //metodo per gestire lo stato della campagna in base ai messaggi inviati/ falliti
- 
+
 
 
     }
