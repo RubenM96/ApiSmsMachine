@@ -147,12 +147,16 @@ namespace SmsMachine.Services
         }
 
         //metodo per contare i messaggi scartati
-        public int CountDiscardedSmsByCampaignId(int campaignId)
+        public int CountDiscardedSmsByCampaignId(CampaignSms campaign)
         {
-            return _discardSmsService.RecoveryDiscardedSmsByCampaignId(campaignId).Count();
+            var failedSmsCount = _discardSmsService.RecoveryDiscardedSmsByCampaignId(campaign.Id).Count();
+            campaign.IncFailed(failedSmsCount);
+            return failedSmsCount;
         }
 
         //metodo per gestire lo stato della campagna in base ai messaggi inviati/ falliti
+ 
+
 
     }
 }

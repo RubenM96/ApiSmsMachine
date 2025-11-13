@@ -73,7 +73,7 @@ namespace SmsMachine.Models
         }
 
         public void IncDelivered() => DeliveredCount++;
-        public void IncFailed() => FailedCount++;
+        public void IncFailed(int failedCount) => FailedCount = failedCount;
         public bool IsComplete() => (DeliveredCount + FailedCount) >= TotalRecipients && TotalRecipients > 0;
     }
 }
