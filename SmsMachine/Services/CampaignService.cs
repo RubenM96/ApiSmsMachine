@@ -11,6 +11,7 @@ namespace SmsMachine.Services
     {
         private readonly ICampaignRepository _campaignRepository;
         private readonly ISmsQueueRepository _smsQueueRepository;
+        private readonly ISmsOutboundRepository _smsOutboundRepository;
         private readonly IDiscardSmsService _discardSmsService;
         private readonly ISmsService _smsService;
         private readonly ILogger<CampaignService> _logger;
@@ -18,12 +19,14 @@ namespace SmsMachine.Services
         public CampaignService(
             ICampaignRepository campaignRepository,
             ISmsQueueRepository smsQueueRepository,
+            ISmsOutboundRepository smsOutboundRepository,
             IDiscardSmsService discardSmsService,
             ISmsService msService,
             ILogger<CampaignService> logger)
         {
             _campaignRepository = campaignRepository;
             _smsQueueRepository = smsQueueRepository;
+            _smsOutboundRepository = smsOutboundRepository;
             _discardSmsService = discardSmsService;
             _smsService = msService;
             _logger = logger;
@@ -70,13 +73,14 @@ namespace SmsMachine.Services
             //Tentativi di invio della coda
             await RetryQueuedForCampaignAsync(campaign.Id, TimeSpan.FromSeconds(5)); // tentativo di invio dei messaggi in coda 
 
-
             //controllo messaggi consegnati/ falliti e cambio stato campagna
-
-
-            campaign.Status = CampaignStatus.Finished;
-            _campaignRepository.UpdateCampaign(campaign);
-            
+            var isComplete = CampaignIsComplete(campaign);
+            if (isComplete)
+            {
+                campaign.Status = CampaignStatus.Finished;
+                _campaignRepository.UpdateCampaign(campaign);
+            }
+           
             return campaign;
         }
 
@@ -146,19 +150,34 @@ namespace SmsMachine.Services
             return await _campaignRepository.SearchAsync(filter);
         }
 
+        //metodo per calcolare lo stato della campagna in base ai messaggi inviati/falliti
+        public bool CampaignIsComplete(CampaignSms campaign)
+        {
+            CountDiscardedSmsByCampaignId(campaign);
+            CountDeliveredSmsByCampaignId(campaign);
+
+            return campaign.IsComplete();
+        }
+
         //metodo per contare i messaggi scartati
         public int CountDiscardedSmsByCampaignId(CampaignSms campaign)
         {
             var failedSmsCount = _discardSmsService.RecoveryDiscardedSmsByCampaignId(campaign.Id).Count();
+            _logger.LogInformation("Counted {FailedSmsCount} discarded SMS for Campaign ID {CampaignId}", failedSmsCount, campaign.Id);
+            
             campaign.IncFailed(failedSmsCount);
             return failedSmsCount;
         }
 
-        //metodo per contare i messaggi inviati con successo
-
-
-        //metodo per gestire lo stato della campagna in base ai messaggi inviati/ falliti
-
+        //metodo per contare i messaggi inviati 
+        public int CountDeliveredSmsByCampaignId(CampaignSms campaign)
+        {
+            var totalSent = _smsOutboundRepository.GetAllSmsByCampaignId(campaign.Id).Count();
+            _logger.LogInformation("Counted {TotalSent} delivered SMS for Campaign ID {CampaignId}", totalSent, campaign.Id);
+            
+            campaign.IncDelivered(totalSent);
+            return totalSent;
+        }
 
 
     }
