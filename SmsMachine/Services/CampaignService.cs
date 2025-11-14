@@ -56,7 +56,6 @@ namespace SmsMachine.Services
             campaign.Status = CampaignStatus.InProgress;
             _campaignRepository.UpdateCampaign(campaign);
 
-            //foreach (var recipient in campaign.RecipientList.Split(new[] { ',', ';', ' ', '\n' }, StringSplitOptions.RemoveEmptyEntries).Select(r => r.Trim()))
             foreach (var recipient in campaign.GetRecipientToList(campaign.RecipientList))
             {
                 try
@@ -70,10 +69,10 @@ namespace SmsMachine.Services
                 }
             }
 
-            //Tentativi di invio della coda
-            await RetryQueuedForCampaignAsync(campaign.Id, TimeSpan.FromSeconds(5)); // tentativo di invio dei messaggi in coda 
+            //Tentativo di invio dei messaggi in coda
+            await RetryQueuedForCampaignAsync(campaign.Id, TimeSpan.FromSeconds(5)); 
 
-            //controllo messaggi consegnati/ falliti e cambio stato campagna
+            //controllo messaggi consegnati/falliti e cambio stato campagna
             var isComplete = CampaignIsComplete(campaign);
             if (isComplete)
             {

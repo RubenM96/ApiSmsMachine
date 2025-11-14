@@ -58,7 +58,7 @@ namespace SmsMachine.Models
                 var isValid = Regex.IsMatch(recipient, @"^\+\d+$");
                 if (!isValid)
                 {
-                    throw new ArgumentException($"Il numero '{recipient}' non è valido. Usa il formato +[prefisso][numero] e solo cifre.");
+                    throw new ArgumentException($"Il numero {recipient} non è valido. Usa il formato +[prefisso][numero] e solo cifre.");
                 }
             }
             return string.Join(",", recipientList);
