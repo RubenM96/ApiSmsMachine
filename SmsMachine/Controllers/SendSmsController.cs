@@ -23,7 +23,7 @@ public class SendSmsController : ControllerBase
 
         try
         {
-            var responeSendSms = _smsService.SendSms(sms.Recipient, sms.Text, false, sms.Notify.Value, null);
+            var responeSendSms = _smsService.SendSms(null, sms.Recipient, sms.Text, false, sms.Notify.Value, null);
             return Ok(responeSendSms);
         }
         catch (Exception ex)

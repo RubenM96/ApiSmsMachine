@@ -4,7 +4,6 @@ using SmsMachine.Api.Models.DTO;
 using SmsMachine.Api.Services;
 using SmsMachine.Interfaces;
 using SmsMachine.Models;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace SmsMachine.Services
 {
@@ -46,14 +45,14 @@ namespace SmsMachine.Services
                 var sms = new SmsOutbound(new Recipient(recipient), text, false, campaignNotify, DateTime.Now, createdCampaign.Id);
                 try
                 {
-                  _smsOutboundRepository.AddSms(sms);
+                    _smsOutboundRepository.AddSms(sms);
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Failed to create SMS for recipient {Recipient} in Campaign ID {CampaignId}", recipient, createdCampaign.Id);
                 }
             }
-            
+
             _logger.LogInformation("Created campaign with ID {CampaignId}", createdCampaign.Id);
             return createdCampaign;
         }
@@ -72,21 +71,23 @@ namespace SmsMachine.Services
             campaign.Status = CampaignStatus.InProgress;
             _campaignRepository.UpdateCampaign(campaign);
 
-            foreach (var recipient in campaign.GetRecipientToList(campaign.RecipientList))
+            var smsList = _smsOutboundRepository.GetAllSmsByCampaignId(id);
+
+            foreach (var smsOutbound in smsList)
             {
                 try
                 {
-                    _smsService.SendSms(recipient, campaign.Text, false, campaign.CampaignNotify, campaign.Id);
-                    _logger.LogInformation("Sent SMS to {Recipient} for Campaign ID {CampaignId}", recipient, id);
+                    _smsService.SendSms(smsOutbound.Id, smsOutbound.Recipient.Value, smsOutbound.Text, smsOutbound.Multipart, smsOutbound.Notify, campaign.Id);
+                    _logger.LogInformation("Sent SMS to {Recipient} for Campaign ID {CampaignId}",smsOutbound.Recipient.Value,campaign.Id);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Failed to send SMS to {Recipient} for Campaign ID {CampaignId}", recipient, id);
+                    _logger.LogError(ex, "Failed to send SMS to {Recipient} for Campaign ID {CampaignId}", smsOutbound.Recipient.Value, campaign.Id);
                 }
             }
 
             //Tentativo di invio dei messaggi in coda
-            await RetryQueuedForCampaignAsync(campaign.Id, TimeSpan.FromSeconds(5)); 
+            await RetryQueuedForCampaignAsync(campaign.Id, TimeSpan.FromSeconds(5));
 
             //controllo messaggi consegnati/falliti e cambio stato campagna
             var isComplete = CampaignIsComplete(campaign);
@@ -95,7 +96,7 @@ namespace SmsMachine.Services
                 campaign.Status = CampaignStatus.Finished;
                 _campaignRepository.UpdateCampaign(campaign);
             }
-           
+
             return campaign;
         }
 
@@ -139,7 +140,7 @@ namespace SmsMachine.Services
                     {
                         try
                         {
-                            _smsService.SendSms(smsQueue.Recipient.Value, smsQueue.Text, smsQueue.Multipart, smsQueue.Notify, campaignId);
+                            _smsService.SendSms(null, smsQueue.Recipient.Value, smsQueue.Text, smsQueue.Multipart, smsQueue.Notify, campaignId);
 
                             //rimuovi sms dalla coda
                             _smsQueueRepository.Delete(smsQueue.Id);
@@ -179,7 +180,7 @@ namespace SmsMachine.Services
         {
             var failedSmsCount = _discardSmsService.RecoveryDiscardedSmsByCampaignId(campaign.Id).Count();
             _logger.LogInformation("Counted {FailedSmsCount} discarded SMS for Campaign ID {CampaignId}", failedSmsCount, campaign.Id);
-            
+
             campaign.IncFailed(failedSmsCount);
             return failedSmsCount;
         }
@@ -189,7 +190,7 @@ namespace SmsMachine.Services
         {
             var totalSent = _smsOutboundRepository.GetAllSmsByCampaignId(campaign.Id).Count();
             _logger.LogInformation("Counted {TotalSent} delivered SMS for Campaign ID {CampaignId}", totalSent, campaign.Id);
-            
+
             campaign.IncDelivered(totalSent);
             return totalSent;
         }

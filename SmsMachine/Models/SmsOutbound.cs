@@ -6,7 +6,7 @@
         {
         }
 
-        public SmsOutbound(Recipient recipient, string text, bool multipart, bool notify, DateTime sentAt, int? campaignId)
+        public SmsOutbound( Recipient recipient, string text, bool multipart, bool notify, DateTime sentAt, int? campaignId)
         {
             Recipient = recipient ?? throw new ArgumentNullException(nameof(recipient));
             Text = text ?? throw new ArgumentNullException(nameof(text));
@@ -17,15 +17,15 @@
             Status = SmsStatus.Draft;
         }
 
-        public int Id { get; set; }
-        public Recipient Recipient { get; }
-        public string Text { get; }
-        public DateTime SentAt { get; }
-        public bool Multipart { get; }
-        public bool Notify { get; }
+        public int? Id { get; set; }
+        public Recipient Recipient { get; set; }
+        public string Text { get; set; }
+        public DateTime SentAt { get; set; }
+        public bool Multipart { get; set; }
+        public bool Notify { get; set; }
         public int? Index { get; set; }
         public int? CampaignId { get; set; }
-        public SmsStatus Status { get; }
+        public SmsStatus Status { get; set; }
 
     }
 

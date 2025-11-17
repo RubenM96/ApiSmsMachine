@@ -25,6 +25,16 @@ namespace SmsMachine.Infrastructure.Repositories
             return _context.Set<SmsOutbound>().Find(id);
         }
 
+        public void UpdateSms(SmsOutbound sms)
+        {
+            var existing = _context.Set<SmsOutbound>().Find(sms.Id);
+            if (existing == null)
+                throw new Exception("Sms not found");
+
+            _context.Entry(existing).CurrentValues.SetValues(sms);
+            _context.SaveChanges();
+        }
+
         public List<SmsOutbound> GetAllSmsByCampaignId(int campaignId)
         {
             return _context.Set<SmsOutbound>().Where(s => s.CampaignId == campaignId).ToList();

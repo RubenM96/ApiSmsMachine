@@ -19,7 +19,7 @@ namespace SmsMachine.Services
             _logger = logger;
         }
 
-        public AreaSxSendResult SendSms(string recipient, string text, bool multipart, bool notify, int? campaignId)
+        public AreaSxSendResult SendSms(int? smsId, string recipient, string text, bool multipart, bool notify, int? campaignId)
         {
             _logger.LogInformation("Preparing to send SMS to {Recipient} with text: {Text}, multipart: {Multipart}, notify: {Notify}", recipient, text, multipart, notify);
 
@@ -43,7 +43,9 @@ namespace SmsMachine.Services
                 if (responeSendSms.IsSuccess)
                 {
                     sms.Index = responeSendSms.GetIndex();
-                    _smsOutboundRepository.AddSms(sms);
+                    sms.Status = SmsStatus.Sent;
+
+                    _smsOutboundRepository.UpdateSms(sms);
                     _logger.LogInformation("SMS to {Recipient} sent and saved to database successfully", recipient);
                 }
                 else if (responeSendSms.Refused)
