@@ -43,7 +43,10 @@ namespace SmsMachine.Services
                 if (responeSendSms.IsSuccess)
                 {
                     sms.Index = responeSendSms.GetIndex();
+                    sms.Id = smsId;
                     sms.Status = SmsStatus.Sent;
+
+                    //_smsOutboundRepository.AddSms(sms);
 
                     _smsOutboundRepository.UpdateSms(sms);
                     _logger.LogInformation("SMS to {Recipient} sent and saved to database successfully", recipient);

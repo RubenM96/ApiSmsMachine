@@ -6,7 +6,7 @@
         {
         }
 
-        public SmsOutbound( Recipient recipient, string text, bool multipart, bool notify, DateTime sentAt, int? campaignId)
+        public SmsOutbound(Recipient recipient, string text, bool multipart, bool notify, DateTime sentAt, int? campaignId)
         {
             Recipient = recipient ?? throw new ArgumentNullException(nameof(recipient));
             Text = text ?? throw new ArgumentNullException(nameof(text));
