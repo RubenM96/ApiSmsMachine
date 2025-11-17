@@ -30,7 +30,7 @@ namespace SmsMachine.Services
             if (text.Length > 300)
                 text = text.Substring(0, 300);
 
-            var sms = new SmsOutbound(new Recipient(recipient), text, multipart, notify, DateTime.Now);
+            var sms = new SmsOutbound(new Recipient(recipient), text, multipart, notify, DateTime.Now, null);
 
             if (campaignId != null)
                 sms.CampaignId = campaignId;

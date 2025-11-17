@@ -4,6 +4,7 @@ using SmsMachine.Api.Models.DTO;
 using SmsMachine.Api.Services;
 using SmsMachine.Interfaces;
 using SmsMachine.Models;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace SmsMachine.Services
 {
@@ -38,6 +39,21 @@ namespace SmsMachine.Services
             CampaignSms campaign = new CampaignSms(title, text, recipientList, campaignNotify, description);
 
             var createdCampaign = _campaignRepository.AddCampaign(campaign);
+
+            //crea i singoli sms della campagna
+            foreach (var recipient in campaign.GetRecipientToList(recipientList))
+            {
+                var sms = new SmsOutbound(new Recipient(recipient), text, false, campaignNotify, DateTime.Now, createdCampaign.Id);
+                try
+                {
+                  _smsOutboundRepository.AddSms(sms);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to create SMS for recipient {Recipient} in Campaign ID {CampaignId}", recipient, createdCampaign.Id);
+                }
+            }
+            
             _logger.LogInformation("Created campaign with ID {CampaignId}", createdCampaign.Id);
             return createdCampaign;
         }

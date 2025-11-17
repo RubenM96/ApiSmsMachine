@@ -16,7 +16,7 @@ namespace SmsMachine.Tests
 
             DateTime date = DateTime.Now;
             string recipientSms = "+393466270684";
-            var smsOutboundTest = new SmsOutbound(new Recipient(recipientSms), "Unit Test", false, true, date);
+            var smsOutboundTest = new SmsOutbound(new Recipient(recipientSms), "Unit Test", false, true, date,null);
             smsOutboundTest.Id = 13;
             smsOutboundTest.Index = 12;
 

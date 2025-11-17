@@ -26,6 +26,7 @@ namespace SmsMachine.Infrastructure.Data
                 e.Property(s => s.Notify).IsRequired();
                 e.Property(s => s.Index);
                 e.Property(s => s.CampaignId);
+                e.Property(s => s.Status).IsRequired();
             });
 
             //Tabella Notify
@@ -57,7 +58,6 @@ namespace SmsMachine.Infrastructure.Data
                 e.Property(s => s.Text).IsRequired().HasMaxLength(300);
                 e.Property(s => s.ReceivedAt).IsRequired();
                 e.Property(s => s.Multipart).IsRequired();
-                //e.Property(s => s.Notify).IsRequired();
             });
 
             //Tabella CampaignSms
@@ -68,7 +68,7 @@ namespace SmsMachine.Infrastructure.Data
                 e.Property(c => c.Id).ValueGeneratedOnAdd();
                 e.Property(c => c.Title).IsRequired().HasMaxLength(100);
                 e.Property(c => c.Text).IsRequired().HasMaxLength(160);
-                e.Property(c => c.RecipientList).IsRequired(); // non abbiamo aggiunto maxlenght perchè la campagna avrebbe il limite di 260 numeri 
+                e.Property(c => c.RecipientList).IsRequired(); // nda cancellare
                 e.Property(c => c.CampaignNotify).IsRequired();
                 e.Property(c => c.CreatedAt).IsRequired();
                 e.Property(c => c.Status).IsRequired();

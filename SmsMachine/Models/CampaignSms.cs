@@ -12,7 +12,7 @@ namespace SmsMachine.Models
         public CampaignSms(string title, string text, string recipientList, bool campaignNotify, string? description)
         {
             var recipients = GetRecipientToList(recipientList);
-
+            
             Title = title ?? throw new ArgumentNullException(nameof(title));
             Text = text ?? throw new ArgumentNullException(nameof(text));
             RecipientList = RegrexRecipient(recipients) ?? throw new ArgumentNullException(nameof(recipientList));
