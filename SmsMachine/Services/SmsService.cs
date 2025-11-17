@@ -8,14 +8,12 @@ namespace SmsMachine.Services
     {
         private readonly ISmsSender _smsSender;
         private readonly ISmsOutboundRepository _smsOutboundRepository;
-        private readonly ISmsQueueService _smsQueueService;
         private readonly ILogger<SmsService> _logger;
 
-        public SmsService(ISmsSender smsSender, ISmsOutboundRepository smsRepository, ILogger<SmsService> logger, ISmsQueueService smsQueueService)
+        public SmsService(ISmsSender smsSender, ISmsOutboundRepository smsRepository, ILogger<SmsService> logger)
         {
             _smsSender = smsSender;
             _smsOutboundRepository = smsRepository;
-            _smsQueueService = smsQueueService;
             _logger = logger;
         }
 
@@ -43,18 +41,33 @@ namespace SmsMachine.Services
                 if (responeSendSms.IsSuccess)
                 {
                     sms.Index = responeSendSms.GetIndex();
-                    sms.Id = smsId;
                     sms.Status = SmsStatus.Sent;
+                    if (smsId == null)
+                    {
+                        _smsOutboundRepository.AddSms(sms);
+                    }
+                    else
+                    {
+                        sms.Id = smsId;
+                        _smsOutboundRepository.UpdateSms(sms);
+                    }
 
-                    //_smsOutboundRepository.AddSms(sms);
-
-                    _smsOutboundRepository.UpdateSms(sms);
                     _logger.LogInformation("SMS to {Recipient} sent and saved to database successfully", recipient);
                 }
                 else if (responeSendSms.Refused)
-                {                                
-                    _smsQueueService.EnqueueSms(new Recipient(recipient), text, multipart, notify, campaignId);
+                {
                     //TODO: Routing per gestire più SmsMachine
+
+                    sms.Status = SmsStatus.InProgress;
+                    if (smsId == null)
+                    {
+                        _smsOutboundRepository.AddSms(sms);
+                    }
+                    else
+                    {
+                        sms.Id = smsId;
+                        _smsOutboundRepository.UpdateSms(sms);
+                    }
                 }
                 else
                 {

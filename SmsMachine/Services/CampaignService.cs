@@ -1,9 +1,11 @@
-﻿using SmsMachine.Api.Infrastructure.Utils;
+﻿using Microsoft.Identity.Client;
+using SmsMachine.Api.Infrastructure.Utils;
 using SmsMachine.Api.Models;
 using SmsMachine.Api.Models.DTO;
 using SmsMachine.Api.Services;
 using SmsMachine.Interfaces;
 using SmsMachine.Models;
+using System.Runtime.CompilerServices;
 
 namespace SmsMachine.Services
 {
@@ -14,6 +16,7 @@ namespace SmsMachine.Services
         private readonly ISmsOutboundRepository _smsOutboundRepository;
         private readonly IDiscardSmsService _discardSmsService;
         private readonly ISmsService _smsService;
+        private readonly ISmsQueueService _smsQueueService;
         private readonly ILogger<CampaignService> _logger;
 
         public CampaignService(
@@ -22,6 +25,7 @@ namespace SmsMachine.Services
             ISmsOutboundRepository smsOutboundRepository,
             IDiscardSmsService discardSmsService,
             ISmsService msService,
+            ISmsQueueService smsQueueService,
             ILogger<CampaignService> logger)
         {
             _campaignRepository = campaignRepository;
@@ -29,6 +33,7 @@ namespace SmsMachine.Services
             _smsOutboundRepository = smsOutboundRepository;
             _discardSmsService = discardSmsService;
             _smsService = msService;
+            _smsQueueService = smsQueueService;
             _logger = logger;
         }
 
@@ -87,7 +92,9 @@ namespace SmsMachine.Services
             }
 
             //Tentativo di invio dei messaggi in coda
-            await RetryQueuedForCampaignAsync(campaign.Id, TimeSpan.FromSeconds(5));
+           // await RetryQueuedForCampaignAsync(campaign.Id, TimeSpan.FromSeconds(5));
+            await _smsQueueService.ProcessSmsQueueAsync(TimeSpan.FromSeconds(5));
+
 
             //controllo messaggi consegnati/falliti e cambio stato campagna
             var isComplete = CampaignIsComplete(campaign);
