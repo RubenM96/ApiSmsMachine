@@ -9,5 +9,8 @@ namespace SmsMachine.Interfaces
         List<SmsQueue> GetSmsQueueByCampaign(int CampaignId);
         bool Delete(int id);
 
+
+
+
     }
 }

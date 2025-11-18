@@ -11,11 +11,12 @@ namespace SmsMachine.Models
 
         public CampaignSms(string title, string text, string recipientList, bool campaignNotify, string? description)
         {
+            //prepara la lista di destinatari e controlla che i numeri siano validi
             var recipients = GetRecipientToList(recipientList);
-            
+            RegrexRecipient(recipients);
+
             Title = title ?? throw new ArgumentNullException(nameof(title));
-            Text = text ?? throw new ArgumentNullException(nameof(text));
-            RecipientList = RegrexRecipient(recipients) ?? throw new ArgumentNullException(nameof(recipientList));
+            Text = text ?? throw new ArgumentNullException(nameof(text));           
             CampaignNotify = campaignNotify;
             CreatedAt = DateTime.UtcNow;
             Status = CampaignStatus.Draft;
@@ -28,7 +29,6 @@ namespace SmsMachine.Models
         public int Id { get; set; }
         public string Title { get; set; }
         public string Text { get; set; }
-        public string RecipientList { get; set; }
         public bool CampaignNotify { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? ScheduledAt { get; set; }
@@ -38,7 +38,6 @@ namespace SmsMachine.Models
         public int TotalRecipients { get; set; }
         public int DeliveredCount { get; private set; }
         public int FailedCount { get; private set; }
-
 
 
         // helper per aggiornare i contatori e controllare la lista di numeri

@@ -1,11 +1,9 @@
-﻿using Microsoft.Identity.Client;
-using SmsMachine.Api.Infrastructure.Utils;
+﻿using SmsMachine.Api.Infrastructure.Utils;
 using SmsMachine.Api.Models;
 using SmsMachine.Api.Models.DTO;
 using SmsMachine.Api.Services;
 using SmsMachine.Interfaces;
 using SmsMachine.Models;
-using System.Runtime.CompilerServices;
 
 namespace SmsMachine.Services
 {
@@ -83,7 +81,7 @@ namespace SmsMachine.Services
                 try
                 {
                     _smsService.SendSms(smsOutbound.Id, smsOutbound.Recipient.Value, smsOutbound.Text, smsOutbound.Multipart, smsOutbound.Notify, campaign.Id);
-                    _logger.LogInformation("Sent SMS to {Recipient} for Campaign ID {CampaignId}",smsOutbound.Recipient.Value,campaign.Id);
+                    _logger.LogInformation("Sent SMS to {Recipient} for Campaign ID {CampaignId}", smsOutbound.Recipient.Value, campaign.Id);
                 }
                 catch (Exception ex)
                 {
@@ -92,8 +90,8 @@ namespace SmsMachine.Services
             }
 
             //Tentativo di invio dei messaggi in coda
-           // await RetryQueuedForCampaignAsync(campaign.Id, TimeSpan.FromSeconds(5));
-            await _smsQueueService.ProcessSmsQueueAsync(TimeSpan.FromSeconds(5));
+            // await RetryQueuedForCampaignAsync(campaign.Id, TimeSpan.FromSeconds(5));
+            await _smsQueueService.ProcessSmsQueueAsync(TimeSpan.FromSeconds(5), campaign);
 
 
             //controllo messaggi consegnati/falliti e cambio stato campagna
@@ -119,9 +117,23 @@ namespace SmsMachine.Services
 
             var recipients = existingCampaign.GetRecipientToList(recipientList);
 
+            _smsOutboundRepository.DeleteAllSmsByCampaignId(existingCampaign.Id);
+            
+            foreach (var recipient in recipients)
+            {
+                var sms = new SmsOutbound(new Recipient(recipient), text, false, campaignNotify, DateTime.Now, existingCampaign.Id);
+                try
+                {
+                    _smsOutboundRepository.AddSms(sms);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to create SMS for recipient {Recipient} in Campaign ID {CampaignId} during update", recipient, existingCampaign.Id);
+                }
+            }
+
             existingCampaign.Title = title;
             existingCampaign.Text = text;
-            existingCampaign.RecipientList = existingCampaign.RegrexRecipient(recipients);
             existingCampaign.CampaignNotify = campaignNotify;
             existingCampaign.Description = description;
             existingCampaign.TotalRecipients = existingCampaign.CalculateTotalRecipients(recipients);

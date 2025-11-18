@@ -40,6 +40,13 @@ namespace SmsMachine.Infrastructure.Repositories
             return _context.Set<SmsOutbound>().Where(s => s.CampaignId == campaignId).ToList();
         }
 
+        public void DeleteAllSmsByCampaignId(int campaignId)
+        {
+            var smsList = _context.Set<SmsOutbound>().Where(s => s.CampaignId == campaignId).ToList();
+            _context.Set<SmsOutbound>().RemoveRange(smsList);
+            _context.SaveChanges();
+        }
+
         //metodo per cercare messaggio nel db in base a recipient e indexSms
         public SmsOutbound? GetSmsOutboundByRecipientAndIndex(string recipient, int indexSms)
         {

@@ -23,7 +23,7 @@ namespace SmsMachine.Services
             _logger.LogInformation("Enqueued SMS for {Recipient} (campaign {CampaignId})", recipient.Value, campaignId);
         }
 
-        public async Task ProcessSmsQueueAsync(TimeSpan delay)
+        public async Task ProcessSmsQueueAsync(TimeSpan delay, CampaignSms campaign)
         {
             await Task.Delay(delay);
 

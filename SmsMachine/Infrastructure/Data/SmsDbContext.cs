@@ -68,7 +68,6 @@ namespace SmsMachine.Infrastructure.Data
                 e.Property(c => c.Id).ValueGeneratedOnAdd();
                 e.Property(c => c.Title).IsRequired().HasMaxLength(100);
                 e.Property(c => c.Text).IsRequired().HasMaxLength(160);
-                e.Property(c => c.RecipientList).IsRequired(); // nda cancellare
                 e.Property(c => c.CampaignNotify).IsRequired();
                 e.Property(c => c.CreatedAt).IsRequired();
                 e.Property(c => c.Status).IsRequired();
