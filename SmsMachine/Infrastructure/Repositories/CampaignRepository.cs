@@ -31,32 +31,32 @@ namespace SmsMachine.Infrastructure.Repositories
 
         public async Task<PagedResult<CampaignListDTO>> SearchAsync(CampaignFilter filter)
         {
-            // NB: il Service chiama filter.Normalize(); qui gestiamo comunque difensivo
+            //  il Service chiama filter.Normalize()
             var title = string.IsNullOrWhiteSpace(filter.Title) ? null : filter.Title.Trim();
             DateTime? from = filter.From?.Date;
-            DateTime? toInclusive = filter.To?.Date.AddDays(1); // include tutto il giorno “To”
+            DateTime? toInclusive = filter.To?.Date.AddDays(1); // include tutto il giorno
 
-            var q = _context.Set<CampaignSms>()
+            var campaignSearchQuery = _context.Set<CampaignSms>()
                             .AsNoTracking()
                             .AsQueryable();
 
             if (!string.IsNullOrEmpty(title))
-                q = q.Where(c => c.Title.Contains(title));
+                campaignSearchQuery = campaignSearchQuery.Where(c => c.Title.Contains(title));
 
             if (from.HasValue)
-                q = q.Where(c => c.CreatedAt >= from.Value);
+                campaignSearchQuery = campaignSearchQuery.Where(c => c.CreatedAt >= from.Value);
 
             if (toInclusive.HasValue)
-                q = q.Where(c => c.CreatedAt < toInclusive.Value);
+                campaignSearchQuery = campaignSearchQuery.Where(c => c.CreatedAt < toInclusive.Value);
 
             // totale con filtri
-            var total = await q.CountAsync();
+            var total = await campaignSearchQuery.CountAsync();
 
             // ordinamento consigliato: più recenti in alto
-            q = q.OrderByDescending(c => c.CreatedAt);
+            campaignSearchQuery = campaignSearchQuery.OrderByDescending(c => c.CreatedAt);
 
 
-            var items = await q
+            var items = await campaignSearchQuery
                 .Skip((filter.Page - 1) * filter.PageSize)
                 .Take(filter.PageSize)
                 .Select(c => new CampaignListDTO

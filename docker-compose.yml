@@ -1,0 +1,13 @@
+services:
+  smsmachine.api:
+    image: ${DOCKER_REGISTRY-}smsmachineapi
+    build:
+      context: .
+      dockerfile: SmsMachine/Dockerfile
+
+  smsmachine.dashboard:
+    image: ${DOCKER_REGISTRY-}smsmachinedashboard
+    build:
+      context: .
+      dockerfile: SmsMachineDashboard/Dockerfile
+

@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "Docker Compose": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "serviceActions": {
+        "smsmachine.api": "StartDebugging",
+        "smsmachine.dashboard": "StartDebugging"
+      }
+    }
+  }
+}

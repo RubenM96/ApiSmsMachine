@@ -63,15 +63,15 @@ public class CampaignService
     public Task<HttpResponseMessage> DeleteCampaignAsync(int id)
     => _http.DeleteAsync($"api/campaign/{id}");
 
-    public async Task<PagedResult<CampaignListDTO>> SearchAsync(CampaignSearchQuery q)
+    public async Task<PagedResult<CampaignListDTO>> SearchAsync(CampaignSearchQuery campaignSearchQuery)
     {
         //querystring
         var qs = HttpUtility.ParseQueryString(string.Empty);
-        if (!string.IsNullOrWhiteSpace(q.Title)) qs["title"] = q.Title;
-        if (q.From.HasValue) qs["from"] = q.From.Value.ToString("yyyy-MM-dd");
-        if (q.To.HasValue) qs["to"] = q.To.Value.ToString("yyyy-MM-dd");
-        qs["page"] = (q.Page <= 0 ? 1 : q.Page).ToString();
-        qs["pageSize"] = (q.PageSize <= 0 ? 10 : q.PageSize).ToString();
+        if (!string.IsNullOrWhiteSpace(campaignSearchQuery.Title)) qs["title"] = campaignSearchQuery.Title;
+        if (campaignSearchQuery.From.HasValue) qs["from"] = campaignSearchQuery.From.Value.ToString("yyyy-MM-dd");
+        if (campaignSearchQuery.To.HasValue) qs["to"] = campaignSearchQuery.To.Value.ToString("yyyy-MM-dd");
+        qs["page"] = (campaignSearchQuery.Page <= 0 ? 1 : campaignSearchQuery.Page).ToString();
+        qs["pageSize"] = (campaignSearchQuery.PageSize <= 0 ? 10 : campaignSearchQuery.PageSize).ToString();
 
         var url = $"api/campaign/search?{qs}";
         var res = await _http.GetFromJsonAsync<PagedResult<CampaignListDTO>>(url);
@@ -79,8 +79,8 @@ public class CampaignService
         {
             Items = Array.Empty<CampaignListDTO>(),
             Total = 0,
-            Page = q.Page <= 0 ? 1 : q.Page,
-            PageSize = q.PageSize <= 0 ? 10 : q.PageSize
+            Page = campaignSearchQuery.Page <= 0 ? 1 : campaignSearchQuery.Page,
+            PageSize = campaignSearchQuery.PageSize <= 0 ? 10 : campaignSearchQuery.PageSize
         };
     }
 }

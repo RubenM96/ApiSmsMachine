@@ -64,8 +64,11 @@ builder.Services.AddCors(options =>
             .AllowAnyMethod());
 });
 
-
+//gestire meglio questo con init db o in seed db
 var app = builder.Build();
+var scope = app.Services.CreateScope();
+var db = scope.ServiceProvider.GetRequiredService<SmsDbContext>();
+db.Database.Migrate();
 
 app.UseCors("AllowBlazor");
 
