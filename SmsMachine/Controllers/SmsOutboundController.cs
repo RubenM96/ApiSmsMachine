@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using SmsMachine.Interfaces;
-using SmsMachine.Models;
 
 namespace SmsMachine.Api.Controllers
 {
@@ -21,7 +19,7 @@ namespace SmsMachine.Api.Controllers
         }
 
 
-        [HttpPost("[action]")]
+        [HttpGet("[action]/{campaignId}")]
         public IActionResult GetAllSmsOutboundByCampaignId(int campaignId)
         {
             try

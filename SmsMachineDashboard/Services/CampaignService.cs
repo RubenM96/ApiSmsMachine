@@ -1,4 +1,5 @@
 ﻿using SmsMachine.Dashboard.Models;
+using System.Net;
 using System.Web;
 
 public class CampaignService
@@ -82,5 +83,29 @@ public class CampaignService
             Page = q.Page <= 0 ? 1 : q.Page,
             PageSize = q.PageSize <= 0 ? 10 : q.PageSize
         };
+    }
+
+    //estrarre i recipient di una campagna
+    public async Task<string> GetRecipientsByCampaignIdAsync(int campaignId)
+    {
+        var url = $"api/smsoutbound/GetAllSmsOutboundByCampaignId/{campaignId}";
+        var resp = await _http.GetAsync(url);
+
+        if (resp.StatusCode == HttpStatusCode.NotFound)
+            return string.Empty; // comportamento atteso se non esistono sms
+
+        resp.EnsureSuccessStatusCode();
+
+        var smsList = await resp.Content.ReadFromJsonAsync<List<SmsOutbound>>() ?? new List<SmsOutbound>();
+
+        if (smsList.Count == 0) return string.Empty;
+
+        var recipientsString = string.Join(", ",
+            smsList
+                .Where(s => s.Recipient != null && !string.IsNullOrEmpty(s.Recipient.Value))
+                .Select(s => s.Recipient.Value)
+        );
+
+        return recipientsString;
     }
 }
