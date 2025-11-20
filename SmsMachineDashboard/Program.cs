@@ -6,12 +6,15 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddScoped<CampaignService>();
+builder.Services.AddServiceDiscovery();
+builder.Services.AddHttpClient<CampaignService>(s => { s.BaseAddress = new Uri("https+http://api"); })
+    .AddServiceDiscovery();
 
-builder.Services.AddScoped(sp => new HttpClient
-{
-    BaseAddress = new Uri("https://api")
-});
+//builder.Services.AddScoped<CampaignService>();
+//builder.Services.AddScoped(sp => new HttpClient
+//{
+//    BaseAddress = new Uri("https://api")
+//});
 
 var app = builder.Build();
 
