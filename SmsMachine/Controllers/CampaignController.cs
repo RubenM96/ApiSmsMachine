@@ -100,7 +100,7 @@ namespace SmsMachine.Controllers
             return Ok(getOneCampaign);
         }
 
-        /*
+        
         [HttpPut("{id}")]
         public IActionResult UpdateCampaign(int id, [FromForm] CampaignForm campaignReceiver)
         {
@@ -110,7 +110,7 @@ namespace SmsMachine.Controllers
 
             try
             {
-                var updatedCampaign = _campaignService.UpdateCampaign(id, campaignReceiver.Title, campaignReceiver.Text, campaignReceiver.RecipientList, campaignReceiver.CampaignNotify, campaignReceiver.Description);
+                var updatedCampaign = _campaignService.UpdateCampaign(id, campaignReceiver);
                 return Ok(updatedCampaign);
             }
             catch (Exception ex)
@@ -119,7 +119,7 @@ namespace SmsMachine.Controllers
                 return BadRequest($"Error updating campaign: {ex.Message}");
             }
         }
-        */
+        
 
         [HttpDelete("{id}")]
         public IActionResult DeleteCampaign(int id)

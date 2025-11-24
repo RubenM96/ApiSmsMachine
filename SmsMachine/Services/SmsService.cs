@@ -17,73 +17,68 @@ namespace SmsMachine.Services
             _logger = logger;
         }
 
-        public AreaSxSendResult SendSms(int? smsId, string recipient, string text, bool multipart, bool notify, int? campaignId)
+        public AreaSxSendResult SendSms(SmsOutbound smsOutbound)
         {
-            _logger.LogInformation("Preparing to send SMS to {Recipient} with text: {Text}, multipart: {Multipart}, notify: {Notify}", recipient, text, multipart, notify);
+            if (smsOutbound == null)
+                throw new ArgumentNullException(nameof(smsOutbound));
+      
+            _logger.LogInformation(
+                "Preparing to send SMS to {Recipient}. Text: {Text}, multipart: {Multipart}, notify: {Notify}",
+                smsOutbound.Recipient.Value,
+                smsOutbound.Text,
+                smsOutbound.Multipart,
+                smsOutbound.Notify
+            );
+    
+            var text = smsOutbound.Text;
 
-            //controlli input
-            if (text.Length > 160 && !multipart)
+            if (text.Length > 160 && !smsOutbound.Multipart)
                 text = text.Substring(0, 160);
 
             if (text.Length > 300)
                 text = text.Substring(0, 300);
 
-            var sms = new SmsOutbound(new Recipient(recipient), text, multipart, notify, DateTime.Now, null);
+            // aggiorno l'entità con il testo normalizzato 
+            smsOutbound.Text = text;
 
-            if (campaignId != null)
-                sms.CampaignId = campaignId;
+            //chiamata macchina 
+            var responseSendSms = _smsSender.SendSms(
+                smsOutbound.Recipient.Value,
+                smsOutbound.Text,
+                smsOutbound.Notify
+            );
 
-            try
+            
+            if (responseSendSms.IsSuccess)
             {
-                //invio sms a AreaSx
-                AreaSxSendResult responeSendSms = _smsSender.SendSms(recipient, text, notify);
+                smsOutbound.SentAt = DateTime.Now;
+                smsOutbound.Status = SmsStatus.Sent;
+                smsOutbound.Index = responseSendSms.GetIndex();
 
-                if (responeSendSms.IsSuccess)
-                {
-                    sms.Index = responeSendSms.GetIndex();
-                    sms.Status = SmsStatus.Sent;
-                    if (smsId == null)
-                    {
-                        _smsOutboundRepository.AddSms(sms);
-                    }
-                    else
-                    {
-                        sms.Id = smsId;
-                        _smsOutboundRepository.UpdateSms(sms);
-                    }
-
-                    _logger.LogInformation("SMS to {Recipient} sent and saved to database successfully", recipient);
-                }
-                else if (responeSendSms.Refused)
-                {
-                    //TODO: Routing per gestire più SmsMachine
-
-                    sms.Status = SmsStatus.InProgress;
-                    if (smsId == null)
-                    {
-                        _smsOutboundRepository.AddSms(sms);
-                    }
-                    else
-                    {
-                        sms.Id = smsId;
-                        _smsOutboundRepository.UpdateSms(sms);
-                    }
-                }
+                if (smsOutbound.Id == 0 || smsOutbound.Id == null)
+                    _smsOutboundRepository.AddSms(smsOutbound);
                 else
-                {
-                    throw new Exception(responeSendSms.Errno);
-                }
+                    _smsOutboundRepository.UpdateSms(smsOutbound);
 
-                return responeSendSms;
+                return responseSendSms;
             }
-            catch (Exception ex)
+            else if (responseSendSms.Refused)
             {
-                _logger.LogError(ex, "Failed to save SMS to database for recipient {Recipient}", recipient);
-                _logger.LogError(ex, "Failed to send SMS to {Recipient}", recipient);
-                throw;
+                smsOutbound.SentAt = DateTime.Now;
+                smsOutbound.Status = SmsStatus.InProgress;
+
+                if (smsOutbound.Id == 0 || smsOutbound.Id == null)
+                    _smsOutboundRepository.AddSms(smsOutbound);
+                else
+                    _smsOutboundRepository.UpdateSms(smsOutbound);
+
+                return responseSendSms;
+            }
+            else
+            {
+                throw new Exception(responseSendSms.Errno);
             }
         }
-
 
 
     }

@@ -5,9 +5,9 @@ namespace SmsMachine.Models
     public class SmsSend
     {
         [Required]
-        public string? Recipient { get; set; }
+        public string Recipient { get; set; }
         [Required]
-        public string? Text { get; set; }
+        public string Text { get; set; }
         [Required]
         public bool? Notify { get; set; }
     }

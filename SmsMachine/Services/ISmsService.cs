@@ -1,9 +1,10 @@
 ﻿using SmsMachine.Infrastructure;
+using SmsMachine.Models;
 
 namespace SmsMachine.Services
 {
     public interface ISmsService
     {
-        AreaSxSendResult SendSms(int? smsId, string recipient, string text, bool multipart, bool notify, int? campaignId);
+        AreaSxSendResult SendSms(SmsOutbound smsOutbound);
     }
 }
