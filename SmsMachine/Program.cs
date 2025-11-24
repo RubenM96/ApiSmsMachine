@@ -22,7 +22,6 @@ builder.Services.AddTransient<ISmsOutboundRepository, SmsOutboundRepository>();
 builder.Services.AddTransient<INotifyRepository, NotifyRepository>();
 builder.Services.AddTransient<ISmsInboundRepository, SmsInboundRepository>();
 builder.Services.AddTransient<ICampaignRepository, CampaignRepository>();
-builder.Services.AddTransient<ISmsQueueRepository, SmsQueueRepository>();
 
 // Add services to the container.
 builder.Services.AddSingleton(new AreaSxOptions
@@ -36,7 +35,6 @@ builder.Services.AddTransient<ISmsReceiver, AreaSxSmsReceiver>();
 builder.Services.AddTransient<INotifyService, NotifyService>();
 builder.Services.AddTransient<ISmsInbound, SmsInboundService>();
 builder.Services.AddTransient<ICampaignService, CampaignService>();
-builder.Services.AddTransient<ISmsQueueService, SmsQueueService>();
 builder.Services.AddTransient<IDiscardSmsService, DiscardSmsService>();
 
 builder.Services.AddHttpClient<ISmsSender, AreaSxSmsSender>(client =>

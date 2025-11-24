@@ -12,8 +12,6 @@ namespace SmsMachine.Services
 
         CampaignSms UpdateCampaign(int id, CampaignForm form);
 
-        Task RetryQueuedForCampaignAsync(int campaignId, TimeSpan delay);
-
         Task<PagedResult<CampaignListDTO>> SearchAsync(CampaignFilter filter);
     }
 }

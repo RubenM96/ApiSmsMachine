@@ -23,7 +23,17 @@ public class SendSmsController : ControllerBase
 
         try
         {
-            var responeSendSms = _smsService.SendSms(null, sms.Recipient, sms.Text, false, sms.Notify.Value, null);
+            // costruisco l’oggetto e lo passo al service
+            var smsOutbound = new SmsOutbound(
+                 new Recipient(sms.Recipient),
+                 sms.Text,
+                 multipart: false,
+                 notify: sms.Notify.Value,
+                 sentAt: DateTime.Now,
+                 campaignId: null
+             );
+
+            var responeSendSms = _smsService.SendSms(smsOutbound);
             return Ok(responeSendSms);
         }
         catch (Exception ex)
@@ -31,6 +41,4 @@ public class SendSmsController : ControllerBase
             return BadRequest($"Errore durante l'invio del messaggio: {ex.Message}");
         }
     }
-
-
 }
