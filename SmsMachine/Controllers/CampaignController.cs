@@ -100,6 +100,7 @@ namespace SmsMachine.Controllers
             return Ok(getOneCampaign);
         }
 
+        /*
         [HttpPut("{id}")]
         public IActionResult UpdateCampaign(int id, [FromForm] CampaignForm campaignReceiver)
         {
@@ -134,7 +135,7 @@ namespace SmsMachine.Controllers
                 return BadRequest($"Error deleting campaign: {ex.Message}");
             }
         }
-
+        */
 
     }
 }

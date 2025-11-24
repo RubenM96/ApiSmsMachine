@@ -12,7 +12,6 @@ namespace SmsMachine.Models
             Recipient = recipient ?? throw new ArgumentNullException(nameof(recipient));
             Text = text ?? throw new ArgumentNullException(nameof(text));
             Multipart = multipart;
-            // Notify = notify;
             ReceivedAt = receivedAt;
         }
         public int Id { get; }

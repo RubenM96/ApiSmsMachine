@@ -1,5 +1,5 @@
 ﻿using SmsMachine.Api.Infrastructure.Utils;
-using System.Text.RegularExpressions;
+using SmsMachine.Api.Models;
 
 namespace SmsMachine.Models
 {
@@ -11,17 +11,15 @@ namespace SmsMachine.Models
 
         public CampaignSms(string title, string text, string recipientList, bool campaignNotify, string? description)
         {
-            //prepara la lista di destinatari e controlla che i numeri siano validi
-            var recipients = GetRecipientToList(recipientList);
-            RegrexRecipient(recipients);
+            RecipientList recipients = new RecipientList(recipientList);
 
             Title = title ?? throw new ArgumentNullException(nameof(title));
-            Text = text ?? throw new ArgumentNullException(nameof(text));           
+            Text = text ?? throw new ArgumentNullException(nameof(text));
             CampaignNotify = campaignNotify;
             CreatedAt = DateTime.UtcNow;
             Status = CampaignStatus.Draft;
             Description = description;
-            TotalRecipients = CalculateTotalRecipients(recipients);
+            TotalRecipients = recipients.CalculateTotalRecipients();
             DeliveredCount = 0;
             FailedCount = 0;
         }
@@ -39,37 +37,6 @@ namespace SmsMachine.Models
         public int DeliveredCount { get; private set; }
         public int FailedCount { get; private set; }
 
-
-        // helper per aggiornare i contatori e controllare la lista di numeri
-        public List<string> GetRecipientToList(string recipientList)
-        {
-            var recipients = recipientList
-               .Split(new[] { ',', ';', ' ', '\n' }, StringSplitOptions.RemoveEmptyEntries)
-               .Select(r => r.Trim())
-               .ToList();
-            return recipients;
-        }
-
-        public string RegrexRecipient(List<string> recipientList)
-        {
-            foreach (var recipient in recipientList)
-            {
-                var isValid = Regex.IsMatch(recipient, @"^\+\d+$");
-                if (!isValid)
-                {
-                    throw new ArgumentException($"Il numero {recipient} non è valido. Usa il formato +[prefisso][numero] e solo cifre.");
-                }
-            }
-            return string.Join(",", recipientList);
-        }
-
-        public int CalculateTotalRecipients(List<string> recipientList)
-        {
-            if (recipientList.Count < 1)
-                throw new ArgumentException("La lista di destinatari deve contenere almeno un numero di telefono valido.");
-
-            return recipientList.Count();
-        }
 
         public void IncDelivered(int deliveredCount) => DeliveredCount = deliveredCount;
         public void IncFailed(int failedCount) => FailedCount = failedCount;

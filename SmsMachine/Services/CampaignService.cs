@@ -38,12 +38,13 @@ namespace SmsMachine.Services
         //Creazione campagna
         public CampaignSms CreateCampaign(CampaignSms campaign, string recipientList)
         {
-            //CampaignSms campaign = new CampaignSms(title, text, recipientList, campaignNotify, description);
+
+            RecipientList recipients = new RecipientList(recipientList);
             
             var createdCampaign = _campaignRepository.AddCampaign(campaign);
 
             //crea i singoli sms della campagna
-            foreach (var recipient in campaign.GetRecipientToList(recipientList))
+            foreach (var recipient in recipients.GetRecipientToList(recipientList))
             {
                 var sms = new SmsOutbound(new Recipient(recipient), campaign.Text, false, campaign.CampaignNotify, DateTime.Now, createdCampaign.Id);
                 try
@@ -105,6 +106,7 @@ namespace SmsMachine.Services
             return campaign;
         }
 
+        /*
         // Modifica Campagna
         public CampaignSms UpdateCampaign(int id, string title, string text, string recipientList, bool campaignNotify, string? description)
         {
@@ -115,6 +117,7 @@ namespace SmsMachine.Services
                 throw new ArgumentException($"Campaign with ID {id} not found");
             }
 
+            
             var recipients = existingCampaign.GetRecipientToList(recipientList);
 
             _smsOutboundRepository.DeleteAllSmsByCampaignId(existingCampaign.Id);
@@ -143,6 +146,7 @@ namespace SmsMachine.Services
             _logger.LogInformation("Updated campaign with ID {CampaignId}", updatedCampaign.Id);
             return updatedCampaign;
         }
+        */
 
         //tentativo di invio dei messaggi in coda per una campagna specifica
         public async Task RetryQueuedForCampaignAsync(int campaignId, TimeSpan delay)
