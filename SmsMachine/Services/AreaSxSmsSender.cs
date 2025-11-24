@@ -52,9 +52,6 @@ namespace SmsMachine.Services
             var result = System.Text.Json.JsonSerializer.Deserialize<AreaSxSendResult>(json,
                 new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
-            //if (!result.IsSuccess)
-            //    throw new Exception(result.Errno);
-
             _logger.LogInformation("SMS sent successfully to {Recipient}", recipient);
 
             return result;

@@ -127,7 +127,6 @@ namespace SmsMachine.Services
         }
         */
 
-
         public async Task<PagedResult<CampaignListDTO>> SearchAsync(CampaignFilter filter)
         {
             filter.Normalize();                      // normalizza page/pageSize e From/To
@@ -139,8 +138,10 @@ namespace SmsMachine.Services
             var ok = _campaignRepository.DeleteCampaign(id);
             if (ok)
             {
-                _smsOutboundRepository.DeleteAllSmsByCampaignId(id);
                 _logger.LogInformation("Deleted campaign with ID {CampaignId}", id);
+                //per l'integrità referenziale elimina anche tutti gli sms associati
+                _smsOutboundRepository.DeleteAllSmsByCampaignId(id);
+                _logger.LogInformation("Deleted all SMS for Campaign ID {CampaignId}", id);
             }
             else {
                 _logger.LogWarning("Failed to delete campaign with ID {CampaignId}", id);
