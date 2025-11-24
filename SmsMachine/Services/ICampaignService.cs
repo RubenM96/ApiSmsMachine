@@ -10,7 +10,7 @@ namespace SmsMachine.Services
 
         Task<CampaignSms> SendCampaign(int id);
 
-        CampaignSms UpdateCampaign(int id, string title, string text, string recipientList, bool campaignNotify, string? description);
+        CampaignSms UpdateCampaign(int id, CampaignForm form);
 
         Task RetryQueuedForCampaignAsync(int campaignId, TimeSpan delay);
 
