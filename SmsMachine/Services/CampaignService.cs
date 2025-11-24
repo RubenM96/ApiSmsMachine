@@ -106,7 +106,7 @@ namespace SmsMachine.Services
         }
 
         // Modifica Campagna
-        public CampaignSms UpdateCampaign(int id, string title, string text, string recipientList, bool campaignNotify, string? description)
+        public CampaignSms UpdateCampaign(int id, CampaignForm form)
         {
             CampaignSms? existingCampaign = _campaignRepository.GetCampaignId(id);
             if (existingCampaign == null)
@@ -115,27 +115,28 @@ namespace SmsMachine.Services
                 throw new ArgumentException($"Campaign with ID {id} not found");
             }
 
-            var recipients = existingCampaign.GetRecipientToList(recipientList);
+            var recipients = existingCampaign.GetRecipientToList(form.RecipientList);
 
             _smsOutboundRepository.DeleteAllSmsByCampaignId(existingCampaign.Id);
-            
+
             foreach (var recipient in recipients)
             {
-                var sms = new SmsOutbound(new Recipient(recipient), text, false, campaignNotify, DateTime.Now, existingCampaign.Id);
-                try
-                {
-                    _smsOutboundRepository.AddSms(sms);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Failed to create SMS for recipient {Recipient} in Campaign ID {CampaignId} during update", recipient, existingCampaign.Id);
-                }
+                var sms = new SmsOutbound(
+                    new Recipient(recipient),
+                    form.Text,
+                    multipart: false,
+                    notify: form.CampaignNotify,
+                    sentAt: DateTime.Now,
+                    campaignId: existingCampaign.Id
+                );
+
+                _smsOutboundRepository.AddSms(sms);
             }
 
-            existingCampaign.Title = title;
-            existingCampaign.Text = text;
-            existingCampaign.CampaignNotify = campaignNotify;
-            existingCampaign.Description = description;
+            existingCampaign.Title = form.Title;
+            existingCampaign.Text = form.Text;
+            existingCampaign.CampaignNotify = form.CampaignNotify;
+            existingCampaign.Description = form.Description;
             existingCampaign.TotalRecipients = existingCampaign.CalculateTotalRecipients(recipients);
 
             var updatedCampaign = _campaignRepository.UpdateCampaign(existingCampaign);
