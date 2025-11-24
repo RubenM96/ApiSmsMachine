@@ -32,7 +32,10 @@ namespace SmsMachine.Controllers
 
             try
             {
-                var createdCampaign = _campaignService.CreateCampaign(campaignReceiver.Title, campaignReceiver.Text, campaignReceiver.RecipientList, campaignReceiver.CampaignNotify, campaignReceiver.Description);
+                CampaignSms campaign = new CampaignSms(campaignReceiver.Title, campaignReceiver.Text, campaignReceiver.RecipientList, campaignReceiver.CampaignNotify, campaignReceiver.Description);
+                var recipientList = campaignReceiver.RecipientList;
+
+                var createdCampaign = _campaignService.CreateCampaign(campaign, recipientList);
                 return Ok(createdCampaign);
             }
             catch (ArgumentException ex) when (ex.ParamName is "recipient" or "recipientList")

@@ -6,7 +6,7 @@ namespace SmsMachine.Services
 {
     public interface ICampaignService
     {
-        CampaignSms CreateCampaign(string title, string text, string recipientList, bool campaignNotify, string? description);
+        CampaignSms CreateCampaign(CampaignSms campaign, string recipientList);
 
         Task<CampaignSms> SendCampaign(int id);
 
