@@ -1,4 +1,5 @@
-﻿namespace SmsMachine.Models;
+﻿using SmsMachine.Models;
+namespace SmsMachine.Api.Models;
 
 public class SmsQueue
 {

@@ -119,15 +119,15 @@ namespace SmsMachine.Controllers
                 return BadRequest($"Error updating campaign: {ex.Message}");
             }
         }
+        */
 
         [HttpDelete("{id}")]
         public IActionResult DeleteCampaign(int id)
         {
             try
             {
-                var ok = _campaignRepository.DeleteCampaign(id);
-                if (!ok) return NotFound($"Campaign {id} not found");
-                return Ok("Campaign delete");
+                _campaignService.DeleteCampaignById(id);
+                return Ok("Campaign and SMS delete");
             }
             catch (Exception ex)
             {
@@ -135,7 +135,7 @@ namespace SmsMachine.Controllers
                 return BadRequest($"Error deleting campaign: {ex.Message}");
             }
         }
-        */
+       
 
     }
 }

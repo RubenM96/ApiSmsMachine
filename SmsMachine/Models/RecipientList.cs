@@ -1,7 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 namespace SmsMachine.Api.Models;
 
-public record RecipientList
+public class RecipientList
 {
    
     public RecipientList(string recipientList)

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SmsMachine.Api.Models;
 using SmsMachine.Models;
 
 namespace SmsMachine.Infrastructure.Data
