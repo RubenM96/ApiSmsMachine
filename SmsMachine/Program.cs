@@ -18,7 +18,7 @@ Log.Logger = new LoggerConfiguration()
 builder.Services.AddDbContext<SmsDbContext>(options =>
     options.UseSqlServer(connectionString));
 
-builder.Services.AddTransient<ISmsOutboundRepository, SmsOutboundRepository>();
+builder.Services.AddScoped<ISmsOutboundRepository, SmsOutboundRepository>();
 builder.Services.AddTransient<INotifyRepository, NotifyRepository>();
 builder.Services.AddTransient<ISmsInboundRepository, SmsInboundRepository>();
 builder.Services.AddTransient<ICampaignRepository, CampaignRepository>();
@@ -30,9 +30,12 @@ builder.Services.AddSingleton(new AreaSxOptions
     Password = builder.Configuration["AreaSx:Password"]
 });
 
+builder.Services.AddHostedService<CheckSmsOutboundToSendHostedService>();
+builder.Services.AddScoped<ICheckSmsOutboundToSend, CheckSmsOutboundToSend>();
+
+
 builder.Services.AddTransient<ISmsService, SmsService>();
 builder.Services.AddTransient<ISmsReceiver, AreaSxSmsReceiver>();
-
 builder.Services.AddTransient<INotifyService, NotifyService>();
 builder.Services.AddTransient<ISmsInbound, SmsInboundService>();
 builder.Services.AddTransient<ICampaignService, CampaignService>();
@@ -65,6 +68,7 @@ builder.Services.AddCors(options =>
 
 //gestire meglio questo con init db o in seed db
 var app = builder.Build();
+
 var scope = app.Services.CreateScope();
 var db = scope.ServiceProvider.GetRequiredService<SmsDbContext>();
 db.Database.Migrate();
@@ -86,3 +90,4 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+

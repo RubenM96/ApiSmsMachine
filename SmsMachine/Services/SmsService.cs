@@ -41,14 +41,13 @@ namespace SmsMachine.Services
             // aggiorno l'entità con il testo normalizzato 
             smsOutbound.Text = text;
 
-            //chiamata macchina 
+            //chiamata macchina AreaSx SmsMachine
             var responseSendSms = _smsSender.SendSms(
                 smsOutbound.Recipient.Value,
                 smsOutbound.Text,
                 smsOutbound.Notify
             );
-
-            
+          
             if (responseSendSms.IsSuccess)
             {
                 smsOutbound.SentAt = DateTime.Now;

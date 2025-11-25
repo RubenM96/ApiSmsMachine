@@ -3,7 +3,7 @@ using SmsMachine.Services;
 
 namespace SmsMachine.Api.Services;
 
-public class CheckSmsOutboundToSend
+public class CheckSmsOutboundToSend : ICheckSmsOutboundToSend
 {
     private readonly ISmsOutboundRepository _smsOutboundRepository;
     private readonly ISmsService _smsService;
@@ -21,7 +21,14 @@ public class CheckSmsOutboundToSend
 
     public async Task CheckSmsOutboundInProgress()
     {
+        _logger.LogInformation("Controllo SMS in stato InProgress da inviare...");
+        var smsOutboundInProgress = _smsOutboundRepository.GetSmsOutboundInProgress();
 
+        if (smsOutboundInProgress != null) 
+        { 
+            _logger.LogInformation("Invio SMS in stato InProgress con Id: {SmsId}", smsOutboundInProgress.Id);
+            _smsService.SendSms(smsOutboundInProgress);
+        }
 
     }
 

@@ -11,5 +11,7 @@ namespace SmsMachine.Interfaces
         void DeleteAllSmsByCampaignId(int campaignId);
         SmsOutbound? GetSmsOutboundByRecipientAndIndex(string recipient, int indexSms);
         SmsOutbound? GetSmsOutboundByIndexAndCampaignId(int indexSms, int campaignId);
+
+        SmsOutbound? GetSmsOutboundInProgress();
     }
 }

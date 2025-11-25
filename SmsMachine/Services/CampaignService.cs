@@ -52,7 +52,7 @@ namespace SmsMachine.Services
             return createdCampaign;
         }
 
-        // Invio Campagna
+        // Invio Campagna, setta tuttis i messaggi in stato InProgress
         public async Task<CampaignSms> SendCampaign(int id)
         {
             CampaignSms? campaign = _campaignRepository.GetCampaignId(id);
@@ -84,7 +84,6 @@ namespace SmsMachine.Services
 
             return campaign;
         }
-
         
         // Modifica Campagna
         public CampaignSms UpdateCampaign(int id, CampaignForm form)

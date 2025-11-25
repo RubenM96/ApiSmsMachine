@@ -58,5 +58,11 @@ namespace SmsMachine.Infrastructure.Repositories
             SmsOutbound? smsOutbound = _context.Set<SmsOutbound>().FirstOrDefault(s => s.Index == indexSms && s.CampaignId == campaignId);
             return smsOutbound;
         }
+
+        public SmsOutbound? GetSmsOutboundInProgress()
+        {
+            SmsOutbound? smsOutbound = _context.Set<SmsOutbound>().FirstOrDefault(s => s.Status == SmsStatus.InProgress);
+            return smsOutbound;
+        }
     }
 }
