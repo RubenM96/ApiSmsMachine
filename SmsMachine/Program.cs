@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using SmsMachine.Api.Infrastructure.Database;
 using SmsMachine.Api.Services;
 using SmsMachine.Infrastructure;
 using SmsMachine.Infrastructure.Data;
@@ -9,12 +10,14 @@ using SmsMachine.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// CONFIGURAZIONE DI BASE ( connection string, logging su file )
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.File("logs/SmsSendLog.txt", rollingInterval: RollingInterval.Day)
     .CreateLogger();
 
+// REGISTRAZIONE INFRASTRUCTURE: DbContext + Repositories
 builder.Services.AddDbContext<SmsDbContext>(options =>
     options.UseSqlServer(connectionString));
 
@@ -24,22 +27,11 @@ builder.Services.AddTransient<ISmsInboundRepository, SmsInboundRepository>();
 builder.Services.AddTransient<ICampaignRepository, CampaignRepository>();
 
 
-// Add services to the container.
+// CONFIGURAZIONE INTEGRAZIONE AREA SX (Opzioni + HttpClient)
 builder.Services.AddSingleton(new AreaSxOptions
 {
     Password = builder.Configuration["AreaSx:Password"]
 });
-
-builder.Services.AddHostedService<CheckSmsOutboundToSendHostedService>();
-builder.Services.AddScoped<ICheckSmsOutboundToSend, CheckSmsOutboundToSend>();
-
-
-builder.Services.AddTransient<ISmsService, SmsService>();
-builder.Services.AddTransient<ISmsReceiver, AreaSxSmsReceiver>();
-builder.Services.AddTransient<INotifyService, NotifyService>();
-builder.Services.AddTransient<ISmsInbound, SmsInboundService>();
-builder.Services.AddTransient<ICampaignService, CampaignService>();
-builder.Services.AddTransient<IDiscardSmsService, DiscardSmsService>();
 
 builder.Services.AddHttpClient<ISmsSender, AreaSxSmsSender>(client =>
 {
@@ -52,38 +44,37 @@ builder.Services.AddHttpClient<ISmsDiscard, AreaSxSmsDiscard>(client =>
     client.BaseAddress = new Uri(baseUrl);
 });
 
+//  APPLICATION SERVICES & BACKGROUND SERVICES
+builder.Services.AddHostedService<CheckSmsOutboundToSendHostedService>();
+builder.Services.AddScoped<ICheckSmsOutboundToSend, CheckSmsOutboundToSend>();
+
+
+builder.Services.AddTransient<ISmsService, SmsService>();
+builder.Services.AddTransient<ISmsReceiver, AreaSxSmsReceiver>();
+builder.Services.AddTransient<INotifyService, NotifyService>();
+builder.Services.AddTransient<ISmsInbound, SmsInboundService>();
+builder.Services.AddTransient<ICampaignService, CampaignService>();
+builder.Services.AddTransient<IDiscardSmsService, DiscardSmsService>();
+
+
+// ASP.NET CORE: Controllers, Swagger, ecc.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-//blazor
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowBlazor",
-        policy => policy
-            .WithOrigins("https://localhost:7069")
-            .AllowAnyHeader()
-            .AllowAnyMethod());
-});
-
-//gestire meglio questo con init db o in seed db
+// BUILD APP + INIZIALIZZAZIONE DATABASE
 var app = builder.Build();
 
-var scope = app.Services.CreateScope();
-var db = scope.ServiceProvider.GetRequiredService<SmsDbContext>();
-db.Database.Migrate();
+app.InizializeDatabase();
 
-app.UseCors("AllowBlazor");
-
+// CONFIGURAZIONE PIPELINE HTTP
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-// Configure the HTTP request pipeline.
-
-// app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
