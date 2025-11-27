@@ -37,6 +37,21 @@ namespace SmsMachine.Models
         public int DeliveredCount { get; private set; }
         public int FailedCount { get; private set; }
 
+        // metodi di stato 
+        public void MarkDraft()
+        {
+            Status = CampaignStatus.Draft;
+        }
+
+        public void MarkInProgress()
+        {
+            Status = CampaignStatus.InProgress;
+        }
+
+        public void MarkFinished()
+        {
+            Status = CampaignStatus.Finished;
+        }
 
         public void IncDelivered(int deliveredCount) => DeliveredCount = deliveredCount;
         public void IncFailed(int failedCount) => FailedCount = failedCount;

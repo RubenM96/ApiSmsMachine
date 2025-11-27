@@ -22,7 +22,7 @@ namespace SmsMachine.Infrastructure.Data
                     r.Property(p => p.Value).HasColumnName("Recipient").IsRequired().HasMaxLength(50);
                 });
                 e.Property(s => s.Text).IsRequired().HasMaxLength(300);
-                e.Property(s => s.SentAt).IsRequired();
+                e.Property(s => s.SentAt);
                 e.Property(s => s.Multipart).IsRequired();
                 e.Property(s => s.Notify).IsRequired();
                 e.Property(s => s.Index);

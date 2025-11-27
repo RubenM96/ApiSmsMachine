@@ -47,7 +47,8 @@ builder.Services.AddHttpClient<ISmsDiscard, AreaSxSmsDiscard>(client =>
 //  APPLICATION SERVICES & BACKGROUND SERVICES
 builder.Services.AddHostedService<CheckSmsOutboundToSendHostedService>();
 builder.Services.AddScoped<ICheckSmsOutboundToSend, CheckSmsOutboundToSend>();
-
+builder.Services.AddHostedService<CampaignCompletionHostedService>();
+builder.Services.AddScoped<ICampaignCompletionService, CampaignCompletionService>();
 
 builder.Services.AddTransient<ISmsService, SmsService>();
 builder.Services.AddTransient<ISmsReceiver, AreaSxSmsReceiver>();

@@ -1,0 +1,87 @@
+﻿using SmsMachine.Interfaces;
+using SmsMachine.Models;
+
+namespace SmsMachine.Api.Services
+{
+    public class CampaignCompletionService : ICampaignCompletionService
+    {
+        private readonly ICampaignRepository _campaignRepository;
+        private readonly ISmsOutboundRepository _smsOutboundRepository;
+        private readonly ILogger<CampaignCompletionService> _logger;
+
+        public CampaignCompletionService(
+            ICampaignRepository campaignRepository,
+            ISmsOutboundRepository smsOutboundRepository,
+            ILogger<CampaignCompletionService> logger)
+        {
+            _campaignRepository = campaignRepository;
+            _smsOutboundRepository = smsOutboundRepository;
+            _logger = logger;
+        }
+
+        public Task CheckCampaignsCompletionAsync()
+        {
+            _logger.LogInformation("Verifica campagne in stato InProgress...");
+
+            // prendo tutte le campagne ancora in corso
+            var campaigns = _campaignRepository.GetCampaignsInProgress();
+
+            foreach (var campaign in campaigns)
+            {
+                try
+                {
+                    CheckSingleCampaignCompletion(campaign);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(
+                        ex,
+                        "Errore durante il controllo della campagna {CampaignId}",
+                        campaign.Id);
+                }
+            }
+
+            return Task.CompletedTask;
+        }
+
+        private void CheckSingleCampaignCompletion(CampaignSms campaign)
+        {
+            // prendo tutti gli SMS della campagna
+            var smsList = _smsOutboundRepository.GetAllSmsByCampaignId(campaign.Id);
+
+            if (!smsList.Any())
+            {
+                // nessun SMS
+                _logger.LogWarning(
+                    "La campagna {CampaignId} è InProgress ma non ha SMS associati",
+                    campaign.Id);
+                return;
+            }
+
+            // stato terminale
+            bool IsTerminal(SmsStatus status) =>
+                status == SmsStatus.Sent ||
+                status == SmsStatus.Discard ||
+                status == SmsStatus.Failed;
+
+            var allTerminal = smsList.All(s => IsTerminal(s.Status));
+
+            if (!allTerminal)
+            {
+                // ci sono ancora SMS non terminali (Draft/InProgress)
+                _logger.LogInformation(
+                    "Campagna {CampaignId} non ancora completa: esistono SMS non terminali",
+                    campaign.Id);
+                return;
+            }
+
+            // tutti terminali = campagna finita
+            campaign.MarkFinished();
+            _campaignRepository.UpdateCampaign(campaign);
+
+            _logger.LogInformation(
+                "Campagna {CampaignId} marcata come Finished (tutti gli SMS in stato terminale)",
+                campaign.Id);
+        }
+    }
+}

@@ -50,9 +50,7 @@ namespace SmsMachine.Services
           
             if (responseSendSms.IsSuccess)
             {
-                smsOutbound.SentAt = DateTime.Now;
-                smsOutbound.Status = SmsStatus.Sent;
-                smsOutbound.Index = responseSendSms.GetIndex();
+                smsOutbound.MarkSent(responseSendSms.GetIndex());
 
                 if (smsOutbound.Id == 0 || smsOutbound.Id == null)
                     _smsOutboundRepository.AddSms(smsOutbound);
@@ -63,8 +61,7 @@ namespace SmsMachine.Services
             }
             else if (responseSendSms.Refused)
             {
-                smsOutbound.SentAt = DateTime.Now;
-                smsOutbound.Status = SmsStatus.InProgress;
+                smsOutbound.MarkInProgress();
 
                 if (smsOutbound.Id == 0 || smsOutbound.Id == null)
                     _smsOutboundRepository.AddSms(smsOutbound);
@@ -78,7 +75,5 @@ namespace SmsMachine.Services
                 throw new Exception(responseSendSms.Errno);
             }
         }
-
-
     }
 }

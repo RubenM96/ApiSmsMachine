@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using SmsMachine.Infrastructure.Data;
 
 namespace SmsMachine.Api.Infrastructure.Database

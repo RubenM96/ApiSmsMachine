@@ -63,7 +63,7 @@ namespace SmsMachine.Services
                 throw new ArgumentException($"Campaign with ID {id} not found");
             }
 
-            campaign.Status = CampaignStatus.InProgress;
+            campaign.MarkInProgress();
             _campaignRepository.UpdateCampaign(campaign);
 
             var smsList = _smsOutboundRepository.GetAllSmsByCampaignId(id);
@@ -72,7 +72,7 @@ namespace SmsMachine.Services
             {
                 try
                 {
-                    smsOutbound.Status = SmsStatus.InProgress;
+                    smsOutbound.MarkInProgress();
                     _smsOutboundRepository.UpdateSms(smsOutbound);
                     _logger.LogInformation("SMS to {Recipient} for Campaign ID {CampaignId} set in progress", smsOutbound.Recipient.Value, campaign.Id);
                 }
@@ -138,6 +138,7 @@ namespace SmsMachine.Services
             if (ok)
             {
                 _logger.LogInformation("Deleted campaign with ID {CampaignId}", id);
+
                 //per l'integrità referenziale elimina anche tutti gli sms associati
                 _smsOutboundRepository.DeleteAllSmsByCampaignId(id);
                 _logger.LogInformation("Deleted all SMS for Campaign ID {CampaignId}", id);
@@ -148,37 +149,5 @@ namespace SmsMachine.Services
 
             return ok;
         }
-
-
-        //metodo per calcolare lo stato della campagna in base ai messaggi inviati/falliti
-        public bool CampaignIsComplete(CampaignSms campaign)
-        {
-            CountDiscardedSmsByCampaignId(campaign);
-            CountDeliveredSmsByCampaignId(campaign);
-
-            return campaign.IsComplete();
-        }
-
-        //metodo per contare i messaggi scartati
-        public int CountDiscardedSmsByCampaignId(CampaignSms campaign)
-        {
-            var failedSmsCount = _discardSmsService.RecoveryDiscardedSmsByCampaignId(campaign.Id).Count();
-            _logger.LogInformation("Counted {FailedSmsCount} discarded SMS for Campaign ID {CampaignId}", failedSmsCount, campaign.Id);
-
-            campaign.IncFailed(failedSmsCount);
-            return failedSmsCount;
-        }
-
-        //metodo per contare i messaggi inviati 
-        public int CountDeliveredSmsByCampaignId(CampaignSms campaign)
-        {
-            var totalSent = _smsOutboundRepository.GetAllSmsByCampaignId(campaign.Id).Count();
-            _logger.LogInformation("Counted {TotalSent} delivered SMS for Campaign ID {CampaignId}", totalSent, campaign.Id);
-
-            campaign.IncDelivered(totalSent);
-            return totalSent;
-        }
-
-
     }
 }
