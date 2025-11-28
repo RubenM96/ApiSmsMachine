@@ -16,48 +16,24 @@ public class CampaignService
         return await _http.GetFromJsonAsync<CampaignDetails>($"api/campaign/{id}");
     }
 
-    public async Task<HttpResponseMessage> SendCampaignAsync(int id)
+    public Task<HttpResponseMessage> SendCampaignAsync(int id)
     {
-        return await _http.PostAsync($"api/campaign/{id}/SendCampaign", null);
+        // REST "command": POST su /SendCampaign, nessuna logica lato UI.
+        return _http.PostAsync($"api/campaign/{id}/SendCampaign", content: null);
     }
 
     //creazione
-    public async Task<HttpResponseMessage> CreateCampaignAsync(CampaignForm campaignForm)
+    public Task<HttpResponseMessage> CreateCampaignAsync(CampaignForm campaignForm)
     {
-        var formData = new MultipartFormDataContent
-        {
-            { new StringContent(campaignForm.Title), "Title" },
-            { new StringContent(campaignForm.Text), "Text" },
-            { new StringContent(campaignForm.RecipientList), "RecipientList" },
-            { new StringContent(campaignForm.CampaignNotify.ToString()), "CampaignNotify" }
-        };
-        if (!string.IsNullOrEmpty(campaignForm.Description))
-        {
-            formData.Add(new StringContent(campaignForm.Description), "Description");
-        }
-
-        return await _http.PostAsync("api/campaign/CreateCampaign", formData);
+        var formData = BuildForm(campaignForm);
+        return _http.PostAsync("api/campaign/CreateCampaign", formData);
     }
 
     //modifica
     public Task<HttpResponseMessage> UpdateCampaignAsync(int id, CampaignForm campaignForm)
     {
-        var response = _http.PutAsync($"api/campaign/{id}", BuildForm(campaignForm));
-        return response;
-    }
-
-    private static MultipartFormDataContent BuildForm(CampaignForm campaignForm)
-    {
-        var formData = new MultipartFormDataContent
-        {
-            { new StringContent(campaignForm.Title ?? string.Empty), "Title" },
-            { new StringContent(campaignForm.Text ?? string.Empty), "Text" },
-            { new StringContent(campaignForm.RecipientList ?? string.Empty), "RecipientList" },
-            { new StringContent(campaignForm.CampaignNotify.ToString()), "CampaignNotify" }
-        };
-        if (!string.IsNullOrWhiteSpace(campaignForm.Description))
-            formData.Add(new StringContent(campaignForm.Description), "Description");
-        return formData;
+        var formData = BuildForm(campaignForm);
+        return _http.PutAsync($"api/campaign/{id}", formData);
     }
 
     //elimina 
@@ -66,22 +42,31 @@ public class CampaignService
 
     public async Task<PagedResult<CampaignListDTO>> SearchAsync(CampaignSearchQuery campaignSearchQuery)
     {
-        //querystring
         var qs = HttpUtility.ParseQueryString(string.Empty);
-        if (!string.IsNullOrWhiteSpace(campaignSearchQuery.Title)) qs["title"] = campaignSearchQuery.Title;
-        if (campaignSearchQuery.From.HasValue) qs["from"] = campaignSearchQuery.From.Value.ToString("yyyy-MM-dd");
-        if (campaignSearchQuery.To.HasValue) qs["to"] = campaignSearchQuery.To.Value.ToString("yyyy-MM-dd");
-        qs["page"] = (campaignSearchQuery.Page <= 0 ? 1 : campaignSearchQuery.Page).ToString();
-        qs["pageSize"] = (campaignSearchQuery.PageSize <= 0 ? 10 : campaignSearchQuery.PageSize).ToString();
+
+        if (!string.IsNullOrWhiteSpace(campaignSearchQuery.Title))
+            qs["title"] = campaignSearchQuery.Title;
+
+        if (campaignSearchQuery.From.HasValue)
+            qs["from"] = campaignSearchQuery.From.Value.ToString("yyyy-MM-dd");
+
+        if (campaignSearchQuery.To.HasValue)
+            qs["to"] = campaignSearchQuery.To.Value.ToString("yyyy-MM-dd");
+
+        qs["page"] = campaignSearchQuery.Page.ToString();
+        qs["pageSize"] = campaignSearchQuery.PageSize.ToString();
 
         var url = $"api/campaign/search?{qs}";
-        var res = await _http.GetFromJsonAsync<PagedResult<CampaignListDTO>>(url);
-        return res ?? new PagedResult<CampaignListDTO>
+
+        var result = await _http.GetFromJsonAsync<PagedResult<CampaignListDTO>>(url);
+
+        // in caso di null (API che risponde 204, ecc.)
+        return result ?? new PagedResult<CampaignListDTO>
         {
             Items = Array.Empty<CampaignListDTO>(),
             Total = 0,
-            Page = campaignSearchQuery.Page <= 0 ? 1 : campaignSearchQuery.Page,
-            PageSize = campaignSearchQuery.PageSize <= 0 ? 10 : campaignSearchQuery.PageSize
+            Page = campaignSearchQuery.Page,
+            PageSize = campaignSearchQuery.PageSize
         };
     }
 
@@ -98,7 +83,8 @@ public class CampaignService
 
         var smsList = await resp.Content.ReadFromJsonAsync<List<SmsOutbound>>() ?? new List<SmsOutbound>();
 
-        if (smsList.Count == 0) return string.Empty;
+        if (smsList.Count == 0) 
+            return string.Empty;
 
         var recipientsString = string.Join(", ",
             smsList
@@ -107,5 +93,22 @@ public class CampaignService
         );
 
         return recipientsString;
+    }
+    private static MultipartFormDataContent BuildForm(CampaignForm campaignForm)
+    {
+        var formData = new MultipartFormDataContent
+        {
+            { new StringContent(campaignForm.Title ?? string.Empty), "Title" },
+            { new StringContent(campaignForm.Text ?? string.Empty), "Text" },
+            { new StringContent(campaignForm.RecipientList ?? string.Empty), "RecipientList" },
+            { new StringContent(campaignForm.CampaignNotify.ToString()), "CampaignNotify" }
+        };
+
+        if (!string.IsNullOrWhiteSpace(campaignForm.Description))
+        {
+            formData.Add(new StringContent(campaignForm.Description), "Description");
+        }
+
+        return formData;
     }
 }

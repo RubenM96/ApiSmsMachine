@@ -96,7 +96,7 @@ else
             isLoading = true;
             StateHasChanged();
 
-            // CHANGED: chiama il backend con query server-side (title, from, to, page, size)
+            // chiama il backend con query server-side (title, from, to, page, size)
             data = await campaignService.SearchAsync(query);
         }
         catch (Exception ex)

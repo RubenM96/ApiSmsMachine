@@ -13,7 +13,5 @@ namespace SmsMachine.Services
         CampaignSms UpdateCampaign(int id, CampaignForm form);
 
         public bool DeleteCampaignById(int id);
-
-        Task<PagedResult<CampaignListDTO>> SearchAsync(CampaignFilter filter);
     }
 }

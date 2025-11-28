@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Serilog;
 using SmsMachine.Api.Infrastructure.Database;
 using SmsMachine.Api.Services;
+using SmsMachine.Api.Services.Queries;
 using SmsMachine.Infrastructure;
 using SmsMachine.Infrastructure.Data;
 using SmsMachine.Infrastructure.Repositories;
@@ -56,6 +57,7 @@ builder.Services.AddTransient<INotifyService, NotifyService>();
 builder.Services.AddTransient<ISmsInbound, SmsInboundService>();
 builder.Services.AddTransient<ICampaignService, CampaignService>();
 builder.Services.AddTransient<IDiscardSmsService, DiscardSmsService>();
+builder.Services.AddTransient<ICampaignQueryService, CampaignQueryService>();
 
 
 // ASP.NET CORE: Controllers, Swagger, ecc.

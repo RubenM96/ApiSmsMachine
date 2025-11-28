@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SmsMachine.Api.Models;
 using SmsMachine.Api.Models.DTO;
+using SmsMachine.Api.Services.Queries;
 using SmsMachine.Interfaces;
 using SmsMachine.Models;
 using SmsMachine.Services;
@@ -14,12 +15,16 @@ namespace SmsMachine.Controllers
         private readonly ICampaignService _campaignService;
         private readonly ICampaignRepository _campaignRepository;
         private readonly ILogger<CampaignController> _logger;
+        private readonly ICampaignQueryService _campaignQueryService;
 
-        public CampaignController(ICampaignService campaignService,
+        public CampaignController(
+            ICampaignService campaignService,
+            ICampaignQueryService campaignQueryService,
             ICampaignRepository campaignRepository,
             ILogger<CampaignController> logger)
         {
             _campaignService = campaignService;
+            _campaignQueryService = campaignQueryService;
             _campaignRepository = campaignRepository;
             _logger = logger;
         }
@@ -86,10 +91,10 @@ namespace SmsMachine.Controllers
             }
         }
 
-        [HttpGet("[action]")]
+        [HttpGet("search")]
         public async Task<ActionResult<PagedResult<CampaignListDTO>>> Search([FromQuery] CampaignFilter filter)
         {
-            var result = await _campaignService.SearchAsync(filter);
+            var result = await _campaignQueryService.SearchAsync(filter);
             return Ok(result);
         }
 
@@ -135,7 +140,14 @@ namespace SmsMachine.Controllers
                 return BadRequest($"Error deleting campaign: {ex.Message}");
             }
         }
-       
+
+        [HttpGet("{id}/progress")]
+        public ActionResult<CampaignProgressDTO> GetProgress(int id)
+        {
+            var dto = _campaignQueryService.GetCampaignProgress(id);
+            return Ok(dto);
+        }
+
 
     }
 }

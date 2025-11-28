@@ -124,14 +124,7 @@ namespace SmsMachine.Services
             _logger.LogInformation("Updated campaign with ID {CampaignId}", updatedCampaign.Id);
             return updatedCampaign;
         }
-        
 
-        public async Task<PagedResult<CampaignListDTO>> SearchAsync(CampaignFilter filter)
-        {
-            filter.Normalize();                      // normalizza page/pageSize e From/To
-            return await _campaignRepository.SearchAsync(filter);
-        }
-        
         public bool DeleteCampaignById(int id)
         {
             var ok = _campaignRepository.DeleteCampaign(id);

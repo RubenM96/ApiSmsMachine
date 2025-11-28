@@ -102,11 +102,7 @@ namespace SmsMachine.Infrastructure.Repositories
             _context.SaveChanges();
             return true;
         }
-        //public CampaignSms GetCampaignsInProgress()
-        //{
-        //    CampaignSms? campaignSms = _context.Set<CampaignSms>().FirstOrDefault(s => s.Status == CampaignStatus.InProgress);
-        //    return campaignSms;
-        //}
+        
         public IEnumerable<CampaignSms> GetCampaignsInProgress()
         {
             return _context.Set<CampaignSms>()

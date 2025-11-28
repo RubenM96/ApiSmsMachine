@@ -53,8 +53,15 @@ namespace SmsMachine.Models
             Status = CampaignStatus.Finished;
         }
 
-        public void IncDelivered(int deliveredCount) => DeliveredCount = deliveredCount;
-        public void IncFailed(int failedCount) => FailedCount = failedCount;
-        public bool IsComplete() => (DeliveredCount + FailedCount) >= TotalRecipients && TotalRecipients > 0;
+        public bool IsComplete(IReadOnlyCollection<SmsOutbound> smsList)
+        {
+            bool IsTerminal(SmsStatus status) =>
+                status == SmsStatus.Sent ||
+                status == SmsStatus.Discard ||
+                status == SmsStatus.Failed;
+
+            return smsList.Count > 0 && smsList.All(s => IsTerminal(s.Status));
+        }
+
     }
 }
