@@ -1,4 +1,5 @@
-﻿using SmsMachine.Interfaces;
+﻿using SmsMachine.Api.Infrastructure.Utils;
+using SmsMachine.Interfaces;
 using SmsMachine.Models;
 
 namespace SmsMachine.Api.Services

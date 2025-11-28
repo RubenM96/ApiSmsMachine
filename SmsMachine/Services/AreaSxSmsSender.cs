@@ -47,7 +47,7 @@ namespace SmsMachine.Services
             var json = response.Content.ReadAsStringAsync().Result;
 
             //Serilog
-            Log.Information(json);
+            Log.ForContext("AresSx", "AreaSxSenderResponse").Information(json);
 
             var result = System.Text.Json.JsonSerializer.Deserialize<AreaSxSendResult>(json,
                 new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });

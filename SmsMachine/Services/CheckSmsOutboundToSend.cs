@@ -1,4 +1,5 @@
-﻿using SmsMachine.Interfaces;
+﻿using Serilog;
+using SmsMachine.Interfaces;
 using SmsMachine.Services;
 
 namespace SmsMachine.Api.Services;
@@ -27,11 +28,11 @@ public class CheckSmsOutboundToSend : ICheckSmsOutboundToSend
         if (smsOutboundInProgress != null) 
         { 
             _logger.LogInformation("Invio SMS in stato InProgress con Id: {SmsId}", smsOutboundInProgress.Id);
+            Log.ForContext("SmsType", "Sent").Information("Send SMS whit status InProgress for Id: {SmsId}", smsOutboundInProgress.Id);
             _smsService.SendSms(smsOutboundInProgress);
         }
 
     }
-
 
 
 }
