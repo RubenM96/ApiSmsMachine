@@ -45,12 +45,16 @@
                                 <span class="visually-hidden">Dettagli</span>
                             </a>
 
-                            <a class="btn btn-sm btn-outline-primary"
-                               href="@($"/campaign/{c.Id}/edit")"
-                               title="Modifica" aria-label="Modifica">
-                                <i class="bi bi-pencil"></i>
-                                <span class="visually-hidden">Modifica</span>
-                            </a>
+                            @if (c.Status != CampaignListDTO.CampaignStatus.Finished)
+                            {
+                                <a class="btn btn-sm btn-outline-primary"
+                                   href="@($"/campaign/{c.Id}/edit")"
+                                   title="Modifica" aria-label="Modifica">
+                                    <i class="bi bi-pencil"></i>
+                                    <span class="visually-hidden">Modifica</span>
+                                </a>
+                            }
+                            
 
                             <button class="btn btn-sm btn-outline-danger"
                                     title="Elimina" aria-label="Elimina"

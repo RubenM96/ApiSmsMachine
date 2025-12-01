@@ -18,10 +18,11 @@ public class CampaignService
 
     public Task<HttpResponseMessage> SendCampaignAsync(int id)
     {
-        // REST "command": POST su /SendCampaign, nessuna logica lato UI.
+        // REST "command": POST su /SendCampaign
         return _http.PostAsync($"api/campaign/{id}/SendCampaign", content: null);
     }
 
+    
     //creazione
     public Task<HttpResponseMessage> CreateCampaignAsync(CampaignForm campaignForm)
     {
@@ -110,5 +111,11 @@ public class CampaignService
         }
 
         return formData;
+    }
+    public async Task<CampaignProgressDTO?> GetProgressAsync(int campaignId)
+    {
+        return await _http.GetFromJsonAsync<CampaignProgressDTO>(
+            $"api/campaign/{campaignId}/progress"
+        );
     }
 }

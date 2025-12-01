@@ -1,0 +1,75 @@
+﻿@using SmsMachine.Dashboard.Models
+
+@if (Progress is null)
+{
+    <div class="progress-wrapper">
+        <p>Nessun dato sullo stato di invio.</p>
+    </div>
+}
+else
+{
+    <div class="progress-wrapper">
+
+        <!-- Titolo sezione -->
+        <div class="progress-status">
+            <h4>Stato invio</h4>
+            <p class="status-label">
+                <strong>Stato campagna:</strong> @Progress.Status
+            </p>
+        </div>
+
+        <!-- Percentuale -->
+        <div class="progress-percentage">
+            <span class="percentage-value">
+                @Progress.CompletionPercent.ToString("0.0")%
+            </span>
+        </div>
+
+        <!-- Progress bar NON segmentata -->
+        <div class="progress-bar-bg">
+            <div class="progress-bar-fill"
+                 style="width:@Progress.CompletionPercent%"></div>
+        </div>
+
+        <!-- Conteggi -->
+        <div class="stats-grid">
+
+            <div class="stat-box sent">
+                <span class="label">Inviati</span>
+                <span class="value">@Progress.Sent</span>
+            </div>
+
+            <div class="stat-box discard">
+                <span class="label">Scartati</span>
+                <span class="value">@Progress.Discard</span>
+            </div>
+
+            <div class="stat-box failed">
+                <span class="label">Falliti</span>
+                <span class="value">@Progress.Failed</span>
+            </div>
+
+            <div class="stat-box inprogress">
+                <span class="label">In coda</span>
+                <span class="value">@Progress.InProgress</span>
+            </div>
+
+            <div class="stat-box draft">
+                <span class="label">Bozza</span>
+                <span class="value">@Progress.Draft</span>
+            </div>
+
+            <div class="stat-box total">
+                <span class="label">Totale</span>
+                <span class="value">@Progress.Total</span>
+            </div>
+
+        </div>
+
+    </div>
+}
+
+@code {
+    [Parameter]
+    public CampaignProgressDTO? Progress { get; set; }
+}

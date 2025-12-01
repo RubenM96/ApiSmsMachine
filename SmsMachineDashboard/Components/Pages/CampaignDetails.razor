@@ -1,0 +1,94 @@
+﻿@page "/campaign/{id:int}"
+@rendermode InteractiveServer
+@using SmsMachine.Dashboard.Models
+@using CampaignDetailsModel = SmsMachine.Dashboard.Models.CampaignDetails <!-- alias per evitare conflitti con il component -->
+@using SmsMachine.Dashboard.Components.Shared
+@inject CampaignService CampaignService
+
+<h3>Dettaglio Campagna</h3>
+
+@if (isLoading)
+{
+    <p>Caricamento...</p>
+}
+else if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger">@errorMessage</div>
+}
+else if (campaign is null)
+{
+    <div class="alert alert-warning">Campagna non trovata.</div>
+}
+else
+{
+    <div class="row mt-3">
+
+        <!-- SINISTRA: stato invio -->
+        <div class="col-md-6 mb-3">
+            <CampaignProgressPanel Progress="@progress" />
+        </div>
+
+        <!-- DESTRA: dettagli campagna -->
+        <div class="col-md-6 mb-3">
+            <div class="card p-3">
+
+                <h4>@campaign.Title</h4>
+                <p>@campaign.Description</p>
+
+                <p><strong>Stato:</strong> @campaign.Status</p>
+                <p><strong>Creato il:</strong> @campaign.CreatedAt.ToString("dd/MM/yyyy HH:mm")</p>
+
+                <p>
+                    <strong>Testo SMS:</strong><br />
+                    @campaign.Text
+                </p>
+
+                @if (!string.IsNullOrWhiteSpace(recipientsList))
+                {
+                    <p>
+                        <strong>Lista destinatari:</strong><br />
+                        @recipientsList
+                    </p>
+                }
+                else
+                {
+                    <p><strong>Lista destinatari:</strong> nessun destinatario trovato.</p>
+                }
+                <p><strong>Destinatari totali:</strong> @campaign.TotalRecipients</p>
+                <p><strong>Notifica attiva:</strong> @(campaign.CampaignNotify ? "Sì" : "No")</p>
+
+            </div>
+        </div>
+
+    </div>
+}
+
+@code {
+    [Parameter] public int Id { get; set; }
+
+    private CampaignDetailsModel? campaign;
+    private CampaignProgressDTO? progress;
+    private string recipientsList = string.Empty;
+    private bool isLoading = true;
+    private string? errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            isLoading = true;
+
+            campaign = await CampaignService.GetCampaignIdAsync(Id);
+            progress = await CampaignService.GetProgressAsync(Id);
+            recipientsList = await CampaignService.GetRecipientsByCampaignIdAsync(Id); 
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Errore nel caricamento: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+}
