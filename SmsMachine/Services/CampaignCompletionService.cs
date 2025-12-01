@@ -8,15 +8,18 @@ namespace SmsMachine.Api.Services
     {
         private readonly ICampaignRepository _campaignRepository;
         private readonly ISmsOutboundRepository _smsOutboundRepository;
+        private readonly IDiscardSmsService _discardSmsService;
         private readonly ILogger<CampaignCompletionService> _logger;
 
         public CampaignCompletionService(
             ICampaignRepository campaignRepository,
             ISmsOutboundRepository smsOutboundRepository,
+            IDiscardSmsService discardSmsService,
             ILogger<CampaignCompletionService> logger)
         {
             _campaignRepository = campaignRepository;
             _smsOutboundRepository = smsOutboundRepository;
+            _discardSmsService = discardSmsService;
             _logger = logger;
         }
 
@@ -49,6 +52,9 @@ namespace SmsMachine.Api.Services
         {
             // prendo tutti gli SMS della campagna
             var smsList = _smsOutboundRepository.GetAllSmsByCampaignId(campaign.Id);
+
+            //check dei messaggi scartati
+            CheckDiscardSmsForSingleCampaign(campaign);           
 
             if (!campaign.IsComplete(smsList))
             {
@@ -84,5 +90,19 @@ namespace SmsMachine.Api.Services
                 "Campagna {CampaignId} marcata come Finished (tutti gli SMS in stato terminale)",
                 campaign.Id);
         }
+
+        public void CheckDiscardSmsForSingleCampaign(CampaignSms campaign)
+        {
+            var discardedSmsList = _discardSmsService.RecoveryDiscardedSmsByCampaignId(campaign.Id);
+
+            foreach (var sms in discardedSmsList)
+            {
+                sms.MarkDiscarded();
+                _smsOutboundRepository.UpdateSms(sms);
+
+                _logger.LogInformation("SMS {SmsId} della campagna {CampaignId} marcato come Discard",sms.Id, campaign.Id);
+            }
+        }
+
     }
 }
