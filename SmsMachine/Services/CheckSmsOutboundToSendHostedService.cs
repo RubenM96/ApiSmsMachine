@@ -19,15 +19,14 @@ internal class CheckSmsOutboundToSendHostedService : BackgroundService
             {
                 using var scope = _scopeFactory.CreateScope();
                 var logic = scope.ServiceProvider.GetRequiredService<ICheckSmsOutboundToSend>();
-
                 await logic.CheckSmsOutboundInProgress();
-
-                await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken);
             }
             catch (Exception)
             {
                 _logger.LogError("Error checking SMS outbound to send.");
             }
+
+            await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken);
         }
     }
 }
