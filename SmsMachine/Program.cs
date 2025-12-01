@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Serilog;
 using SmsMachine.Api.Infrastructure.Database;
 using SmsMachine.Api.Services;
 using SmsMachine.Api.Services.Queries;
@@ -13,10 +12,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 // CONFIGURAZIONE DI BASE ( connection string, logging su file )
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
-Log.Logger = new LoggerConfiguration()
-    .WriteTo.File("logs/SmsSendLog.txt", rollingInterval: RollingInterval.Day)
-    .CreateLogger();
 
 // REGISTRAZIONE INFRASTRUCTURE: DbContext + Repositories
 builder.Services.AddDbContext<SmsDbContext>(options =>
@@ -64,6 +59,9 @@ builder.Services.AddTransient<ICampaignQueryService, CampaignQueryService>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// CONFIGURAZIONE SERILOG
+LoggingConfig.Configure();
 
 // BUILD APP + INIZIALIZZAZIONE DATABASE
 var app = builder.Build();

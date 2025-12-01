@@ -39,7 +39,7 @@ namespace SmsMachine.Services
 
             var json = response.Content.ReadAsStringAsync().Result;
 
-            Log.Information(json);
+            Log.ForContext("AresSx", "AreaSxDiscardSms").Information(json);
 
             var result = System.Text.Json.JsonSerializer.Deserialize<AreaSxSmsNotSent>(json,
                 new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });

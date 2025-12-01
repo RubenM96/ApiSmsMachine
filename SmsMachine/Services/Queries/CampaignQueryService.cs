@@ -1,7 +1,7 @@
 ﻿using SmsMachine.Api.Models;
 using SmsMachine.Api.Models.DTO;
 using SmsMachine.Interfaces;
-using SmsMachine.Models;
+using SmsMachine.Api.Infrastructure.Utils;
 
 namespace SmsMachine.Api.Services.Queries
 {
@@ -33,6 +33,7 @@ namespace SmsMachine.Api.Services.Queries
                 
             var sms = _smsOutboundRepository.GetAllSmsByCampaignId(campaignId).ToList();
 
+            
             return new CampaignProgressDTO
             {
                 CampaignId = campaign.Id,

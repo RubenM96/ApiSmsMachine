@@ -1,4 +1,5 @@
-﻿using SmsMachine.Infrastructure.Data;
+﻿using SmsMachine.Api.Infrastructure.Utils;
+using SmsMachine.Infrastructure.Data;
 using SmsMachine.Interfaces;
 using SmsMachine.Models;
 
