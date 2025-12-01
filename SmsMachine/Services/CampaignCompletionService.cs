@@ -48,7 +48,7 @@ namespace SmsMachine.Api.Services
         private void CheckSingleCampaignCompletion(CampaignSms campaign)
         {
             // prendo tutti gli SMS della campagna
-            var smsList = _smsOutboundRepository.GetAllSmsByCampaignId(campaign.Id).ToList();
+            var smsList = _smsOutboundRepository.GetAllSmsByCampaignId(campaign.Id);
 
             if (!campaign.IsComplete(smsList))
             {

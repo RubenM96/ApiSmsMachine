@@ -12,8 +12,6 @@ namespace SmsMachine.Interfaces
         CampaignSms UpdateCampaign(CampaignSms campaign);
         bool DeleteCampaign(int id);
         Task<PagedResult<CampaignListDTO>> SearchAsync(CampaignFilter filter);
-
-        //CampaignSms? GetCampaignsInProgress();
         IEnumerable<CampaignSms> GetCampaignsInProgress();
     }
 }

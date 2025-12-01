@@ -91,7 +91,7 @@ namespace SmsMachine.Controllers
             }
         }
 
-        [HttpGet("search")]
+        [HttpGet("[action]")]
         public async Task<ActionResult<PagedResult<CampaignListDTO>>> Search([FromQuery] CampaignFilter filter)
         {
             var result = await _campaignQueryService.SearchAsync(filter);
@@ -105,6 +105,12 @@ namespace SmsMachine.Controllers
             return Ok(getOneCampaign);
         }
 
+        [HttpGet("{id}/[action]")]
+        public ActionResult<CampaignProgressDTO> GetProgress(int id)
+        {
+            var dto = _campaignQueryService.GetCampaignProgress(id);
+            return Ok(dto);
+        }
 
         [HttpPut("{id}")]
         public IActionResult UpdateCampaign(int id, [FromForm] CampaignForm campaignReceiver)
@@ -125,7 +131,6 @@ namespace SmsMachine.Controllers
             }
         }
 
-
         [HttpDelete("{id}")]
         public IActionResult DeleteCampaign(int id)
         {
@@ -140,14 +145,6 @@ namespace SmsMachine.Controllers
                 return BadRequest($"Error deleting campaign: {ex.Message}");
             }
         }
-
-        [HttpGet("{id}/progress")]
-        public ActionResult<CampaignProgressDTO> GetProgress(int id)
-        {
-            var dto = _campaignQueryService.GetCampaignProgress(id);
-            return Ok(dto);
-        }
-
 
     }
 }

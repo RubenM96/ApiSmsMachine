@@ -1,4 +1,5 @@
-﻿using SmsMachine.Infrastructure.Utils;
+﻿using Serilog;
+using SmsMachine.Infrastructure.Utils;
 using SmsMachine.Interfaces;
 using SmsMachine.Models;
 
@@ -26,6 +27,8 @@ public class NotifyService : INotifyService
         if (smsOutbound == null)
         {
             _logger.LogWarning("Not found SmsOutbound for recipient {Recipient} and index {Index}", recipient, indexSms.ToString());
+            Log.ForContext("Notify", "NotifyNotSent").Error("Not found SmsOutbound for recipient {Recipient} and index {Index}", recipient, indexSms.ToString());
+
             throw new ArgumentException("Sms not found");
         }
 
