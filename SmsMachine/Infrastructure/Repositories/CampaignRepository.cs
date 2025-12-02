@@ -72,7 +72,7 @@ namespace SmsMachine.Infrastructure.Repositories
             };
         }
 
-        public CampaignSms? GetCampaignId(int id)
+        public async Task<CampaignSms?> GetCampaignId(int id)
         {
             return _context.Set<CampaignSms>().Find(id);
         }

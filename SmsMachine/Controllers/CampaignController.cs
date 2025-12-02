@@ -41,9 +41,8 @@ namespace SmsMachine.Controllers
 
             try
             {
-                //createcampaignDTO
-               await _campaignService.CreateCampaignAsync(request.Title, request.Text, request.RecipientList, request.CampaignNotify, request.Description);
-                return Ok();
+               await _campaignService.CreateCampaignAsync(request);
+               return Ok();
             }
             catch (Exception ex)
             {
@@ -63,7 +62,7 @@ namespace SmsMachine.Controllers
 
             try
             {
-                var campaignSend = await _campaignService.SendCampaign(id);
+                await _campaignService.SendCampaign(id);
                 return Ok();
 
             }
@@ -84,15 +83,15 @@ namespace SmsMachine.Controllers
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet("{id}")]
-        public IActionResult GetCampaign(int id)
+        public async Task<IActionResult> GetCampaign(int id)
         {
-            var getOneCampaign = _campaignRepository.GetCampaignId(id);
+            var getOneCampaign = await _campaignRepository.GetCampaignId(id);
             return Ok(getOneCampaign);
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet("{id}")]
-        public ActionResult<CampaignProgressDTO> GetProgress(int id)
+        public async Task<ActionResult<CampaignProgressDTO>> GetProgress(int id)
         {
             var dto = _campaignQueryService.GetCampaignProgress(id);
             return Ok(dto);
@@ -102,7 +101,7 @@ namespace SmsMachine.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ModelStateDictionary))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [HttpPut("{id}")]
-        public IActionResult UpdateCampaign(int id, [FromBody] CreateCampaignRequest campaignReceiver)
+        public async Task<IActionResult> UpdateCampaign(int id, [FromBody] CreateCampaignRequest campaignReceiver)
         {
 
             if (!ModelState.IsValid)
@@ -110,7 +109,7 @@ namespace SmsMachine.Controllers
 
             try
             {
-                var updatedCampaign = _campaignService.UpdateCampaign(id, campaignReceiver);
+                var updatedCampaign = await _campaignService.UpdateCampaign(id, campaignReceiver);
                 return Ok(updatedCampaign);
             }
             catch (Exception ex)
@@ -122,10 +121,10 @@ namespace SmsMachine.Controllers
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpDelete("{id}")]
-        public IActionResult DeleteCampaign(int id)
+        public async Task<IActionResult> DeleteCampaign(int id)
         {        
-             _campaignService.DeleteCampaignById(id);
-             return Ok("Campaign and SMS delete");           
+             await _campaignService.DeleteCampaignById(id);
+             return Ok();           
         }
 
     }

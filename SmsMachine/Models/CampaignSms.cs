@@ -1,5 +1,4 @@
 ﻿using SmsMachine.Api.Infrastructure.Utils;
-using SmsMachine.Api.Models;
 
 namespace SmsMachine.Models
 {
@@ -9,17 +8,15 @@ namespace SmsMachine.Models
         {
         }
 
-        public CampaignSms(string title, string text, string recipientList, bool campaignNotify, string? description)
+        public CampaignSms(string title, string text, int totalRepicients, bool campaignNotify, string? description)
         {
-            RecipientList recipients = new RecipientList(recipientList);
-
             Title = title ?? throw new ArgumentNullException(nameof(title));
             Text = text ?? throw new ArgumentNullException(nameof(text));
+            TotalRecipients = totalRepicients;
             CampaignNotify = campaignNotify;
             CreatedAt = DateTime.UtcNow;
             Status = CampaignStatus.Draft;
             Description = description;
-            TotalRecipients = recipients.CalculateTotalRecipients();
             DeliveredCount = 0;
             FailedCount = 0;
         }

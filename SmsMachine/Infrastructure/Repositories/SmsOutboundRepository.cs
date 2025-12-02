@@ -21,11 +21,6 @@ namespace SmsMachine.Infrastructure.Repositories
             return sms;
         }
 
-        public void ClearErrors()
-        {
-            _context.ChangeTracker.AcceptAllChanges();
-        }
-
         public SmsOutbound? GetSmsById(int id)
         {
             return _context.Set<SmsOutbound>().Find(id);
@@ -41,7 +36,7 @@ namespace SmsMachine.Infrastructure.Repositories
             _context.SaveChanges();
         }
 
-        public List<SmsOutbound> GetAllSmsByCampaignId(int campaignId)
+        public async Task<List<SmsOutbound>> GetAllSmsByCampaignId(int campaignId)
         {
             return _context.Set<SmsOutbound>().Where(s => s.CampaignId == campaignId).ToList();
         }
@@ -70,5 +65,10 @@ namespace SmsMachine.Infrastructure.Repositories
             SmsOutbound? smsOutbound = _context.Set<SmsOutbound>().FirstOrDefault(s => s.Status == SmsStatus.InProgress);
             return smsOutbound;
         }
+        public void ClearErrors()
+        {
+            _context.ChangeTracker.AcceptAllChanges();
+        }
+
     }
 }

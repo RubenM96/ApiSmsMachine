@@ -5,14 +5,13 @@ namespace SmsMachine.Interfaces
     public interface ISmsOutboundRepository
     {
         SmsOutbound AddSms(SmsOutbound sms);
-        void ClearErrors();
         SmsOutbound? GetSmsById(int id);
         void UpdateSms(SmsOutbound sms);
-        List<SmsOutbound> GetAllSmsByCampaignId(int campaignId);
+        Task<List<SmsOutbound>> GetAllSmsByCampaignId(int campaignId);
         void DeleteAllSmsByCampaignId(int campaignId);
         SmsOutbound? GetSmsOutboundByRecipientAndIndex(string recipient, int indexSms);
         SmsOutbound? GetSmsOutboundByIndexAndCampaignId(int indexSms, int campaignId);
-
         SmsOutbound? GetSmsOutboundInProgress();
+        void ClearErrors();
     }
 }

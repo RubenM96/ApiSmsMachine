@@ -1,7 +1,4 @@
-﻿using SmsMachine.Api.Infrastructure.Utils;
-using SmsMachine.Api.Models;
-using SmsMachine.Api.Models.DTO;
-using SmsMachine.Api.Services;
+﻿using SmsMachine.Api.Models;
 using SmsMachine.Interfaces;
 using SmsMachine.Models;
 
@@ -11,28 +8,26 @@ namespace SmsMachine.Services
     {
         private readonly ICampaignRepository _campaignRepository;
         private readonly ISmsOutboundRepository _smsOutboundRepository;
-        private readonly IDiscardSmsService _discardSmsService;
         private readonly ILogger<CampaignService> _logger;
 
         public CampaignService(
             ICampaignRepository campaignRepository,
             ISmsOutboundRepository smsOutboundRepository,
-            IDiscardSmsService discardSmsService,
             ILogger<CampaignService> logger)
         {
             _campaignRepository = campaignRepository;
             _smsOutboundRepository = smsOutboundRepository;
-            _discardSmsService = discardSmsService;
             _logger = logger;
         }
 
         //Creazione campagna
-        public async Task CreateCampaignAsync(string title, string text, string recipientList, bool campaignNotify, string? description)
+        public async Task CreateCampaignAsync(CreateCampaignRequest campaignRequest)
         {
 
-            RecipientList recipients = new RecipientList(recipientList);
-            CampaignSms campaign = new CampaignSms(title, text, recipientList, campaignNotify, description);
+            RecipientList recipients = new RecipientList(campaignRequest.RecipientList);
+            int totalRecipient = recipients.CalculateTotalRecipients();
 
+            CampaignSms campaign = new CampaignSms(campaignRequest.Title, campaignRequest.Text, totalRecipient, campaignRequest.CampaignNotify, campaignRequest.Description);
             var createdCampaign = _campaignRepository.AddCampaign(campaign);
 
             //crea i singoli sms della campagna
@@ -53,10 +48,10 @@ namespace SmsMachine.Services
             _logger.LogInformation("Created campaign with ID {CampaignId}", createdCampaign.Id);
         }
 
-        // Invio Campagna, setta tuttis i messaggi in stato InProgress
-        public async Task<CampaignSms> SendCampaign(int id)
+        // Invio Campagna, setta tutti i messaggi in stato InProgress
+        public async Task SendCampaign(int id)
         {
-            CampaignSms? campaign = _campaignRepository.GetCampaignId(id);
+            CampaignSms? campaign = await _campaignRepository.GetCampaignId(id);
 
             if (campaign == null)
             {
@@ -67,7 +62,7 @@ namespace SmsMachine.Services
             campaign.MarkInProgress();
             _campaignRepository.UpdateCampaign(campaign);
 
-            var smsList = _smsOutboundRepository.GetAllSmsByCampaignId(id);
+            var smsList = await _smsOutboundRepository.GetAllSmsByCampaignId(id);
 
             foreach (var smsOutbound in smsList)
             {
@@ -80,16 +75,15 @@ namespace SmsMachine.Services
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Failed to set SMS to {Recipient} for Campaign ID {CampaignId}", smsOutbound.Recipient.Value, campaign.Id);
+                    _smsOutboundRepository.ClearErrors();
                 }
             }
-
-            return campaign;
         }
-        
+
         // Modifica Campagna
-        public CampaignSms UpdateCampaign(int id, CreateCampaignRequest form)
+        public async Task<CampaignSms> UpdateCampaign(int id, CreateCampaignRequest form)
         {
-            CampaignSms? existingCampaign = _campaignRepository.GetCampaignId(id);
+            CampaignSms? existingCampaign = await _campaignRepository.GetCampaignId(id);
             if (existingCampaign == null)
             {
                 _logger.LogWarning("Campaign with ID {CampaignId} not found for update", id);
@@ -97,7 +91,7 @@ namespace SmsMachine.Services
             }
 
             var recipientList = new RecipientList(form.RecipientList);
-            
+
             _smsOutboundRepository.DeleteAllSmsByCampaignId(existingCampaign.Id);
 
             foreach (var recipient in recipientList.Recipients)
@@ -126,7 +120,7 @@ namespace SmsMachine.Services
             return updatedCampaign;
         }
 
-        public bool DeleteCampaignById(int id)
+        public async Task DeleteCampaignById(int id)
         {
             var ok = _campaignRepository.DeleteCampaign(id);
             if (ok)
@@ -137,16 +131,10 @@ namespace SmsMachine.Services
                 _smsOutboundRepository.DeleteAllSmsByCampaignId(id);
                 _logger.LogInformation("Deleted all SMS for Campaign ID {CampaignId}", id);
             }
-            else {
+            else
+            {
                 _logger.LogWarning("Failed to delete campaign with ID {CampaignId}", id);
             }
-
-            return ok;
-        }
-
-        public CampaignSms CreateCampaign(CampaignSms campaign, string recipientList)
-        {
-            throw new NotImplementedException();
         }
 
 
