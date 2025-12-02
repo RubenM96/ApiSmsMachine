@@ -60,15 +60,7 @@ namespace SmsMachine.Infrastructure.Repositories
             var items = await campaignSearchQuery
                 .Skip((filter.Page - 1) * filter.PageSize)
                 .Take(filter.PageSize)
-                .Select(c => new CampaignListDTO
-                {
-                    Id = c.Id,
-                    Title = c.Title,
-                    Text = c.Text,
-                    TotalRecipients = c.TotalRecipients,
-                    CreatedAt = c.CreatedAt,
-                    Status = c.Status
-                })
+                .Select(c => new CampaignListDTO(c.Id, c.Title, c.TotalRecipients, c.CreatedAt, c.Status))
                 .ToListAsync();
 
             return new PagedResult<CampaignListDTO>

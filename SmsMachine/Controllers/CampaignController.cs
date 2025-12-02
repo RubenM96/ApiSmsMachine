@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using SmsMachine.Api.Models;
 using SmsMachine.Api.Models.DTO;
 using SmsMachine.Api.Services.Queries;
@@ -9,7 +10,7 @@ using SmsMachine.Services;
 namespace SmsMachine.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     public class CampaignController : ControllerBase
     {
         private readonly ICampaignService _campaignService;
@@ -29,26 +30,20 @@ namespace SmsMachine.Controllers
             _logger = logger;
         }
 
-        [HttpPost("[action]")]
-        public IActionResult CreateCampaign([FromForm] CampaignForm campaignReceiver)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ModelStateDictionary))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [HttpPost]
+        public async Task<IActionResult> CreateCampaign([FromBody] CreateCampaignRequest request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             try
             {
-                CampaignSms campaign = new CampaignSms(campaignReceiver.Title, campaignReceiver.Text, campaignReceiver.RecipientList, campaignReceiver.CampaignNotify, campaignReceiver.Description);
-                var recipientList = campaignReceiver.RecipientList;
-
-                var createdCampaign = _campaignService.CreateCampaign(campaign, recipientList);
-                return Ok(createdCampaign);
-            }
-            catch (ArgumentException ex) when (ex.ParamName is "recipient" or "recipientList")
-            {
-                ModelState.AddModelError("RecipientList", ex.Message);
-                _logger.LogWarning(ex, "Error validation recipientList");
-                return ValidationProblem(ModelState);
-
+                //createcampaignDTO
+               await _campaignService.CreateCampaignAsync(request.Title, request.Text, request.RecipientList, request.CampaignNotify, request.Description);
+                return Ok();
             }
             catch (Exception ex)
             {
@@ -57,7 +52,10 @@ namespace SmsMachine.Controllers
             }
         }
 
-        [HttpPost("{id}/[action]")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ModelStateDictionary))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [HttpPost("{id}")]
         public async Task<IActionResult> SendCampaign(int id)
         {
             if (!ModelState.IsValid)
@@ -66,7 +64,7 @@ namespace SmsMachine.Controllers
             try
             {
                 var campaignSend = await _campaignService.SendCampaign(id);
-                return Ok(campaignSend);
+                return Ok();
 
             }
             catch (Exception ex)
@@ -76,28 +74,15 @@ namespace SmsMachine.Controllers
             }
         }
 
-        [HttpGet("[action]")]
-        public IActionResult GetAllCampaigns()
-        {
-            try
-            {
-                var getAllCampaigns = _campaignRepository.GetAllCampaigns();
-                return Ok(getAllCampaigns);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error retrieving campaigns: {ex.Message}");
-                return BadRequest($"Error retrieving campaigns: {ex.Message}");
-            }
-        }
-
-        [HttpGet("[action]")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [HttpGet]
         public async Task<ActionResult<PagedResult<CampaignListDTO>>> Search([FromQuery] CampaignFilter filter)
         {
             var result = await _campaignQueryService.SearchAsync(filter);
             return Ok(result);
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet("{id}")]
         public IActionResult GetCampaign(int id)
         {
@@ -105,15 +90,19 @@ namespace SmsMachine.Controllers
             return Ok(getOneCampaign);
         }
 
-        [HttpGet("{id}/[action]")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [HttpGet("{id}")]
         public ActionResult<CampaignProgressDTO> GetProgress(int id)
         {
             var dto = _campaignQueryService.GetCampaignProgress(id);
             return Ok(dto);
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ModelStateDictionary))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [HttpPut("{id}")]
-        public IActionResult UpdateCampaign(int id, [FromForm] CampaignForm campaignReceiver)
+        public IActionResult UpdateCampaign(int id, [FromBody] CreateCampaignRequest campaignReceiver)
         {
 
             if (!ModelState.IsValid)
@@ -131,19 +120,12 @@ namespace SmsMachine.Controllers
             }
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpDelete("{id}")]
         public IActionResult DeleteCampaign(int id)
-        {
-            try
-            {
-                _campaignService.DeleteCampaignById(id);
-                return Ok("Campaign and SMS delete");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error deleting campaign {Id}", id);
-                return BadRequest($"Error deleting campaign: {ex.Message}");
-            }
+        {        
+             _campaignService.DeleteCampaignById(id);
+             return Ok("Campaign and SMS delete");           
         }
 
     }

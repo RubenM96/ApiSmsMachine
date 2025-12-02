@@ -2,7 +2,7 @@
 using System.Net;
 using System.Web;
 
-public class CampaignService
+public class CampaignService : ICampaignService
 {
     private readonly HttpClient _http;
 
@@ -16,28 +16,31 @@ public class CampaignService
         return await _http.GetFromJsonAsync<CampaignDetails>($"api/campaign/{id}");
     }
 
-    public Task<HttpResponseMessage> SendCampaignAsync(int id)
+    public async Task<bool> SendCampaignAsync(int id)
     {
         // REST "command": POST su /SendCampaign, nessuna logica lato UI.
-        return _http.PostAsync($"api/campaign/{id}/SendCampaign", content: null);
+        var response = await _http.PostAsync($"api/campaign/{id}/SendCampaign", content: null);
+        return response.IsSuccessStatusCode;
     }
 
     //creazione
-    public Task<HttpResponseMessage> CreateCampaignAsync(CampaignForm campaignForm)
+    public async Task<bool> CreateCampaignAsync(CampaignForm campaignForm)
     {
         var formData = BuildForm(campaignForm);
-        return _http.PostAsync("api/campaign/CreateCampaign", formData);
+        var response = await _http.PostAsync("api/campaign/CreateCampaign", formData);
+        return response.IsSuccessStatusCode;
     }
 
     //modifica
-    public Task<HttpResponseMessage> UpdateCampaignAsync(int id, CampaignForm campaignForm)
+    public async Task<bool> UpdateCampaignAsync(int id, CampaignForm campaignForm)
     {
         var formData = BuildForm(campaignForm);
-        return _http.PutAsync($"api/campaign/{id}", formData);
+        var response = await _http.PutAsync($"api/campaign/{id}", formData);
+        return response.IsSuccessStatusCode;
     }
 
     //elimina 
-    public Task<HttpResponseMessage> DeleteCampaignAsync(int id)
+    public Task<bool> DeleteCampaignAsync(int id)
     => _http.DeleteAsync($"api/campaign/{id}");
 
     public async Task<PagedResult<CampaignListDTO>> SearchAsync(CampaignSearchQuery campaignSearchQuery)
@@ -83,7 +86,7 @@ public class CampaignService
 
         var smsList = await resp.Content.ReadFromJsonAsync<List<SmsOutbound>>() ?? new List<SmsOutbound>();
 
-        if (smsList.Count == 0) 
+        if (smsList.Count == 0)
             return string.Empty;
 
         var recipientsString = string.Join(", ",
@@ -94,21 +97,5 @@ public class CampaignService
 
         return recipientsString;
     }
-    private static MultipartFormDataContent BuildForm(CampaignForm campaignForm)
-    {
-        var formData = new MultipartFormDataContent
-        {
-            { new StringContent(campaignForm.Title ?? string.Empty), "Title" },
-            { new StringContent(campaignForm.Text ?? string.Empty), "Text" },
-            { new StringContent(campaignForm.RecipientList ?? string.Empty), "RecipientList" },
-            { new StringContent(campaignForm.CampaignNotify.ToString()), "CampaignNotify" }
-        };
-
-        if (!string.IsNullOrWhiteSpace(campaignForm.Description))
-        {
-            formData.Add(new StringContent(campaignForm.Description), "Description");
-        }
-
-        return formData;
-    }
+   
 }

@@ -92,11 +92,11 @@
     int Start => Math.Max(0, (CurrentPage - 1) * PageSize);
     int End => Math.Min(CurrentPage * PageSize, TotalCount);
 
-    static string StatusClass(CampaignListDTO.CampaignStatus status) => status switch
+    static string StatusClass(CampaignStatus status) => status switch
     {
-        CampaignListDTO.CampaignStatus.Draft => "text-bg-secondary",
-        CampaignListDTO.CampaignStatus.InProgress => "text-bg-warning",
-        CampaignListDTO.CampaignStatus.Finished => "text-bg-success",
+        CampaignStatus.Draft => "text-bg-secondary",
+        CampaignStatus.InProgress => "text-bg-warning",
+        CampaignStatus.Finished => "text-bg-success",
         _ => "text-bg-light"
     };
 }

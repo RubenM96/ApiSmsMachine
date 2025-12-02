@@ -18,7 +18,7 @@
         <div class="row g-2">
             <div class="col-sm-4">
                 <label class="form-label">Titolo</label>
-                <input class="form-control" @bind="query.Title" @bind:event="oninput" />
+                <InputText class="form-control" @bind-Value="query.Title" />
             </div>
 
             <div class="col-sm-3">
@@ -120,14 +120,15 @@ else
 
     private async Task HandleSend(int id)
     {
-        var resp = await campaignService.SendCampaignAsync(id);
-        if (!resp.IsSuccessStatusCode)
+        var result = await campaignService.SendCampaignAsync(id);
+        if (!result)
         {
-            var msg = await resp.Content.ReadAsStringAsync();
+            var msg = await result.Content.ReadAsStringAsync();
             await JS.InvokeVoidAsync("alert", $"Invio fallito: {msg}");
         }
         await ReloadAsync(); // refresh per aggiornare stato riga
-        }
+     }
+
     private async Task HandleDelete(int id)
     {
         var ok = await JS.InvokeAsync<bool>("confirm", $"Eliminare definitivamente la campagna {id}?");

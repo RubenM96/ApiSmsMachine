@@ -10,8 +10,9 @@ namespace SmsMachine.Services
 
         Task<CampaignSms> SendCampaign(int id);
 
-        CampaignSms UpdateCampaign(int id, CampaignForm form);
+        CampaignSms UpdateCampaign(int id, CreateCampaignRequest form);
 
         public bool DeleteCampaignById(int id);
+        Task CreateCampaignAsync(string title, string text, string recipientList, bool campaignNotify, string? description);
     }
 }

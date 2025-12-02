@@ -27,29 +27,30 @@ namespace SmsMachine.Services
         }
 
         //Creazione campagna
-        public CampaignSms CreateCampaign(CampaignSms campaign, string recipientList)
+        public async Task CreateCampaignAsync(string title, string text, string recipientList, bool campaignNotify, string? description)
         {
 
             RecipientList recipients = new RecipientList(recipientList);
+            CampaignSms campaign = new CampaignSms(title, text, recipientList, campaignNotify, description);
 
             var createdCampaign = _campaignRepository.AddCampaign(campaign);
 
             //crea i singoli sms della campagna
             foreach (var recipient in recipients.Recipients)
             {
-                var sms = new SmsOutbound(new Recipient(recipient), campaign.Text, false, campaign.CampaignNotify, DateTime.Now, createdCampaign.Id);
                 try
                 {
+                    var sms = new SmsOutbound(new Recipient(recipient), campaign.Text, false, campaign.CampaignNotify, DateTime.Now, createdCampaign.Id);
                     _smsOutboundRepository.AddSms(sms);
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Failed to create SMS for recipient {Recipient} in Campaign ID {CampaignId}", recipient, createdCampaign.Id);
+                    _smsOutboundRepository.ClearErrors();
                 }
             }
 
             _logger.LogInformation("Created campaign with ID {CampaignId}", createdCampaign.Id);
-            return createdCampaign;
         }
 
         // Invio Campagna, setta tuttis i messaggi in stato InProgress
@@ -86,7 +87,7 @@ namespace SmsMachine.Services
         }
         
         // Modifica Campagna
-        public CampaignSms UpdateCampaign(int id, CampaignForm form)
+        public CampaignSms UpdateCampaign(int id, CreateCampaignRequest form)
         {
             CampaignSms? existingCampaign = _campaignRepository.GetCampaignId(id);
             if (existingCampaign == null)
@@ -142,5 +143,12 @@ namespace SmsMachine.Services
 
             return ok;
         }
+
+        public CampaignSms CreateCampaign(CampaignSms campaign, string recipientList)
+        {
+            throw new NotImplementedException();
+        }
+
+
     }
 }

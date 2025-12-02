@@ -5,6 +5,7 @@ namespace SmsMachine.Interfaces
     public interface ISmsOutboundRepository
     {
         SmsOutbound AddSms(SmsOutbound sms);
+        void ClearErrors();
         SmsOutbound? GetSmsById(int id);
         void UpdateSms(SmsOutbound sms);
         List<SmsOutbound> GetAllSmsByCampaignId(int campaignId);
