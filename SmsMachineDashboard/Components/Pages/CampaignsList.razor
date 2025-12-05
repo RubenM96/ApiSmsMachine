@@ -84,9 +84,8 @@ else
         //qui deve rimanere un bool tue o false, la logica va nel service
         var result = await campaignService.SendCampaignAsync(id);
         if (!result)
-        {
-            var msg = await result.Content.ReadAsStringAsync();
-            await JS.InvokeVoidAsync("alert", $"Invio fallito: {msg}");
+        {       
+            await JS.InvokeVoidAsync("alert", $"Invio fallito");
         }
         await ReloadAsync(); // refresh per aggiornare stato riga
      }
@@ -99,8 +98,7 @@ else
         var result = await campaignService.DeleteCampaignAsync(id);
         if (!result)
         {
-            var msg = await result.Content.ReadAsStringAsync();
-            await JS.InvokeVoidAsync("alert", $"Errore eliminazione : {msg}");
+            await JS.InvokeVoidAsync("alert", $"Errore eliminazione");
         }
         await ReloadAsync(); // refresh pagina corrente (server-side)
     }

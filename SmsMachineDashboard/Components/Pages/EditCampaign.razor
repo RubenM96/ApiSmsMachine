@@ -196,47 +196,7 @@ else
         {
             var resp = await campaignService.UpdateCampaignAsync(Id, campaignForm);
 
-            if (resp.IsSuccessStatusCode)
-            {
-                successMessage = "Campagna aggiornata con successo.";
-            }
-            else if ((int)resp.StatusCode == 400)
-            {
-                // ValidationProblemDetails dal server
-                try
-                {
-                    var vpd = await resp.Content.ReadFromJsonAsync<Microsoft.AspNetCore.Mvc.ValidationProblemDetails>();
-                    if (vpd?.Errors != null && vpd.Errors.Count > 0)
-                    {
-                        var all = vpd.Errors.SelectMany(kvp => kvp.Value).ToArray();
-                        errorMessage = string.Join(" ", all);
-
-                        if (vpd.Errors.TryGetValue(nameof(campaignForm.RecipientList), out var recErrs))
-                            serverRecipientError = string.Join(" ", recErrs);
-                        else
-                            serverRecipientError ??= errorMessage; // fallback sotto il campo
-                    }
-                    else
-                    {
-                        var body = await resp.Content.ReadAsStringAsync();
-                        errorMessage = string.IsNullOrWhiteSpace(body) ? "Richiesta non valida." : body;
-                        serverRecipientError ??= errorMessage;
-                    }
-                }
-                catch
-                {
-                    var body = await resp.Content.ReadAsStringAsync();
-                    errorMessage = string.IsNullOrWhiteSpace(body) ? "Richiesta non valida." : body;
-                    serverRecipientError ??= errorMessage;
-                }
-            }
-            else
-            {
-                var body = await resp.Content.ReadAsStringAsync();
-                errorMessage = string.IsNullOrWhiteSpace(body)
-                    ? $"Errore server ({(int)resp.StatusCode})."
-                    : body;
-            }
+            
         }
         finally
         {

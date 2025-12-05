@@ -125,57 +125,17 @@
         if (isSubmitting) return;
         isSubmitting = true;
 
-        // reset messaggi precedenti
-        message = null;
-        errorMessage = null;
-        serverRecipientError = null;
-
         try
         {
-            var result = await campaignService.CreateCampaignAsync(campaignForm);
+            // Chiama il servizio e riceve il risultato
+            var isSuccess = await campaignService.CreateCampaignAsync(campaignForm);
 
-            if (result)
-            {
-                message = "Campagna creata con successo.";
-                // reset form
-                campaignForm = new();
-            }
-            else if ((int)result.StatusCode == 400)
-            {
-                // Provo a leggere ValidationProblemDetails; se non riesco, mostro il body grezzo
-                try
-                {
-                    var vpd = await result.Content.ReadFromJsonAsync<Microsoft.AspNetCore.Mvc.ValidationProblemDetails>();
-                    if (vpd?.Errors != null && vpd.Errors.Count > 0)
-                    {
-                        // Mostro un riassunto in alto
-                        var all = vpd.Errors.SelectMany(kvp => kvp.Value).ToArray();
-                        errorMessage = string.Join(" ", all);
-
-                        // Se c'è un errore specifico su RecipientList lo salvo a parte
-                        if (vpd.Errors.TryGetValue(nameof(campaignForm.RecipientList), out var recErrs))
-                            serverRecipientError = string.Join(" ", recErrs);
-                    }
-                    else
-                    {
-                        errorMessage = await result.Content.ReadAsStringAsync();
-                        // se non ho un messaggio campo-specifico, riusa l'errore generale per mostrarlo sotto "Destinatari"
-                        serverRecipientError ??= errorMessage;
-                    }
-                }
-                catch
-                {
-                    errorMessage = await result.Content.ReadAsStringAsync();
-                    //  propaga lo stesso messaggio anche sotto il campo destinatari
-                    serverRecipientError ??= errorMessage;
-                }
-            }
-            else
-            {
-                // altri errori: mostro contenuto grezzo
-                var body = await result.Content.ReadAsStringAsync();
-                errorMessage = string.IsNullOrWhiteSpace(body) ? $"Errore server ({(int)resp.StatusCode})." : body;
-            }
+            // Aggiorno i messaggi per la UI
+            if (isSuccess)
+            {           
+                // reset del form
+                campaignForm = new CampaignForm();
+            }      
         }
         finally
         {

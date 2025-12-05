@@ -1,4 +1,5 @@
-﻿using SmsMachine.Dashboard.Models;
+﻿using Microsoft.AspNetCore.Mvc;
+using SmsMachine.Dashboard.Models;
 using SmsMachine.Dashboard.Services;
 using System.Net;
 using System.Text;
@@ -30,25 +31,131 @@ public class CampaignService : ICampaignService
     //creazione
     public async Task<bool> CreateCampaignAsync(CampaignForm campaignForm)
     {
+        // Serializzo l'oggetto in JSON
         var json = JsonSerializer.Serialize(campaignForm);
-        // Crea il contenuto HTTP con il tipo 'application/json'
         var content = new StringContent(json, Encoding.UTF8, "application/json");
 
+        string? successMessage = null;
+        string? errorMessage = null;
+        string? serverRecipientError = null;
+
         var response = await _http.PostAsync("api/campaign/CreateCampaign", content);
+
+        if (response.IsSuccessStatusCode)
+        {
+            successMessage = "Campagna creata con successo.";
+            // reset del form
+            campaignForm = new CampaignForm();
+        }
+        else if ((int)response.StatusCode == 400)
+        {
+            try
+            {
+                // Provo a leggere la risposta come ValidationProblemDetails
+                var vpd = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>();
+
+                if (vpd?.Errors != null && vpd.Errors.Count > 0)
+                {
+                    // Messaggio di errore generale
+                    errorMessage = string.Join(" ", vpd.Errors.SelectMany(kvp => kvp.Value));
+
+                    // Errore specifico su RecipientList, se presente
+                    if (vpd.Errors.TryGetValue(nameof(campaignForm.RecipientList), out var recipientErrors))
+                        serverRecipientError = string.Join(" ", recipientErrors);
+                }
+                else
+                {
+                    errorMessage = await response.Content.ReadAsStringAsync();
+                    serverRecipientError ??= errorMessage;
+                }
+            }
+            catch
+            {
+                // Se la deserializzazione fallisce, mostro il body grezzo
+                errorMessage = await response.Content.ReadAsStringAsync();
+                serverRecipientError ??= errorMessage;
+            }
+        }
+        else
+        {
+            // Altri errori generici
+            var body = await response.Content.ReadAsStringAsync();
+            errorMessage = string.IsNullOrWhiteSpace(body)
+                ? $"Errore server ({(int)response.StatusCode})."
+                : body;
+        }
+
+        // Qui puoi eventualmente loggare o mostrare successMessage, errorMessage, serverRecipientError
+        // Es: Debug.WriteLine(successMessage ?? errorMessage);
         return response.IsSuccessStatusCode;
     }
 
     //modifica
     public async Task<bool> UpdateCampaignAsync(int id, CampaignForm campaignForm)
     {
-        var formData = BuildForm(campaignForm);
-        var response = await _http.PutAsync($"api/campaign/{id}", formData);
+
+        string? errorMessage =null;          // alert rosso in alto
+        string? successMessage = null;        // alert verde in alto
+        string? serverRecipientError = null;  // messaggio specifico sotto "Destinatari"
+        var json = JsonSerializer.Serialize(campaignForm);
+
+        // Crea il contenuto HTTP con il tipo 'application/json'
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+        var response = await _http.PutAsync($"api/campaign/UpdateCampaign/{id}", content);
+
+        if (response.IsSuccessStatusCode)
+        {
+            successMessage = "Campagna aggiornata con successo.";
+        }
+        else if ((int)response.StatusCode == 400)
+        {
+            // ValidationProblemDetails dal server
+            try
+            {
+                var vpd = await response.Content.ReadFromJsonAsync<Microsoft.AspNetCore.Mvc.ValidationProblemDetails>();
+                if (vpd?.Errors != null && vpd.Errors.Count > 0)
+                {
+                    var all = vpd.Errors.SelectMany(kvp => kvp.Value).ToArray();
+                    errorMessage = string.Join(" ", all);
+
+                    if (vpd.Errors.TryGetValue(nameof(campaignForm.RecipientList), out var recErrs))
+                        serverRecipientError = string.Join(" ", recErrs);
+                    else
+                        serverRecipientError ??= errorMessage; // fallback sotto il campo
+                }
+                else
+                {
+                    var body = await response.Content.ReadAsStringAsync();
+                    errorMessage = string.IsNullOrWhiteSpace(body) ? "Richiesta non valida." : body;
+                    serverRecipientError ??= errorMessage;
+                }
+            }
+            catch
+            {
+                var body = await response.Content.ReadAsStringAsync();
+                errorMessage = string.IsNullOrWhiteSpace(body) ? "Richiesta non valida." : body;
+                serverRecipientError ??= errorMessage;
+            }
+        }
+        else
+        {
+            var body = await response.Content.ReadAsStringAsync();
+            errorMessage = string.IsNullOrWhiteSpace(body)
+                ? $"Errore server ({(int)response.StatusCode})."
+                : body;
+        }
+
+
+
         return response.IsSuccessStatusCode;
     }
 
     //elimina 
     public async Task<bool> DeleteCampaignAsync(int id)
-    =>  _http.DeleteAsync($"api/campaign/{id}");
+    {
+        var response = await _http.DeleteAsync($"api/campaign/DeleteCampaign/{id}");
+        return response.IsSuccessStatusCode;
+    }
 
     public async Task<PagedResult<CampaignListDTO>> SearchAsync(CampaignSearchQuery campaignSearchQuery)
     {
@@ -104,5 +211,10 @@ public class CampaignService : ICampaignService
 
         return recipientsString;
     }
-   
+
+    public async Task<CampaignProgressDTO?> GetProgressAsync(int campaignId)
+    {
+        return await _http.GetFromJsonAsync<CampaignProgressDTO>($"api/campaign/GetProgress/{campaignId}");
+    }
+
 }
