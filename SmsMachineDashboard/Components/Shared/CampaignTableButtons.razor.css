@@ -1,0 +1,7 @@
+﻿.campaign-actions {
+    gap: 0.4rem;
+}
+
+    .campaign-actions .btn {
+        min-width: 2.2rem;
+    }

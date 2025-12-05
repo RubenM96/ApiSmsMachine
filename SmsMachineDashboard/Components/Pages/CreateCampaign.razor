@@ -1,7 +1,8 @@
 ﻿@page "/createcampaign"
 @using SmsMachine.Dashboard.Models
 @using System.ComponentModel.DataAnnotations
-@inject CampaignService campaignService
+@using SmsMachine.Dashboard.Services
+@inject ICampaignService campaignService
 @inject NavigationManager Nav
 @rendermode InteractiveServer
 
@@ -131,20 +132,20 @@
 
         try
         {
-            var resp = await campaignService.CreateCampaignAsync(campaignForm);
+            var result = await campaignService.CreateCampaignAsync(campaignForm);
 
-            if (resp.IsSuccessStatusCode)
+            if (result)
             {
                 message = "Campagna creata con successo.";
                 // reset form
                 campaignForm = new();
             }
-            else if ((int)resp.StatusCode == 400) 
+            else if ((int)result.StatusCode == 400)
             {
                 // Provo a leggere ValidationProblemDetails; se non riesco, mostro il body grezzo
                 try
                 {
-                    var vpd = await resp.Content.ReadFromJsonAsync<Microsoft.AspNetCore.Mvc.ValidationProblemDetails>();
+                    var vpd = await result.Content.ReadFromJsonAsync<Microsoft.AspNetCore.Mvc.ValidationProblemDetails>();
                     if (vpd?.Errors != null && vpd.Errors.Count > 0)
                     {
                         // Mostro un riassunto in alto
@@ -157,14 +158,14 @@
                     }
                     else
                     {
-                        errorMessage = await resp.Content.ReadAsStringAsync();
+                        errorMessage = await result.Content.ReadAsStringAsync();
                         // se non ho un messaggio campo-specifico, riusa l'errore generale per mostrarlo sotto "Destinatari"
                         serverRecipientError ??= errorMessage;
                     }
                 }
                 catch
                 {
-                    errorMessage = await resp.Content.ReadAsStringAsync();
+                    errorMessage = await result.Content.ReadAsStringAsync();
                     //  propaga lo stesso messaggio anche sotto il campo destinatari
                     serverRecipientError ??= errorMessage;
                 }
@@ -172,7 +173,7 @@
             else
             {
                 // altri errori: mostro contenuto grezzo
-                var body = await resp.Content.ReadAsStringAsync();
+                var body = await result.Content.ReadAsStringAsync();
                 errorMessage = string.IsNullOrWhiteSpace(body) ? $"Errore server ({(int)resp.StatusCode})." : body;
             }
         }

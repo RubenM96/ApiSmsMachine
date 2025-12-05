@@ -1,5 +1,8 @@
 ﻿using SmsMachine.Dashboard.Models;
+using SmsMachine.Dashboard.Services;
 using System.Net;
+using System.Text;
+using System.Text.Json;
 using System.Web;
 
 public class CampaignService : ICampaignService
@@ -23,11 +26,15 @@ public class CampaignService : ICampaignService
         return response.IsSuccessStatusCode;
     }
 
+    
     //creazione
     public async Task<bool> CreateCampaignAsync(CampaignForm campaignForm)
     {
-        var formData = BuildForm(campaignForm);
-        var response = await _http.PostAsync("api/campaign/CreateCampaign", formData);
+        var json = JsonSerializer.Serialize(campaignForm);
+        // Crea il contenuto HTTP con il tipo 'application/json'
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+        var response = await _http.PostAsync("api/campaign/CreateCampaign", content);
         return response.IsSuccessStatusCode;
     }
 
@@ -40,8 +47,8 @@ public class CampaignService : ICampaignService
     }
 
     //elimina 
-    public Task<bool> DeleteCampaignAsync(int id)
-    => _http.DeleteAsync($"api/campaign/{id}");
+    public async Task<bool> DeleteCampaignAsync(int id)
+    =>  _http.DeleteAsync($"api/campaign/{id}");
 
     public async Task<PagedResult<CampaignListDTO>> SearchAsync(CampaignSearchQuery campaignSearchQuery)
     {

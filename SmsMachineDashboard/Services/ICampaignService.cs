@@ -1,12 +1,15 @@
 ﻿using SmsMachine.Dashboard.Models;
 
-public interface ICampaignService
+namespace SmsMachine.Dashboard.Services
 {
-    Task<bool> CreateCampaignAsync(CampaignForm campaignForm);
-    Task<bool> DeleteCampaignAsync(int id);
-    Task<CampaignDetails?> GetCampaignIdAsync(int id);
-    Task<string> GetRecipientsByCampaignIdAsync(int campaignId);
-    Task<PagedResult<CampaignListDTO>> SearchAsync(CampaignSearchQuery campaignSearchQuery);
-    Task<bool> SendCampaignAsync(int id);
-    Task<bool> UpdateCampaignAsync(int id, CampaignForm campaignForm);
+    public interface ICampaignService
+    {
+        Task<bool> CreateCampaignAsync(CampaignForm campaignForm);
+        Task<bool> DeleteCampaignAsync(int id);
+        Task<CampaignDetails?> GetCampaignIdAsync(int id);
+        Task<string> GetRecipientsByCampaignIdAsync(int campaignId);
+        Task<PagedResult<CampaignListDTO>> SearchAsync(CampaignSearchQuery campaignSearchQuery);
+        Task<bool> SendCampaignAsync(int id);
+        Task<bool> UpdateCampaignAsync(int id, CampaignForm campaignForm);
+    }
 }

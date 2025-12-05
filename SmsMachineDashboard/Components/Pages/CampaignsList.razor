@@ -2,7 +2,8 @@
 @using SmsMachine.Dashboard.Models
 @using SmsMachine.Dashboard.Components.Shared
 @using Microsoft.AspNetCore.Components.Forms
-@inject CampaignService campaignService
+@using SmsMachine.Dashboard.Services
+@inject ICampaignService campaignService
 @inject IJSRuntime JS
 @inject NavigationManager Nav
 @rendermode InteractiveServer
@@ -13,30 +14,7 @@
 {
     <div class="alert alert-danger">@errorMessage</div>
 }
-<div class="card mb-3">
-    <div class="card-body">
-        <div class="row g-2">
-            <div class="col-sm-4">
-                <label class="form-label">Titolo</label>
-                <InputText class="form-control" @bind-Value="query.Title" />
-            </div>
-
-            <div class="col-sm-3">
-                <label class="form-label">Da</label>
-                <InputDate TValue="DateTime?" class="form-control" @bind-Value="query.From" />
-            </div>
-
-            <div class="col-sm-3">
-                <label class="form-label">A</label>
-                <InputDate TValue="DateTime?" class="form-control" @bind-Value="query.To" />
-            </div>
-
-            <div class="col-sm-2 d-flex align-items-end">
-                <button class="btn btn-primary w-100" @onclick="ApplyFilters">Filtra</button>
-            </div>
-        </div>
-    </div>
-</div>
+<CampaignFilterPanel Query="query" OnSearch="ApplyFilters" />
 
 @if (isLoading)
 {
@@ -52,7 +30,7 @@ else
                     TotalCount="data.Total"
                     CurrentPage="query.Page"
                     PageSize="query.PageSize"
-                    OnEdit="HandleEdit"
+                    
                     OnSend="HandleSend"
                     OnDelete="HandleDelete" />
 
@@ -70,19 +48,6 @@ else
     private PagedResult<CampaignListDTO> data = new();
     private bool isLoading = true;
     string? errorMessage;
-
-    private string? fromStr
-    {
-        get => query.From?.ToString("yyyy-MM-dd");
-        set => query.From = string.IsNullOrWhiteSpace(value) ? null : DateTime.Parse(value);
-    }
-   
-    private string? toStr
-    {
-        get => query.To?.ToString("yyyy-MM-dd");
-        set => query.To = string.IsNullOrWhiteSpace(value) ? null : DateTime.Parse(value);
-    }
-
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -112,14 +77,11 @@ else
 
     // --- Eventi/azioni ---
 
-    private Task HandleEdit(int id)
-    {
-        Nav.NavigateTo($"/campaigns/{id}/edit");
-        return Task.CompletedTask;
-    }
+
 
     private async Task HandleSend(int id)
     {
+        //qui deve rimanere un bool tue o false, la logica va nel service
         var result = await campaignService.SendCampaignAsync(id);
         if (!result)
         {
@@ -134,10 +96,10 @@ else
         var ok = await JS.InvokeAsync<bool>("confirm", $"Eliminare definitivamente la campagna {id}?");
         if (!ok) return;
 
-        var resp = await campaignService.DeleteCampaignAsync(id);
-        if (!resp.IsSuccessStatusCode)
+        var result = await campaignService.DeleteCampaignAsync(id);
+        if (!result)
         {
-            var msg = await resp.Content.ReadAsStringAsync();
+            var msg = await result.Content.ReadAsStringAsync();
             await JS.InvokeVoidAsync("alert", $"Errore eliminazione : {msg}");
         }
         await ReloadAsync(); // refresh pagina corrente (server-side)
@@ -160,7 +122,6 @@ else
         query.Page = 1;
         await ReloadAsync();
     }
-
-    }
+}
 
    

@@ -1,0 +1,92 @@
+﻿.progress-wrapper {
+    padding: 1.2rem;
+    background: #ffffff;
+    border-radius: 8px;
+    border: 1px solid #e3e3e3;
+}
+
+.progress-status h4 {
+    margin-top: 0;
+    margin-bottom: 0.4rem;
+}
+
+.status-label {
+    margin-bottom: 1rem;
+    color: #444;
+}
+
+.progress-percentage {
+    font-size: 1.4rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.percentage-value {
+    color: #0078d7;
+}
+
+.progress-bar-bg {
+    background: #f0f0f0;
+    border-radius: 6px;
+    height: 14px;
+    margin-bottom: 1.2rem;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: #2ea44f; /* verde "success" */
+    transition: width 0.4s ease;
+}
+
+/* Griglia dei conteggi */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.6rem;
+}
+
+.stat-box {
+    padding: 0.7rem;
+    border-radius: 6px;
+    text-align: center;
+    background: #fafafa;
+    border: 1px solid #e4e4e4;
+}
+
+    .stat-box .label {
+        display: block;
+        font-size: 0.85rem;
+        color: #555;
+    }
+
+    .stat-box .value {
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin-top: 0.2rem;
+    }
+
+    /* Colori laterali per tipo */
+    .stat-box.sent {
+        border-left: 4px solid #2ea44f;
+    }
+
+    .stat-box.discard {
+        border-left: 4px solid #f4a32a;
+    }
+
+    .stat-box.failed {
+        border-left: 4px solid #d93025;
+    }
+
+    .stat-box.inprogress {
+        border-left: 4px solid #1a73e8;
+    }
+
+    .stat-box.draft {
+        border-left: 4px solid #888;
+    }
+
+    .stat-box.total {
+        border-left: 4px solid #000;
+    }
