@@ -73,7 +73,7 @@ namespace SmsMachine.Controllers
             }
         }
 
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CampaignListDTO))]
         [HttpGet]
         public async Task<ActionResult<PagedResult<CampaignListDTO>>> Search([FromBody] CampaignFilter filter)
         {
@@ -81,7 +81,7 @@ namespace SmsMachine.Controllers
             return Ok(result);
         }
 
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CampaignSms))]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCampaign(int id)
         {
@@ -89,7 +89,7 @@ namespace SmsMachine.Controllers
             return Ok(getOneCampaign);
         }
 
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CampaignProgressDTO))]
         [HttpGet("{id}")]
         public async Task<ActionResult<CampaignProgressDTO>> GetProgress(int id)
         {
