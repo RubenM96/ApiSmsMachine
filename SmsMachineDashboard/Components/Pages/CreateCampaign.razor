@@ -1,7 +1,8 @@
 ﻿@page "/createcampaign"
 @using SmsMachine.Dashboard.Models
 @using System.ComponentModel.DataAnnotations
-@inject CampaignService campaignService
+@using SmsMachine.Dashboard.Services
+@inject ICampaignService campaignService
 @inject NavigationManager Nav
 @rendermode InteractiveServer
 

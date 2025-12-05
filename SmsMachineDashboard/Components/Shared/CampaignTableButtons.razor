@@ -1,0 +1,67 @@
+﻿@using SmsMachine.Dashboard.Models
+@using Microsoft.AspNetCore.Components
+@inject NavigationManager Nav
+
+<div class="campaign-actions d-inline-flex justify-content-center align-items-center gap-2">
+            <!-- Dettagli -->
+        <button class="btn btn-sm btn-outline-secondary"
+                title="Dettagli" aria-label="Dettagli"
+                @onclick="() => NavigateToDetails(c.Id)">
+            <i class="bi bi-search"></i>
+            <span class="visually-hidden">Dettagli</span>
+        </button>
+
+        <!-- Modifica (solo se non è finita) -->
+        @if (c.Status != CampaignListDTO.CampaignStatus.Finished)
+        {
+            <button class="btn btn-sm btn-outline-primary"
+                    title="Modifica" aria-label="Modifica"
+                    @onclick="() => NavigateToEdit(c.Id)">
+                <i class="bi bi-pencil"></i>
+                <span class="visually-hidden">Modifica</span>
+            </button>
+        }
+
+        <!-- Elimina -->
+        <button class="btn btn-sm btn-outline-danger"
+                title="Elimina" aria-label="Elimina"
+                @onclick="() => OnDelete.InvokeAsync(c.Id)">
+            <i class="bi bi-trash"></i>
+            <span class="visually-hidden">Elimina</span>
+        </button>
+
+        <!-- Invia (solo se non è finita) -->
+        @if (c.Status != CampaignListDTO.CampaignStatus.Finished)
+        {
+            <button class="btn btn-sm btn-warning"
+                    title="Invia" aria-label="Invia"
+                    @onclick="() => OnSend.InvokeAsync(c.Id)">
+                <i class="bi bi-send"></i>
+                <span class="visually-hidden">Invia</span>
+            </button>
+        }
+    </div>
+
+@code {
+    [Parameter]
+    public CampaignListDTO c { get; set; } = default!;
+
+    [Parameter]
+    public EventCallback<int> OnDelete { get; set; }
+
+    [Parameter]
+    public EventCallback<int> OnSend { get; set; }
+    
+  
+
+    private void NavigateToDetails(int id)
+    {
+        Nav.NavigateTo($"/campaign/{id}");
+    }
+
+    private void NavigateToEdit(int id)
+    {
+        Nav.NavigateTo($"/campaign/{id}/edit");
+    }
+
+}

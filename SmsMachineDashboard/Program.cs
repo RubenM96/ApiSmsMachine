@@ -1,4 +1,5 @@
 using SmsMachine.Dashboard.Components;
+using SmsMachine.Dashboard.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,7 +8,7 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddServiceDiscovery();
-builder.Services.AddHttpClient<CampaignService>(s => { s.BaseAddress = new Uri("https+http://api"); })
+builder.Services.AddHttpClient<ICampaignService,CampaignService>(s => { s.BaseAddress = new Uri("https+http://api"); })
     .AddServiceDiscovery();
 
 //builder.Services.AddScoped<CampaignService>();

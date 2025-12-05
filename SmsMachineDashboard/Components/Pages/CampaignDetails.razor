@@ -3,7 +3,8 @@
 @using SmsMachine.Dashboard.Models
 @using CampaignDetailsModel = SmsMachine.Dashboard.Models.CampaignDetails <!-- alias per evitare conflitti con il component -->
 @using SmsMachine.Dashboard.Components.Shared
-@inject CampaignService CampaignService
+@using SmsMachine.Dashboard.Services
+@inject ICampaignService CampaignService
 
 <h3>Dettaglio Campagna</h3>
 

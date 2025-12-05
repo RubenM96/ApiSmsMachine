@@ -1,6 +1,7 @@
 ﻿@page "/campaign/{id:int}/edit"
 @using SmsMachine.Dashboard.Models
-@inject CampaignService campaignService
+@using SmsMachine.Dashboard.Services
+@inject ICampaignService campaignService
 @inject NavigationManager Nav
 @rendermode InteractiveServer
 

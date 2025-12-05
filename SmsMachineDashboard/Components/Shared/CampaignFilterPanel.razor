@@ -1,0 +1,44 @@
+﻿@using SmsMachine.Dashboard.Models
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Forms
+
+<div class="card mb-3">
+    <div class="card-body">
+        <div class="row g-2">
+            <div class="col-sm-4">
+                <label class="form-label">Titolo</label>
+                <input class="form-control" @bind="Query.Title" @bind:event="oninput" />
+            </div>
+
+            <div class="col-sm-3">
+                <label class="form-label">Da</label>
+                <InputDate TValue="DateTime?" class="form-control" @bind-Value="Query.From" />
+            </div>
+
+            <div class="col-sm-3">
+                <label class="form-label">A</label>
+                <InputDate TValue="DateTime?" class="form-control" @bind-Value="Query.To" />
+            </div>
+
+            <div class="col-sm-2 d-flex align-items-end">
+                <button class="btn btn-primary w-100" @onclick="OnSearchClick">Filtra</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public CampaignSearchQuery Query { get; set; } = default!;
+
+    [Parameter]
+    public EventCallback OnSearch { get; set; }
+
+    private async Task OnSearchClick()
+    {
+        if (OnSearch.HasDelegate)
+        {
+            await OnSearch.InvokeAsync();
+        }
+    }
+}

@@ -1,8 +1,9 @@
 ﻿using SmsMachine.Dashboard.Models;
+using SmsMachine.Dashboard.Services;
 using System.Net;
 using System.Web;
 
-public class CampaignService
+public class CampaignService : ICampaignService
 {
     private readonly HttpClient _http;
 
