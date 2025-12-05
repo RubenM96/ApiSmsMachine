@@ -4,6 +4,6 @@ namespace SmsMachine.Api.Services
 {
     public interface IDiscardSmsService
     {
-        List<SmsOutbound> RecoveryDiscardedSmsByCampaignId(int campaignId);
+        Task<List<SmsOutbound>> RecoveryDiscardedSmsByCampaignId(int campaignId);
     }
 }

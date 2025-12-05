@@ -75,7 +75,7 @@ namespace SmsMachine.Controllers
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
-        public async Task<ActionResult<PagedResult<CampaignListDTO>>> Search([FromQuery] CampaignFilter filter)
+        public async Task<ActionResult<PagedResult<CampaignListDTO>>> Search([FromBody] CampaignFilter filter)
         {
             var result = await _campaignQueryService.SearchAsync(filter);
             return Ok(result);

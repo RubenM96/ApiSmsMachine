@@ -48,13 +48,13 @@ namespace SmsMachine.Api.Services
             return Task.CompletedTask;
         }
 
-        private void CheckSingleCampaignCompletion(CampaignSms campaign)
+        private async Task CheckSingleCampaignCompletion(CampaignSms campaign)
         {
             // prendo tutti gli SMS della campagna
-            var smsList = _smsOutboundRepository.GetAllSmsByCampaignId(campaign.Id);
+            var smsList = await _smsOutboundRepository.GetAllSmsByCampaignId(campaign.Id);
 
             //check dei messaggi scartati
-            CheckDiscardSmsForSingleCampaign(campaign);           
+            await CheckDiscardSmsForSingleCampaign(campaign);           
 
             if (!campaign.IsComplete(smsList))
             {
@@ -91,9 +91,9 @@ namespace SmsMachine.Api.Services
                 campaign.Id);
         }
 
-        public void CheckDiscardSmsForSingleCampaign(CampaignSms campaign)
+        public async Task CheckDiscardSmsForSingleCampaign(CampaignSms campaign)
         {
-            var discardedSmsList = _discardSmsService.RecoveryDiscardedSmsByCampaignId(campaign.Id);
+            var discardedSmsList = await _discardSmsService.RecoveryDiscardedSmsByCampaignId(campaign.Id);
 
             foreach (var sms in discardedSmsList)
             {

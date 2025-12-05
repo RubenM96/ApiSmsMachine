@@ -23,16 +23,15 @@ namespace SmsMachine.Api.Services.Queries
             return await _campaignRepository.SearchAsync(filter);
         }
 
-        public CampaignProgressDTO GetCampaignProgress(int campaignId)
+        public async Task<CampaignProgressDTO> GetCampaignProgress(int campaignId)
         {
-            var campaign = _campaignRepository.GetCampaignId(campaignId);
+            var campaign = await _campaignRepository.GetCampaignId(campaignId);
             if (campaign == null) 
             {
                 throw new ArgumentException($"Campaign with ID {campaignId} not found");
             } 
                 
-            var sms = _smsOutboundRepository.GetAllSmsByCampaignId(campaignId).ToList();
-
+            var sms = await _smsOutboundRepository.GetAllSmsByCampaignId(campaignId);
             
             return new CampaignProgressDTO
             {

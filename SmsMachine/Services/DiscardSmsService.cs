@@ -18,7 +18,7 @@ namespace SmsMachine.Api.Services
             _logger = logger;
         }
 
-        public List<SmsOutbound> RecoveryDiscardedSmsByCampaignId(int campaignId)
+        public async Task<List<SmsOutbound>> RecoveryDiscardedSmsByCampaignId(int campaignId)
         {
             try
             {

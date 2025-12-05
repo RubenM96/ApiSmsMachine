@@ -20,11 +20,5 @@ namespace SmsMachine.Infrastructure.Repositories
             return notify;
         }
 
-        public Notify? GetNotify(int id)
-        {
-            return _context.Set<Notify>().Find(id);
-        }
-
-
     }
 }

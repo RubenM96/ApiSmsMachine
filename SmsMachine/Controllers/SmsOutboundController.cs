@@ -4,7 +4,7 @@ using SmsMachine.Interfaces;
 namespace SmsMachine.Api.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     public class SmsOutboundController : ControllerBase
     {
         private readonly ISmsOutboundRepository _smsOutboundRepository;
@@ -19,15 +19,15 @@ namespace SmsMachine.Api.Controllers
         }
 
 
-        [HttpGet("[action]/{campaignId}")]
-        public IActionResult GetAllSmsOutboundByCampaignId(int campaignId)
+        [HttpGet("{campaignId}")]
+        public async Task<IActionResult> GetAllSmsOutboundByCampaignId(int campaignId)
         {
             try
             {
                 if (campaignId <= 0)
                     return BadRequest("CampaignId non valido.");
 
-                var smsList = _smsOutboundRepository.GetAllSmsByCampaignId(campaignId);
+                var smsList = await _smsOutboundRepository.GetAllSmsByCampaignId(campaignId);
 
                 if (smsList == null || smsList.Count == 0)
                     return NotFound("Nessun SMS trovato per questa campagna.");
