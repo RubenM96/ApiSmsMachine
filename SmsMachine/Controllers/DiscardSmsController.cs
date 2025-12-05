@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SmsMachine.Api.Services;
-using SmsMachine.Services;
 
 
 namespace SmsMachine.Controllers
@@ -20,12 +19,12 @@ namespace SmsMachine.Controllers
             _discardSmsService = discardSmsService;
         }
 
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Models.SmsOutbound))]
         [HttpGet]
         public async Task<IActionResult> RecoveryDiscardedSmsFromCampaign(int campaignId)
         {
             var result = await _discardSmsService.RecoveryDiscardedSmsByCampaignId(campaignId);
-            return Ok(result);       
+            return Ok(result);
         }
 
     }

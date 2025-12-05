@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using SmsMachine.Models;
 using SmsMachine.Services;
 
@@ -15,8 +16,11 @@ public class SendSmsController : ControllerBase
         _smsService = smsService;
     }
 
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ModelStateDictionary))]
+    [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
     [HttpPost]
-    public IActionResult Send([FromForm] SmsSend sms)
+    public IActionResult Send([FromBody] SmsSend sms)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);

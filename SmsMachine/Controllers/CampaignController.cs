@@ -50,7 +50,7 @@ namespace SmsMachine.Controllers
                 return BadRequest($"Errore nella creazione della campagna: {ex.Message}");
             }
         }
-
+        
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ModelStateDictionary))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]

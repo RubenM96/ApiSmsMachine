@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using SmsMachine.Models;
 using SmsMachine.Services;
 
@@ -17,8 +18,11 @@ namespace SmsMachine.Controllers
             _logger = logger;
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ModelStateDictionary))]
         [HttpPost]
-        public IActionResult ReceiveSms([FromForm] SmsReceived sms)
+        public IActionResult ReceiveSms([FromForm] SmsReceived sms) //AreaSx
         {
 
             if (!ModelState.IsValid)
