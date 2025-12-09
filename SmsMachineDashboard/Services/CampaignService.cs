@@ -29,100 +29,39 @@ public class CampaignService : ICampaignService
 
     
     //creazione
-    public async Task<bool> CreateCampaignAsync(CampaignForm campaignForm)
+    public async Task<CampaignFormResult> CreateCampaignAsync(CampaignForm campaignForm)
     {
         // Serializzo l'oggetto in JSON
         var json = JsonSerializer.Serialize(campaignForm);
         var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-        string? successMessage = null;
         string? errorMessage = null;
         string? serverRecipientError = null;
 
         var response = await _http.PostAsync("api/campaign/CreateCampaign", content);
-
+        
+        // caso ok
         if (response.IsSuccessStatusCode)
         {
-            successMessage = "Campagna creata con successo.";
-            // reset del form
-            campaignForm = new CampaignForm();
+            return CampaignFormResult.Ok();
         }
-        else if ((int)response.StatusCode == 400)
+        // caso errore 400 Bad Request con ValidationProblemDetails (errori nel form)
+        if (response.StatusCode == HttpStatusCode.BadRequest)
         {
             try
             {
-                // Provo a leggere la risposta come ValidationProblemDetails
                 var vpd = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>();
 
                 if (vpd?.Errors != null && vpd.Errors.Count > 0)
                 {
-                    // Messaggio di errore generale
+                    // errore generale 
                     errorMessage = string.Join(" ", vpd.Errors.SelectMany(kvp => kvp.Value));
 
-                    // Errore specifico su RecipientList, se presente
+                    // errore specifico su RecipientList
                     if (vpd.Errors.TryGetValue(nameof(campaignForm.RecipientList), out var recipientErrors))
                         serverRecipientError = string.Join(" ", recipientErrors);
-                }
-                else
-                {
-                    errorMessage = await response.Content.ReadAsStringAsync();
-                    serverRecipientError ??= errorMessage;
-                }
-            }
-            catch
-            {
-                // Se la deserializzazione fallisce, mostro il body grezzo
-                errorMessage = await response.Content.ReadAsStringAsync();
-                serverRecipientError ??= errorMessage;
-            }
-        }
-        else
-        {
-            // Altri errori generici
-            var body = await response.Content.ReadAsStringAsync();
-            errorMessage = string.IsNullOrWhiteSpace(body)
-                ? $"Errore server ({(int)response.StatusCode})."
-                : body;
-        }
-
-        // Qui puoi eventualmente loggare o mostrare successMessage, errorMessage, serverRecipientError
-        // Es: Debug.WriteLine(successMessage ?? errorMessage);
-        return response.IsSuccessStatusCode;
-    }
-
-
-    public async Task<bool> UpdateCampaignAsync(int id, CampaignForm campaignForm)
-    {
-
-        string? errorMessage =null;          // alert rosso in alto
-        string? successMessage = null;        // alert verde in alto
-        string? serverRecipientError = null;  // messaggio specifico sotto "Destinatari"
-       
-       var json = JsonSerializer.Serialize(campaignForm);
-
-        // Crea il contenuto HTTP con il tipo 'application/json'
-        var content = new StringContent(json, Encoding.UTF8, "application/json");
-        var response = await _http.PutAsync($"api/campaign/UpdateCampaign/{id}", content);
-
-        if (response.IsSuccessStatusCode)
-        {
-            successMessage = "Campagna aggiornata con successo.";
-        }
-        else if ((int)response.StatusCode == 400)
-        {
-            // ValidationProblemDetails dal server
-            try
-            {
-                var vpd = await response.Content.ReadFromJsonAsync<Microsoft.AspNetCore.Mvc.ValidationProblemDetails>();
-                if (vpd?.Errors != null && vpd.Errors.Count > 0)
-                {
-                    var all = vpd.Errors.SelectMany(kvp => kvp.Value).ToArray();
-                    errorMessage = string.Join(" ", all);
-
-                    if (vpd.Errors.TryGetValue(nameof(campaignForm.RecipientList), out var recErrs))
-                        serverRecipientError = string.Join(" ", recErrs);
                     else
-                        serverRecipientError ??= errorMessage; // fallback sotto il campo
+                        serverRecipientError ??= errorMessage;
                 }
                 else
                 {
@@ -137,18 +76,70 @@ public class CampaignService : ICampaignService
                 errorMessage = string.IsNullOrWhiteSpace(body) ? "Richiesta non valida." : body;
                 serverRecipientError ??= errorMessage;
             }
+            return CampaignFormResult.Fail(errorMessage, serverRecipientError);
         }
-        else
+        // altri errori (500, ecc.)
+        var rawBody = await response.Content.ReadAsStringAsync();
+        errorMessage = string.IsNullOrWhiteSpace(rawBody)
+            ? $"Errore server ({(int)response.StatusCode})."
+            : rawBody;
+
+        return CampaignFormResult.Fail(errorMessage);
+    }
+
+
+    public async Task<CampaignFormResult> UpdateCampaignAsync(int id, CampaignForm campaignForm)
+    {
+        string? errorMessage = null;
+        string? serverRecipientError = null;
+
+        var json = JsonSerializer.Serialize(campaignForm);
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+        var response = await _http.PutAsync($"api/campaign/UpdateCampaign/{id}", content);
+
+        if (response.IsSuccessStatusCode)
         {
-            var body = await response.Content.ReadAsStringAsync();
-            errorMessage = string.IsNullOrWhiteSpace(body)
-                ? $"Errore server ({(int)response.StatusCode})."
-                : body;
+            return CampaignFormResult.Ok();
         }
 
+        if (response.StatusCode == HttpStatusCode.BadRequest)
+        {
+            try
+            {
+                var vpd = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>();
+                if (vpd?.Errors != null && vpd.Errors.Count > 0)
+                {
+                    var all = vpd.Errors.SelectMany(kvp => kvp.Value).ToArray();
+                    errorMessage = string.Join(" ", all);
 
+                    if (vpd.Errors.TryGetValue(nameof(campaignForm.RecipientList), out var recErrs))
+                        serverRecipientError = string.Join(" ", recErrs);
+                    else
+                        serverRecipientError ??= errorMessage;
+                }
+                else
+                {
+                    var body = await response.Content.ReadAsStringAsync();
+                    errorMessage = string.IsNullOrWhiteSpace(body) ? "Richiesta non valida." : body;
+                    serverRecipientError ??= errorMessage;
+                }
+            }
+            catch
+            {
+                var body = await response.Content.ReadAsStringAsync();
+                errorMessage = string.IsNullOrWhiteSpace(body) ? "Richiesta non valida." : body;
+                serverRecipientError ??= errorMessage;
+            }
 
-        return response.IsSuccessStatusCode;
+            return CampaignFormResult.Fail(errorMessage, serverRecipientError);
+        }
+
+        var rawBody = await response.Content.ReadAsStringAsync();
+        errorMessage = string.IsNullOrWhiteSpace(rawBody)
+            ? $"Errore server ({(int)response.StatusCode})."
+            : rawBody;
+
+        return CampaignFormResult.Fail(errorMessage);
     }
 
     //elimina 

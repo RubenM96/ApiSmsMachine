@@ -194,9 +194,17 @@ else
 
         try
         {
-            var resp = await campaignService.UpdateCampaignAsync(Id, campaignForm);
+            var result = await campaignService.UpdateCampaignAsync(Id, campaignForm);
 
-            
+            if (result.Success)
+            {
+                successMessage = "Campagna aggiornata con successo.";
+            }
+            else
+            {
+                errorMessage = result.ErrorMessage;
+                serverRecipientError = result.RecipientError;
+            }
         }
         finally
         {

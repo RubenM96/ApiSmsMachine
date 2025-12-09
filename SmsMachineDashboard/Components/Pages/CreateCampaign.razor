@@ -16,6 +16,13 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
+@if (!string.IsNullOrEmpty(successMessage))
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @successMessage
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
 
 <EditForm Model="@campaignForm" OnValidSubmit="@CampaignFormSubmit" FormName="CampaignForm">
     <DataAnnotationsValidator />
@@ -113,7 +120,7 @@
 
 @code {
     CampaignForm campaignForm = new();
-    string? message;                 // messaggio di successo
+    string? successMessage;                 // messaggio di successo in verde
     string? errorMessage;            // errore generale (alert in testa pagina)
     string? serverRecipientError;    // errore specifico su RecipientList 
     bool isSubmitting = false;
@@ -125,17 +132,27 @@
         if (isSubmitting) return;
         isSubmitting = true;
 
+        // pulisco i messaggi precedenti
+        successMessage = null;
+        errorMessage = null;
+        serverRecipientError = null;
+
         try
         {
-            // Chiama il servizio e riceve il risultato
-            var isSuccess = await campaignService.CreateCampaignAsync(campaignForm);
+            var result = await campaignService.CreateCampaignAsync(campaignForm);
 
-            // Aggiorno i messaggi per la UI
-            if (isSuccess)
-            {           
+            if (result.Success)
+            {
+                successMessage = "Campagna creata con successo!";
                 // reset del form
                 campaignForm = new CampaignForm();
-            }      
+            }
+            else
+            {
+                // messaggi da mostrare
+                errorMessage = result.ErrorMessage;
+                serverRecipientError = result.RecipientError;
+            }
         }
         finally
         {

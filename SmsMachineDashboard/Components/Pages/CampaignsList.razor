@@ -79,18 +79,33 @@ else
     // --- Eventi/azioni ---
     private async Task HandleSend(int id)
     {
+
+        var campaign = data.Items.FirstOrDefault(x => x.Id == id);
+        var title = campaign?.Title ?? id.ToString(); // per recuperare il titolo della campagna
         //qui deve rimanere un bool tue o false, la logica va nel service
+        var ok = await JS.InvokeAsync<bool>("confirm", $"Sei sicuro di voler inviare la campagna \"{title}\"?");
+        if (!ok) return;
+
         var result = await campaignService.SendCampaignAsync(id);
+
         if (!result)
-        {       
+        {
             await JS.InvokeVoidAsync("alert", $"Invio fallito");
         }
-        await ReloadAsync(); // refresh per aggiornare stato riga
+        else
+        {
+            await JS.InvokeVoidAsync("alert", $"Invio campagna iniziato con successo");
+        }
+
+        await ReloadAsync();
      }
 
     private async Task HandleDelete(int id)
     {
-        var ok = await JS.InvokeAsync<bool>("confirm", $"Eliminare definitivamente la campagna {id}?");
+        var campaign = data.Items.FirstOrDefault(x => x.Id == id);
+        var title = campaign?.Title ?? id.ToString();
+
+        var ok = await JS.InvokeAsync<bool>("alert", $"Campagna \"{title}\" inviata con successo");
         if (!ok) return;
 
         var result = await campaignService.DeleteCampaignAsync(id);

@@ -37,13 +37,21 @@ namespace SmsMachine.Controllers
         public async Task<IActionResult> CreateCampaign([FromBody] CreateCampaignRequest request)
         {
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+                return ValidationProblem(ModelState);
 
             try
             {
                await _campaignService.CreateCampaignAsync(request);
                return Ok();
             }
+
+            catch (ArgumentException argEx)
+            {
+              //  Se l'errore viene da RecipientList (o simile), lo agganciamo al campo RecipientList del form
+                ModelState.AddModelError(nameof(request.RecipientList), argEx.Message);
+                return ValidationProblem(ModelState);
+            }
+
             catch (Exception ex)
             {
                 _logger.LogError($"Error creating campaign: {ex.Message}");
@@ -101,17 +109,25 @@ namespace SmsMachine.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ModelStateDictionary))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCampaign(int id, [FromBody] CreateCampaignRequest campaignReceiver)
+        public async Task<IActionResult> UpdateCampaign(int id, [FromBody] CreateCampaignRequest request)
         {
 
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+                return ValidationProblem(ModelState);
 
             try
             {
-                var updatedCampaign = await _campaignService.UpdateCampaign(id, campaignReceiver);
+                var updatedCampaign = await _campaignService.UpdateCampaign(id, request);
                 return Ok(updatedCampaign);
             }
+
+            catch (ArgumentException argEx)
+            {
+                //  Se l'errore viene da RecipientList (o simile), lo agganciamo al campo RecipientList del form
+                ModelState.AddModelError(nameof(request.RecipientList), argEx.Message);
+                return ValidationProblem(ModelState);
+            }
+
             catch (Exception ex)
             {
                 _logger.LogError($"Error updating campaign: {ex.Message}");
