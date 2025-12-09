@@ -17,13 +17,13 @@ public class CampaignService : ICampaignService
 
     public async Task<CampaignDetails?> GetCampaignIdAsync(int id)
     {
-        return await _http.GetFromJsonAsync<CampaignDetails>($"api/campaign/getcampaign/{id}");
+        return await _http.GetFromJsonAsync<CampaignDetails>($"api/campaign/GetCampaign/{id}");
     }
 
     public async Task<bool> SendCampaignAsync(int id)
     {
         // REST "command": POST su /SendCampaign, nessuna logica lato UI.
-        var response = await _http.PostAsync($"api/campaign/{id}/SendCampaign", content: null);
+        var response = await _http.PostAsync($"api/campaign/SendCampaign/{id}", content: null);
         return response.IsSuccessStatusCode;
     }
 
