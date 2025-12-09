@@ -90,14 +90,15 @@ public class CampaignService : ICampaignService
         return response.IsSuccessStatusCode;
     }
 
-    //modifica
+
     public async Task<bool> UpdateCampaignAsync(int id, CampaignForm campaignForm)
     {
 
         string? errorMessage =null;          // alert rosso in alto
         string? successMessage = null;        // alert verde in alto
         string? serverRecipientError = null;  // messaggio specifico sotto "Destinatari"
-        var json = JsonSerializer.Serialize(campaignForm);
+       
+       var json = JsonSerializer.Serialize(campaignForm);
 
         // Crea il contenuto HTTP con il tipo 'application/json'
         var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -157,27 +158,12 @@ public class CampaignService : ICampaignService
         return response.IsSuccessStatusCode;
     }
 
+    //Lista
     public async Task<PagedResult<CampaignListDTO>> SearchAsync(CampaignSearchQuery campaignSearchQuery)
     {
-        var qs = HttpUtility.ParseQueryString(string.Empty);
+        var response = await _http.PostAsJsonAsync("api/campaign/search", campaignSearchQuery);
+        var result = await response.Content.ReadFromJsonAsync<PagedResult<CampaignListDTO>>();
 
-        if (!string.IsNullOrWhiteSpace(campaignSearchQuery.Title))
-            qs["title"] = campaignSearchQuery.Title;
-
-        if (campaignSearchQuery.From.HasValue)
-            qs["from"] = campaignSearchQuery.From.Value.ToString("yyyy-MM-dd");
-
-        if (campaignSearchQuery.To.HasValue)
-            qs["to"] = campaignSearchQuery.To.Value.ToString("yyyy-MM-dd");
-
-        qs["page"] = campaignSearchQuery.Page.ToString();
-        qs["pageSize"] = campaignSearchQuery.PageSize.ToString();
-
-        var url = $"api/campaign/search?{qs}";
-
-        var result = await _http.GetFromJsonAsync<PagedResult<CampaignListDTO>>(url);
-
-        // in caso di null (API che risponde 204, ecc.)
         return result ?? new PagedResult<CampaignListDTO>
         {
             Items = Array.Empty<CampaignListDTO>(),

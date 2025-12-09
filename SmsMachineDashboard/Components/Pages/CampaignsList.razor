@@ -54,6 +54,7 @@ else
         if (!firstRender) return;
         await ReloadAsync();
     }
+
     private async Task ReloadAsync()
     {
         try
@@ -76,9 +77,6 @@ else
     }
 
     // --- Eventi/azioni ---
-
-
-
     private async Task HandleSend(int id)
     {
         //qui deve rimanere un bool tue o false, la logica va nel service
@@ -102,6 +100,7 @@ else
         }
         await ReloadAsync(); // refresh pagina corrente (server-side)
     }
+
     private async Task ApplyFilters()
     {
         query.Page = 1; // reset alla prima pagina quando cambi filtri
