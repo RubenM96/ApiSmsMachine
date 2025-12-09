@@ -17,7 +17,7 @@ public class CampaignService : ICampaignService
 
     public async Task<CampaignDetails?> GetCampaignIdAsync(int id)
     {
-        return await _http.GetFromJsonAsync<CampaignDetails>($"api/campaign/{id}");
+        return await _http.GetFromJsonAsync<CampaignDetails>($"api/campaign/getcampaign/{id}");
     }
 
     public async Task<bool> SendCampaignAsync(int id)
@@ -159,17 +159,17 @@ public class CampaignService : ICampaignService
     }
 
     //Lista
-    public async Task<PagedResult<CampaignListDTO>> SearchAsync(CampaignSearchQuery campaignSearchQuery)
+    public async Task<PagedResult<CampaignListDTO>> SearchAsync(CampaignSearchQuery campaignSearch)
     {
-        var response = await _http.PostAsJsonAsync("api/campaign/search", campaignSearchQuery);
+        var response = await _http.PostAsJsonAsync("api/campaign/search", campaignSearch);
         var result = await response.Content.ReadFromJsonAsync<PagedResult<CampaignListDTO>>();
 
         return result ?? new PagedResult<CampaignListDTO>
         {
             Items = Array.Empty<CampaignListDTO>(),
             Total = 0,
-            Page = campaignSearchQuery.Page,
-            PageSize = campaignSearchQuery.PageSize
+            Page = campaignSearch.Page,
+            PageSize = campaignSearch.PageSize
         };
     }
 
