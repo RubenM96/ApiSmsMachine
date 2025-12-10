@@ -4,7 +4,6 @@ using SmsMachine.Dashboard.Services;
 using System.Net;
 using System.Text;
 using System.Text.Json;
-using System.Web;
 
 public class CampaignService : ICampaignService
 {
@@ -27,7 +26,7 @@ public class CampaignService : ICampaignService
         return response.IsSuccessStatusCode;
     }
 
-    
+
     //creazione
     public async Task<CampaignFormResult> CreateCampaignAsync(CampaignForm campaignForm)
     {
@@ -39,7 +38,7 @@ public class CampaignService : ICampaignService
         string? serverRecipientError = null;
 
         var response = await _http.PostAsync("api/campaign/CreateCampaign", content);
-        
+
         // caso ok
         if (response.IsSuccessStatusCode)
         {

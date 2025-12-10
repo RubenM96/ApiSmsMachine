@@ -82,7 +82,7 @@ else
 
         var campaign = data.Items.FirstOrDefault(x => x.Id == id);
         var title = campaign?.Title ?? id.ToString(); // per recuperare il titolo della campagna
-        //qui deve rimanere un bool tue o false, la logica va nel service
+
         var ok = await JS.InvokeAsync<bool>("confirm", $"Sei sicuro di voler inviare la campagna \"{title}\"?");
         if (!ok) return;
 
@@ -105,7 +105,7 @@ else
         var campaign = data.Items.FirstOrDefault(x => x.Id == id);
         var title = campaign?.Title ?? id.ToString();
 
-        var ok = await JS.InvokeAsync<bool>("alert", $"Campagna \"{title}\" inviata con successo");
+        var ok = await JS.InvokeAsync<bool>("confirm", $"Sei sicuro di voler cancellare la campagna \"{title}\"?");
         if (!ok) return;
 
         var result = await campaignService.DeleteCampaignAsync(id);
