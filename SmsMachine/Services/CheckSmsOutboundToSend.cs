@@ -20,6 +20,13 @@ public class CheckSmsOutboundToSend : ICheckSmsOutboundToSend
         _logger = logger;
     }
 
+    /// <summary>
+    /// Verifica la presenza di messaggi SMS con lo stato InProgress da inviare.
+    /// </summary>
+    /// <remarks>Se esiste un SMScon stato 'InProgress', verrà inviato utilizzando il servizio SMS configurato. 
+    /// Non viene intrapresa alcuna azione se non viene trovato alcun messaggio di questo tipo.
+    /// </remarks>
+
     public async Task CheckSmsOutboundInProgress()
     {
         _logger.LogInformation("Controllo SMS in stato InProgress da inviare...");

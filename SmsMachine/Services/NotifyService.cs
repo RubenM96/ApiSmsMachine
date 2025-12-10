@@ -19,7 +19,20 @@ public class NotifyService : INotifyService
         _smsOutboundRepository = smsOutboundRepository;
     }
 
-    public void Notify(string index, string recipient, string text, string date, int indexSms, string status)
+
+    /// <summary>
+    /// Crea e memorizza una notifica per un SMS associato al destinatario e all'indice specificati.
+    /// </summary>
+    /// <remarks>Il metodo registra informazioni sulla notifica e la memorizza nel repository delle notifiche. 
+    /// </remarks>
+    /// <param name="recipient">Il numero di telefono del destinatario per il quale viene creata la notifica.</param>
+    /// <param name="text">Il testo della notifica "STATUS REPORT".</param>
+    /// <param name="date">La data e l'orario della notifica, rappresentati come stringa. Il formato deve essere compatibile con il parser delle date previsto.</param>
+    /// <param name="indexSms">L'id del SMS per il quale viene creata la notifica.</param>
+    /// <param name="status">Il valore di stato da assegnare alla notifica, indicando il suo stato corrente.</param>
+    /// <exception cref="ArgumentException">Viene sollevata se non viene trovato alcun messaggio SMS in uscita per il destinatario e l'indexSms specificati.</exception>
+
+    public void Notify( string recipient, string text, string date, int indexSms, string status)
     {
 
         SmsOutbound? smsOutbound = _smsOutboundRepository.GetSmsOutboundByRecipientAndIndex(recipient, indexSms);

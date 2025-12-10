@@ -20,35 +20,64 @@ namespace SmsMachine.Services
             _logger = logger;
         }
 
-        //Creazione campagna
+        /// <summary>
+        /// Crea una nuova campagna SMS e i singoli messaggi per ciascun destinatario.
+        /// </summary>
+        /// <remarks>Se si verifica un errore durante la creazione di un singolo SMS per un destinatario, l'errore viene
+        /// registrato e l'elaborazione continua per gli altri destinatari. La campagna viene creata indipendentemente
+        /// dagli eventuali errori nella creazione dei singoli SMS.
+        /// </remarks>
+        /// <param name="campaignRequest">La richiesta contenente i dettagli della campagna, inclusi titolo, testo del messaggio, lista dei destinatari,
+        /// impostazioni di notifica e descrizione. Non può essere null.</param>
+        /// <returns>Un task che rappresenta l'operazione asincrona.</returns>
+
         public async Task CreateCampaignAsync(CreateCampaignRequest campaignRequest)
         {
 
+            //Controlla la validità dei numeri di telefono e calcola totale dei destinatari
             RecipientList recipients = new RecipientList(campaignRequest.RecipientList);
             int totalRecipient = recipients.CalculateTotalRecipients();
 
             CampaignSms campaign = new CampaignSms(campaignRequest.Title, campaignRequest.Text, totalRecipient, campaignRequest.CampaignNotify, campaignRequest.Description);
-            var createdCampaign = _campaignRepository.AddCampaign(campaign);
 
-            //crea i singoli sms della campagna
-            foreach (var recipient in recipients.Recipients)
+            try
             {
-                try
-                {
-                    var sms = new SmsOutbound(new Recipient(recipient), campaign.Text, false, campaign.CampaignNotify, DateTime.Now, createdCampaign.Id);
-                    _smsOutboundRepository.AddSms(sms);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Failed to create SMS for recipient {Recipient} in Campaign ID {CampaignId}", recipient, createdCampaign.Id);
-                    _smsOutboundRepository.ClearErrors();
-                }
-            }
+                var createdCampaign = _campaignRepository.AddCampaign(campaign);
 
-            _logger.LogInformation("Created campaign with ID {CampaignId}", createdCampaign.Id);
+                //crea i singoli sms della campagna
+                foreach (var recipient in recipients.Recipients)
+                {
+                    try
+                    {
+                        var sms = new SmsOutbound(new Recipient(recipient), campaign.Text, false, campaign.CampaignNotify, DateTime.Now, createdCampaign.Id);
+                        _smsOutboundRepository.AddSms(sms);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Failed to create SMS for recipient {Recipient} in Campaign ID {CampaignId}", recipient, createdCampaign.Id);
+                        _smsOutboundRepository.ClearErrors();
+                    }
+                }
+
+                _logger.LogInformation("Created campaign with ID {CampaignId}", createdCampaign.Id);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to create campaign with title {CampaignTitle}", campaignRequest.Title);
+                throw;
+            }
         }
 
-        // Invio Campagna, setta tutti i messaggi in stato InProgress
+        /// <summary>
+        /// Avvia il processo di invio per la campagna SMS, settando InProgress lo status della campagna e di tutti i messaggi.
+        /// </summary>
+        /// <remarks>Segna la campagna e i messaggi SMS in uscita associati come in corso prima dell'invio. Registra
+        /// avvisi se la campagna non viene trovata e logga informazioni o errori per ciascun messaggio SMS durante
+        /// l'elaborazione.</remarks>
+        /// <param name="id">L'identificativo univoco della campagna da inviare.</param>
+        /// <returns>Un task che rappresenta l'operazione asincrona.</returns>
+        /// <exception cref="ArgumentException">Viene sollevata se non esiste alcuna campagna con l'identificativo specificato.</exception>
+
         public async Task SendCampaign(int id)
         {
             CampaignSms? campaign = await _campaignRepository.GetCampaignId(id);
@@ -92,6 +121,7 @@ namespace SmsMachine.Services
 
             var recipientList = new RecipientList(form.RecipientList);
 
+            //cancella tutti gli sms esistenti per questa campagna
             _smsOutboundRepository.DeleteAllSmsByCampaignId(existingCampaign.Id);
 
             foreach (var recipient in recipientList.Recipients)

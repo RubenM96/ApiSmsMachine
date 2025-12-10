@@ -17,6 +17,29 @@ namespace SmsMachine.Services
             _password = options.Password;
         }
 
+        /// <summary>
+        /// Invia un form ad AreaSx con il testo, il numero e richiedendo opzionalmente la notifica di consegna.
+        /// </summary>
+        /// <param name="recipient">
+        /// Il numero di telefono del destinatario a cui inviare l’SMS.
+        /// Deve essere un numero valido nel formato previsto.
+        /// </param>
+        /// <param name="text">
+        /// Il contenuto testuale del messaggio SMS da inviare.
+        /// </param>
+        /// <param name="notify">
+        /// Indica se richiedere una notifica di consegna per l’SMS inviato.
+        /// </param>
+        /// <returns>
+        /// Un <see cref="AreaSxSendResult"/> contenente l’esito dell’invio dell’SMS,
+        /// lo stato e gli eventuali dettagli della risposta.
+        /// </returns>
+        /// <exception cref="Exception">
+        /// Generata quando l’SMS non può essere inviato a causa di una risposta HTTP fallita
+        /// o di un altro errore durante l’operazione.
+        /// </exception>
+
+
         public AreaSxSendResult SendSms(string recipient, string text, bool notify)
         {
             _logger.LogInformation("Sending SMS to {Recipient} with text: {Text} and notify: {Notify}", recipient, text, notify);

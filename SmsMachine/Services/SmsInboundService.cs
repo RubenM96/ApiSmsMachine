@@ -15,6 +15,15 @@ namespace SmsMachine.Services
             _smsInboundRepository = smsInboundRepository;
         }
 
+
+
+        /// <summary>
+        /// Elabora un messaggio SMS in ingresso e lo memorizza.
+        /// </summary>
+        /// <param name="recipient">Il numero di telefono del destinatario del messaggio. Non può essere null o vuoto.</param>
+        /// <param name="text">Il contenuto del messaggio SMS. Se supera i 300 caratteri, verrà troncato.</param>
+        /// <param name="date">La data e l'orario in cui l'SMS è stato ricevuto, rappresentati come stringa. Se il formato non è valido, viene utilizzata l'ora corrente in UTC.</param>
+
         public void SmsInbound(string recipient, string text, string date)
         {
             // parse della data

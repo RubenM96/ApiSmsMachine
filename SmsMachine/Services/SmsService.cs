@@ -17,6 +17,17 @@ namespace SmsMachine.Services
             _logger = logger;
         }
 
+        /// <summary>
+        /// Invia un messaggio SMS utilizzando i dettagli dell'SMS in uscita specificati e restituisce il risultato dell'operazione di invio.
+        /// </summary>
+        /// <remarks>
+        /// Il metodo aggiorna inoltre il repository degli SMS per riflettere lo stato del messaggio.
+        /// </remarks>
+        /// <param name="smsOutbound">I dettagli dell'SMS da inviare. Non può essere null. Il testo del messaggio può essere troncato in base alla lunghezza e alle impostazioni di multipart.</param>
+        /// <returns>Un oggetto AreaSxSendResult contenente il risultato dell'operazione di invio SMS. Il risultato indica se il messaggio è stato inviato con successo, rifiutato o non riuscito.</returns>
+        /// <exception cref="ArgumentNullException">Viene sollevata se smsOutbound è null.</exception>
+        /// <exception cref="Exception">Viene sollevata se l'operazione di invio SMS fallisce e la risposta non indica successo o rifiuto. Il messaggio dell'eccezione contiene il codice di errore restituito dal mittente SMS.</exception>
+
         public AreaSxSendResult SendSms(SmsOutbound smsOutbound)
         {
             if (smsOutbound == null)

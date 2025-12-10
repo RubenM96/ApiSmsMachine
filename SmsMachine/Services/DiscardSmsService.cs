@@ -18,6 +18,15 @@ namespace SmsMachine.Api.Services
             _logger = logger;
         }
 
+        /// <summary>
+        /// Recupera gli SMS scartati per la campagna specificata.
+        /// </summary>
+        /// <remarks>Questo metodo recupera gli indici dei messaggi scartati da AreaSx 
+        /// per fare una ricerca dei Sms attraverso gli indici dei messaggi e l'id della campagna.
+        /// </remarks>
+        /// <param name="campaignId">L'identificativo univoco della campagna per la quale devono essere recuperati i messaggi SMS scartati.</param>
+        /// <returns>Una lista di messaggi SMS in uscita che sono stati scartati per la campagna indicata. La lista sarà vuota se non vengono trovati messaggi scartati.</returns>
+
         public async Task<List<SmsOutbound>> RecoveryDiscardedSmsByCampaignId(int campaignId)
         {
             try

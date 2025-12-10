@@ -23,6 +23,15 @@ namespace SmsMachine.Api.Services
             _logger = logger;
         }
 
+
+        /// <summary>
+        /// Verifica lo stato di completamento di tutte le campagne attualmente in corso
+        /// e aggiorna il loro stato quando necessario.
+        /// </summary>
+        /// <remarks>
+        /// Cerca tutte le campagne con stato "InProgress" e controlla i singoli SMS associati per singola campagna.
+        /// </remarks>
+
         public Task CheckCampaignsCompletionAsync()
         {
             _logger.LogInformation("Verifica campagne in stato InProgress...");
@@ -48,13 +57,27 @@ namespace SmsMachine.Api.Services
             return Task.CompletedTask;
         }
 
+        /// <summary>
+        /// Verifica se la campagna SMS specificata è stata completata in base allo stato
+        /// dei messaggi ad essa associati e aggiorna il suo stato se tutti i messaggi
+        /// si trovano in uno stato terminale.
+        /// </summary>
+        /// <remarks>
+        /// Una campagna è considerata completata quando tutti i messaggi SMS associati
+        /// si trovano in uno stato terminale (come Inviato, Scartato o Fallito).
+        /// Se la campagna risulta completata, il suo stato viene aggiornato di conseguenza.
+        /// </remarks>
+        /// <param name="campaign">
+        /// La campagna da verificare per il completamento.
+        /// </param>
+
         private async Task CheckSingleCampaignCompletion(CampaignSms campaign)
         {
             // prendo tutti gli SMS della campagna
             var smsList = await _smsOutboundRepository.GetAllSmsByCampaignId(campaign.Id);
 
             //check dei messaggi scartati
-            await CheckDiscardSmsForSingleCampaign(campaign);           
+            //await CheckDiscardSmsForSingleCampaign(campaign);           
 
             if (!campaign.IsComplete(smsList))
             {
@@ -90,6 +113,16 @@ namespace SmsMachine.Api.Services
                 "Campagna {CampaignId} marcata come Finished (tutti gli SMS in stato terminale)",
                 campaign.Id);
         }
+
+        /// <summary>
+        /// Segna tutti i messaggi SMS associati alla campagna specificata come scartati e aggiorna il loro stato nel
+        /// repository.
+        /// </summary>
+        /// <remarks>Questo metodo recupera tutti i messaggi SMS scartati per la campagna indicata
+        /// e li segna nuovamente come scartati.
+        /// </remarks>
+        /// <param name="campaign">La campagna i cui messaggi SMS associati saranno contrassegnati come scartati.
+        /// </param>
 
         public async Task CheckDiscardSmsForSingleCampaign(CampaignSms campaign)
         {
