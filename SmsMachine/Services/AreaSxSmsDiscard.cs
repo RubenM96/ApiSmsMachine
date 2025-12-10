@@ -18,6 +18,18 @@ namespace SmsMachine.Services
             _password = options.Password;
         }
 
+        /// <summary>
+        /// Chiama l'endpoint di AreaSx SMSMachine e restituisce l'indice degli SMS scartati.
+        /// </summary>
+        /// <returns>
+        /// Un oggetto <see cref="AreaSxSmsNotSent"/> contenente l'esito del controllo,
+        /// gli identificativi degli SMS scartati e eventuali informazioni di errore.
+        /// </returns>
+        /// <exception cref="Exception">
+        /// Viene sollevata quando la chiamata HTTP non va a buon fine.
+        /// </exception>
+         
+
         public AreaSxSmsNotSent SmsNotSend()
         {
             using var request = new HttpRequestMessage(HttpMethod.Post, AreaSxSmsMachine.Endpoints.DiscardSms);

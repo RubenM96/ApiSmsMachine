@@ -2,5 +2,5 @@
 
 public interface INotifyService
 {
-    void Notify(string index, string recipient, string text, string date, int indexSms, string status);
+    void Notify(string recipient, string text, string date, int indexSms, string status);
 }
