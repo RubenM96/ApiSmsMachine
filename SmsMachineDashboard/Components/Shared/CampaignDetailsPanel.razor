@@ -1,0 +1,36 @@
+﻿@using SmsMachine.Dashboard.Models
+
+<div class="card p-3">
+
+    <h4>@Campaign.Title</h4>
+    <p>@Campaign.Description</p>
+
+    <p><strong>Stato:</strong> @Campaign.Status</p>
+    <p><strong>Creato il:</strong> @Campaign.CreatedAt.ToString("dd/MM/yyyy HH:mm")</p>
+
+    <p>
+        <strong>Testo SMS:</strong><br />
+        @Campaign.Text
+    </p>
+
+    @if (!string.IsNullOrWhiteSpace(RecipientsList))
+    {
+        <p>
+            <strong>Lista destinatari:</strong><br />
+            @RecipientsList
+        </p>
+    }
+    else
+    {
+        <p><strong>Lista destinatari:</strong> nessun destinatario trovato.</p>
+    }
+
+    <p><strong>Destinatari totali:</strong> @Campaign.TotalRecipients</p>
+    <p><strong>Notifica attiva:</strong> @(Campaign.CampaignNotify ? "Sì" : "No")</p>
+
+</div>
+
+@code {
+    [Parameter] public CampaignDetails Campaign { get; set; } = default!;
+    [Parameter] public string RecipientsList { get; set; } = string.Empty;
+}

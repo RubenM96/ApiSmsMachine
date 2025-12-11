@@ -77,7 +77,7 @@ namespace SmsMachine.Api.Services
             var smsList = await _smsOutboundRepository.GetAllSmsByCampaignId(campaign.Id);
 
             //check dei messaggi scartati
-            //await CheckDiscardSmsForSingleCampaign(campaign);           
+            await CheckDiscardSmsForSingleCampaign(campaign);           
 
             if (!campaign.IsComplete(smsList))
             {

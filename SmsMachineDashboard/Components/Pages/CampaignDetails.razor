@@ -29,37 +29,11 @@ else
             <CampaignProgressPanel Progress="@progress" />
         </div>
 
-        <!-- DESTRA: dettagli campagna -->
+       <!-- DESTRA: dettagli campagna -->
         <div class="col-md-6 mb-3">
-            <div class="card p-3">
-
-                <h4>@campaign.Title</h4>
-                <p>@campaign.Description</p>
-
-                <p><strong>Stato:</strong> @campaign.Status</p>
-                <p><strong>Creato il:</strong> @campaign.CreatedAt.ToString("dd/MM/yyyy HH:mm")</p>
-
-                <p>
-                    <strong>Testo SMS:</strong><br />
-                    @campaign.Text
-                </p>
-
-                @if (!string.IsNullOrWhiteSpace(recipientsList))
-                {
-                    <p>
-                        <strong>Lista destinatari:</strong><br />
-                        @recipientsList
-                    </p>
-                }
-                else
-                {
-                    <p><strong>Lista destinatari:</strong> nessun destinatario trovato.</p>
-                }
-                <p><strong>Destinatari totali:</strong> @campaign.TotalRecipients</p>
-                <p><strong>Notifica attiva:</strong> @(campaign.CampaignNotify ? "Sì" : "No")</p>
-
-            </div>
+            <CampaignDetailsPanel Campaign="campaign" RecipientsList="recipientsList" />
         </div>
+
 
     </div>
 }

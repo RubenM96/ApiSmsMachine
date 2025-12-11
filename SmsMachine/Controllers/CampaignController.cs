@@ -101,7 +101,7 @@ namespace SmsMachine.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<CampaignProgressDTO>> GetProgress(int id)
         {
-            var dto = _campaignQueryService.GetCampaignProgress(id);
+            var dto = await _campaignQueryService.GetCampaignProgress(id);
             return Ok(dto);
         }
 

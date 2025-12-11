@@ -1,7 +1,4 @@
-﻿using System;
-using static SmsMachine.Dashboard.Models.CampaignDetails;
-
-namespace SmsMachine.Dashboard.Models
+﻿namespace SmsMachine.Dashboard.Models
 {
     public class CampaignProgressDTO
     {
@@ -17,9 +14,9 @@ namespace SmsMachine.Dashboard.Models
         public int Draft { get; set; }
 
         // Completamento basato sugli stati terminali (Sent + Discard + Failed)
-        public double CompletionPercent =>
+        public double CompletionPercentInt =>
             Total == 0
                 ? 0
-                : (double)(Sent + Discard + Failed) / Total * 100;
+                : (int)Math.Round((double)(Sent + Discard + Failed) / Total * 100);
     }
 }

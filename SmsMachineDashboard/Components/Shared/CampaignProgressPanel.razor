@@ -21,14 +21,14 @@ else
         <!-- Percentuale -->
         <div class="progress-percentage">
             <span class="percentage-value">
-                @Progress.CompletionPercent.ToString("0.0")%
+                @Progress.CompletionPercentInt.ToString("0.0")%
             </span>
         </div>
 
-        <!-- Progress bar NON segmentata -->
+        <!-- Progress bar -->
         <div class="progress-bar-bg">
             <div class="progress-bar-fill"
-                 style="width:@Progress.CompletionPercent%"></div>
+                 style="width:@Progress.CompletionPercentInt%"></div>
         </div>
 
         <!-- Conteggi -->
