@@ -20,9 +20,16 @@
                 <InputDate TValue="DateTime?" class="form-control" @bind-Value="Query.To" />
             </div>
 
-            <div class="col-sm-2 d-flex align-items-end">
-                <button class="btn btn-primary w-100" @onclick="OnSearchClick">Filtra</button>
+            <div class="col-sm-2 d-flex align-items-end gap-2">
+                <button type="button" class="btn btn-primary flex-fill" @onclick="OnSearchClick">
+                    Filtra
+                </button>
+
+                <button type="button" class="btn btn-outline-secondary flex-fill" @onclick="OnClearClick">
+                    Pulisci
+                </button>
             </div>
+
         </div>
     </div>
 </div>
@@ -40,5 +47,15 @@
         {
             await OnSearch.InvokeAsync();
         }
+    }
+    private async Task OnClearClick()
+    {
+        Query.Title = string.Empty;
+        Query.From = null;
+        Query.To = null;
+        Query.Page = 1;
+
+        if (OnSearch.HasDelegate)
+            await OnSearch.InvokeAsync();
     }
 }

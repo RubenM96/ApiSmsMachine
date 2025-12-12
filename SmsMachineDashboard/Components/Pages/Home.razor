@@ -6,11 +6,6 @@
 @inject ICampaignService CampaignService
 @inject NavigationManager Nav
 
-<h2 class="mb-1">Benvenuto 👋</h2>
-<p class="text-muted mb-4">
-    Qui trovi un riepilogo veloce delle campagne.
-</p>
-
 @if (isLoading)
 {
     <p>Caricamento…</p>
@@ -25,18 +20,34 @@ else if (summary is null)
 }
 else
 {
-     <CampaignSummaryPanel Summary="summary!" />
+    <div class="d-flex align-items-start justify-content-between mb-4">
+        <div>
+            <h2 class="mb-1">Benvenuto 👋</h2>
+            <div class="text-muted">
+                Gestisci le campagne SMS e monitora lo stato di invio in tempo reale.
+            </div>
+        </div>
 
-    <div class="d-flex gap-2">
-        <button class="btn btn-primary"
-                @onclick="@(() => Nav.NavigateTo("/createcampaign"))">
-            + Nuova campagna
-        </button>
+        <div class="d-flex gap-2">
+            <button class="btn btn-primary"
+                    @onclick="@(() => Nav.NavigateTo("/createcampaign"))">
+                <i class="bi bi-plus-lg me-1"></i> Nuova campagna
+            </button>
 
-        <button class="btn btn-outline-secondary"
-                @onclick="@(() => Nav.NavigateTo("/campaignslist"))">
-            Vai alle campagne
-        </button>
+            <button class="btn btn-outline-secondary"
+                    @onclick="@(() => Nav.NavigateTo("/campaignslist"))">
+                <i class="bi bi-list-ul me-1"></i> Lista campagne
+            </button>
+        </div>
+    </div>
+
+    <CampaignSummaryPanel Summary="summary!" />
+
+    <div class="alert alert-light border d-flex align-items-center gap-2">
+        <i class="bi bi-lightning-charge"></i>
+        <div class="small">
+            Suggerimento: crea una campagna in bozza, verifica destinatari e testo, poi invia quando sei pronto.
+        </div>
     </div>
 }
 
