@@ -25,9 +25,9 @@ namespace SmsMachine.Infrastructure.Repositories
             return campaign;
         }
 
-        public IEnumerable<CampaignSms> GetAllCampaigns()
+        public async Task<IReadOnlyList<CampaignSms>> GetAllCampaignsAsync()
         {
-            return _context.Set<CampaignSms>().ToList();
+            return await _context.Set<CampaignSms>().ToListAsync();
         }
 
         public async Task<PagedResult<CampaignListDTO>> SearchAsync(CampaignFilter filter)

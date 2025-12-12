@@ -192,5 +192,9 @@ public class CampaignService : ICampaignService
     {
         return await _http.GetFromJsonAsync<CampaignProgressDTO>($"api/campaign/GetProgress/{campaignId}");
     }
+    public async Task<CampaignSummaryDTO?> GetSummaryAsync()
+    {
+        return await _http.GetFromJsonAsync<CampaignSummaryDTO>("api/campaign/summary");
+    }
 
 }

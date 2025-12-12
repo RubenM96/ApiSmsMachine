@@ -7,5 +7,6 @@ namespace SmsMachine.Api.Services.Queries
     {
         Task<PagedResult<CampaignListDTO>> SearchAsync(CampaignFilter filter);
         Task<CampaignProgressDTO> GetCampaignProgress(int campaignId);
+        Task<CampaignSummaryDTO> GetSummaryAsync();
     }
 }

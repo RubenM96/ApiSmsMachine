@@ -12,5 +12,6 @@ namespace SmsMachine.Dashboard.Services
         Task<bool> SendCampaignAsync(int id);
         Task<CampaignFormResult> UpdateCampaignAsync(int id, CampaignForm campaignForm);
         Task<CampaignProgressDTO?> GetProgressAsync(int campaignId);
+        Task<CampaignSummaryDTO?> GetSummaryAsync();
     }
 }

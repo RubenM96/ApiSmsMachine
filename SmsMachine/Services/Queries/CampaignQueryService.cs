@@ -45,5 +45,41 @@ namespace SmsMachine.Api.Services.Queries
                 Draft = sms.Count(s => s.Status == SmsStatus.Draft)
             };
         }
+        public async Task<CampaignSummaryDTO> GetSummaryAsync()
+        {
+            var campaigns = await _campaignRepository.GetAllCampaignsAsync();
+
+            var total = 0;
+            var draft = 0;
+            var inProgress = 0;
+            var finished = 0;
+
+            foreach (var c in campaigns)
+            {
+                total++;
+
+                switch (c.Status)
+                {
+                    case CampaignStatus.Draft:
+                        draft++;
+                        break;
+
+                    case CampaignStatus.InProgress:
+                        inProgress++;
+                        break;
+
+                    case CampaignStatus.Finished:
+                        finished++;
+                        break;
+                }
+            }
+
+            return new CampaignSummaryDTO(
+                Total: total,
+                Draft: draft,
+                InProgress: inProgress,
+                Finished: finished
+            );
+        }
     }
 }
