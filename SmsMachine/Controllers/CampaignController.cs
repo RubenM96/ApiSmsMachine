@@ -145,7 +145,7 @@ namespace SmsMachine.Controllers
 
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CampaignSummaryDTO))]
         [HttpGet]
-        public async Task<ActionResult<CampaignSummaryDTO>> Summary()
+        public async Task<IActionResult> Summary()
         {
             var dto = await _campaignQueryService.GetSummaryAsync();
             return Ok(dto);
